@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -97,5 +98,57 @@
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* Cylindrical Bookshelf Styles */
+.perspective-1000 {
+  perspective: 1000px;
+  perspective-origin: center center;
+}
+
+.cylindrical-bookshelf {
+  transform-style: preserve-3d;
+  position: relative;
+  height: 100%;
+  animation: gentle-rotate 60s linear infinite;
+}
+
+.book-row {
+  position: relative;
+  transform-style: preserve-3d;
+  margin-bottom: 20px;
+}
+
+.book-item:hover {
+  animation-play-state: paused;
+}
+
+@keyframes gentle-rotate {
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
+    transform: rotateY(360deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .cylindrical-bookshelf {
+    animation: none;
+  }
+  
+  .book-item {
+    position: relative !important;
+    transform: none !important;
+    display: inline-block;
+    margin: 10px;
+  }
+  
+  .book-row {
+    transform: none !important;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
   }
 }

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Book } from '@/types';
@@ -41,7 +40,11 @@ const BookDetailModal: React.FC<BookDetailModalProps> = ({ book, isOpen, onClose
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-7xl max-h-[95vh] overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 border-gray-700">
+      <DialogContent className={`${
+        activeTab === 'read' 
+          ? 'max-w-[95vw] w-[95vw] max-h-[95vh] h-[95vh]' 
+          : 'max-w-7xl max-h-[95vh]'
+      } overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 border-gray-700`}>
         <DialogHeader className="pb-4">
           <DialogTitle className="text-3xl font-bold text-white text-center">
             {book.title}
@@ -91,12 +94,12 @@ const BookDetailModal: React.FC<BookDetailModalProps> = ({ book, isOpen, onClose
         <div className="overflow-y-auto flex-1">
           {/* Reading Tab */}
           {activeTab === 'read' && (
-            <div className="flex justify-center">
+            <div className="flex justify-center h-full">
               {book.pagesContent && book.pagesContent.length > 0 ? (
                 <FlipBook 
                   pages={book.pagesContent}
-                  width={1000}
-                  height={1200}
+                  width={Math.min(1400, window.innerWidth * 0.8)}
+                  height={Math.min(800, window.innerHeight * 0.65)}
                 />
               ) : (
                 <div className="text-center text-white py-12">

@@ -10,6 +10,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, Download, QrCode, X } from 'lucide-react';
 import { QRCodeGenerator } from './QRCodeGenerator';
+import './BookReader.css';
 
 interface BookReaderProps {
   book: Book | null;
@@ -22,18 +23,23 @@ const BookReader: React.FC<BookReaderProps> = ({ book, isOpen, onClose }) => {
   const [showQR, setShowQR] = useState(false);
   const [isPageTurning, setIsPageTurning] = useState(false);
   const [pageFlipDirection, setPageFlipDirection] = useState<'left' | 'right' | null>(null);
+  const [isBookOpening, setIsBookOpening] = useState(false);
 
   if (!book) return null;
 
   // Generate mock pages for demonstration
   const totalPages = Math.min(book.pages, 20); // Limit to 20 pages for demo
 
-  // Reset page when book changes
+  // Reset page when book changes and trigger opening animation
   useEffect(() => {
-    if (book) {
+    if (book && isOpen) {
       setCurrentPage(1);
+      setIsBookOpening(true);
+      setTimeout(() => {
+        setIsBookOpening(false);
+      }, 800);
     }
-  }, [book]);
+  }, [book, isOpen]);
 
   const nextPage = () => {
     if (currentPage < totalPages && !isPageTurning) {
@@ -141,17 +147,31 @@ ${book.description}
       return isRightPage ? {
         transform: 'perspective(1000px) rotateY(-180deg)',
         transformOrigin: 'left center',
-        zIndex: 10
+        zIndex: 10,
+        transition: 'transform 0.6s ease-in-out'
       } : {};
     } else if (pageFlipDirection === 'right') {
       return !isRightPage ? {
         transform: 'perspective(1000px) rotateY(180deg)',
         transformOrigin: 'right center',
-        zIndex: 10
+        zIndex: 10,
+        transition: 'transform 0.6s ease-in-out'
       } : {};
     }
     
     return {};
+  };
+
+  const handlePageClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const isRightSide = clickX > rect.width / 2;
+    
+    if (isRightSide) {
+      nextPage();
+    } else {
+      prevPage();
+    }
   };
 
   return (
@@ -202,7 +222,12 @@ ${book.description}
             <>
               {/* Enhanced Book Reader with realistic 3D page turning effect */}
               <div className="max-w-6xl mx-auto perspective-1000">
-                <div className="relative bg-gradient-to-br from-amber-100 to-yellow-50 rounded-2xl shadow-2xl overflow-hidden border-4 border-amber-200">
+                <div 
+                  className={`relative bg-gradient-to-br from-amber-100 to-yellow-50 rounded-2xl shadow-2xl overflow-hidden border-4 border-amber-200 cursor-pointer transition-all duration-800 ${
+                    isBookOpening ? 'scale-95 opacity-80' : 'scale-100 opacity-100'
+                  }`}
+                  onClick={handlePageClick}
+                >
                   {/* Book spine effect */}
                   <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-amber-800 to-amber-600 shadow-inner z-20"></div>
                   
@@ -211,7 +236,7 @@ ${book.description}
                     {/* Left Page */}
                     {currentPage > 1 && (
                       <div 
-                        className="w-1/2 border-r-2 border-amber-300/50 relative transition-all duration-600 ease-in-out transform-gpu"
+                        className="w-1/2 border-r-2 border-amber-300/50 relative transition-all duration-600 ease-in-out transform-gpu hover:bg-amber-50"
                         style={{
                           ...getPageFlipStyle(false),
                           backfaceVisibility: 'hidden'
@@ -229,7 +254,7 @@ ${book.description}
                     
                     {/* Right Page */}
                     <div 
-                      className={`${currentPage === 1 ? 'w-full' : 'w-1/2'} relative transition-all duration-600 ease-in-out transform-gpu`}
+                      className={`${currentPage === 1 ? 'w-full' : 'w-1/2'} relative transition-all duration-600 ease-in-out transform-gpu hover:bg-amber-50`}
                       style={{
                         ...getPageFlipStyle(true),
                         backfaceVisibility: 'hidden'
@@ -257,6 +282,16 @@ ${book.description}
                     {isPageTurning && (
                       <div className="absolute inset-0 bg-black/5 transition-opacity duration-300"></div>
                     )}
+                    {/* Book opening effect */}
+                    {isBookOpening && (
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse"></div>
+                    )}
+                  </div>
+
+                  {/* Click areas hint (invisible but functional) */}
+                  <div className="absolute inset-0 pointer-events-none">
+                    <div className="absolute left-0 top-0 bottom-0 w-1/2 pointer-events-auto cursor-w-resize" title="صفحه قبل"></div>
+                    <div className="absolute right-0 top-0 bottom-0 w-1/2 pointer-events-auto cursor-e-resize" title="صفحه بعد"></div>
                   </div>
                 </div>
               </div>
@@ -301,6 +336,13 @@ ${book.description}
               {isPageTurning && (
                 <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black/70 text-white px-4 py-2 rounded-full text-sm z-50">
                   در حال ورق زدن...
+                </div>
+              )}
+
+              {/* Opening book indicator */}
+              {isBookOpening && (
+                <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-amber-800/80 text-white px-6 py-3 rounded-full text-lg z-50 animate-pulse">
+                  📖 در حال باز کردن کتاب...
                 </div>
               )}
             </>

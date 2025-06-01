@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Label } from '@/components/ui/label';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useForm } from 'react-hook-form';
@@ -16,7 +17,7 @@ import { Upload, Plus, FileText, Lock, BookOpen, Download } from 'lucide-react';
 import { Book } from '@/types';
 import { books } from '@/data/books';
 
-const ADMIN_PASSWORD = 'admin123'; // در پروژه واقعی باید از متغیر محیطی استفاده شود
+const ADMIN_PASSWORD = '123'; // رمز عبور ساده
 
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -152,7 +153,7 @@ const Admin = () => {
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-white flex items-center gap-2">
             <BookOpen className="w-8 h-8" />
-            پنل مدیریت کتابخانه دیجیتال
+            پنل مدیریت کتابخانه دیجیتال فارسی
           </h1>
           <Button onClick={handleLogout} variant="outline">
             خروج
@@ -211,9 +212,23 @@ const Admin = () => {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>دسته‌بندی</FormLabel>
-                          <FormControl>
-                            <Input {...field} placeholder="دسته‌بندی کتاب" />
-                          </FormControl>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger className="bg-white">
+                                <SelectValue placeholder="دسته‌بندی را انتخاب کنید" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="bg-white border border-gray-200 shadow-lg">
+                              <SelectItem value="ادبیات">ادبیات</SelectItem>
+                              <SelectItem value="تاریخ">تاریخ</SelectItem>
+                              <SelectItem value="علوم">علوم</SelectItem>
+                              <SelectItem value="فلسفه">فلسفه</SelectItem>
+                              <SelectItem value="کودک و نوجوان">کودک و نوجوان</SelectItem>
+                              <SelectItem value="روانشناسی">روانشناسی</SelectItem>
+                              <SelectItem value="اقتصاد">اقتصاد</SelectItem>
+                              <SelectItem value="هنر">هنر</SelectItem>
+                            </SelectContent>
+                          </Select>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -225,9 +240,21 @@ const Admin = () => {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>تعداد صفحات</FormLabel>
-                          <FormControl>
-                            <Input {...field} type="number" placeholder="تعداد صفحات" />
-                          </FormControl>
+                          <Select onValueChange={(value) => field.onChange(parseInt(value))} defaultValue={field.value?.toString()}>
+                            <FormControl>
+                              <SelectTrigger className="bg-white">
+                                <SelectValue placeholder="تعداد صفحات را انتخاب کنید" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="bg-white border border-gray-200 shadow-lg">
+                              <SelectItem value="50">کمتر از 50 صفحه</SelectItem>
+                              <SelectItem value="100">50-100 صفحه</SelectItem>
+                              <SelectItem value="200">100-200 صفحه</SelectItem>
+                              <SelectItem value="300">200-300 صفحه</SelectItem>
+                              <SelectItem value="500">300-500 صفحه</SelectItem>
+                              <SelectItem value="1000">بیش از 500 صفحه</SelectItem>
+                            </SelectContent>
+                          </Select>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -253,8 +280,61 @@ const Admin = () => {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>سال انتشار</FormLabel>
+                          <Select onValueChange={(value) => field.onChange(parseInt(value))} defaultValue={field.value?.toString()}>
+                            <FormControl>
+                              <SelectTrigger className="bg-white">
+                                <SelectValue placeholder="سال انتشار را انتخاب کنید" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="bg-white border border-gray-200 shadow-lg">
+                              {Array.from({ length: 30 }, (_, i) => {
+                                const year = new Date().getFullYear() - i;
+                                return (
+                                  <SelectItem key={year} value={year.toString()}>
+                                    {year}
+                                  </SelectItem>
+                                );
+                              })}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="rating"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>امتیاز</FormLabel>
+                          <Select onValueChange={(value) => field.onChange(parseFloat(value))} defaultValue={field.value?.toString()}>
+                            <FormControl>
+                              <SelectTrigger className="bg-white">
+                                <SelectValue placeholder="امتیاز را انتخاب کنید" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="bg-white border border-gray-200 shadow-lg">
+                              <SelectItem value="1">1 ستاره</SelectItem>
+                              <SelectItem value="2">2 ستاره</SelectItem>
+                              <SelectItem value="3">3 ستاره</SelectItem>
+                              <SelectItem value="4">4 ستاره</SelectItem>
+                              <SelectItem value="5">5 ستاره</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="coverUrl"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>آدرس تصویر جلد</FormLabel>
                           <FormControl>
-                            <Input {...field} type="number" placeholder="سال انتشار" />
+                            <Input {...field} placeholder="آدرس URL تصویر جلد" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>

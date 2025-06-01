@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Book } from '@/types';
 
@@ -83,7 +82,7 @@ export const LibraryShelfView: React.FC<LibraryShelfViewProps> = ({
                 
                 {/* Books on shelf */}
                 <div 
-                  className="flex justify-center items-end space-x-6 rtl:space-x-reverse mb-8"
+                  className="flex justify-center items-end"
                   style={{ minHeight: '280px' }}
                 >
                   {shelf.map((book, bookIndex) => {
@@ -97,13 +96,14 @@ export const LibraryShelfView: React.FC<LibraryShelfViewProps> = ({
                     return (
                       <div
                         key={book.id}
-                        className="group cursor-pointer transition-all duration-700 hover:scale-110 hover:-translate-y-8 hover:rotate-1 hover:z-50 relative"
+                        className="group cursor-pointer transition-all duration-700 hover:scale-110 hover:-translate-y-12 hover:rotate-1 hover:z-50 relative"
                         style={{
                           width: `${width}px`,
                           height: `${height}px`,
                           transform: `rotateY(${tilt}deg) rotateZ(${lean}deg) perspective(2000px)`,
                           transformStyle: 'preserve-3d',
-                          filter: 'drop-shadow(0 15px 30px rgba(0,0,0,0.6))'
+                          filter: 'drop-shadow(0 15px 30px rgba(0,0,0,0.6))',
+                          marginLeft: bookIndex > 0 ? '-8px' : '0'
                         }}
                         onClick={() => onSelectBook(book)}
                       >
@@ -264,18 +264,28 @@ export const LibraryShelfView: React.FC<LibraryShelfViewProps> = ({
                             <div className="absolute bottom-1/3 left-2 w-1 h-2 bg-amber-700/30 rounded blur-sm"></div>
                           </div>
 
-                          {/* Enhanced selection glow effect */}
+                          {/* Enhanced selection glow effect with lifting animation */}
                           <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none">
                             <div 
                               className="absolute inset-0 rounded"
                               style={{
-                                background: `radial-gradient(ellipse at center, ${bookStyle.accent}40 0%, ${bookStyle.accent}20 30%, transparent 70%)`,
-                                boxShadow: `0 0 30px ${bookStyle.accent}60, inset 0 0 20px ${bookStyle.accent}30`
+                                background: `radial-gradient(ellipse at center, ${bookStyle.accent}60 0%, ${bookStyle.accent}30 30%, transparent 70%)`,
+                                boxShadow: `
+                                  0 0 40px ${bookStyle.accent}80, 
+                                  inset 0 0 30px ${bookStyle.accent}40,
+                                  0 20px 60px rgba(0,0,0,0.8),
+                                  0 30px 80px rgba(0,0,0,0.6)
+                                `
                               }}
                             />
                             <div 
-                              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent transform -skew-x-12"
+                              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent transform -skew-x-12 group-hover:animate-pulse"
                               style={{ animation: 'shimmer 1.5s ease-in-out' }}
+                            />
+                            {/* Book lifting shadow */}
+                            <div 
+                              className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 w-full h-4 bg-black/60 rounded-full blur-lg opacity-0 group-hover:opacity-100 transition-all duration-500"
+                              style={{ filter: 'blur(12px)' }}
                             />
                           </div>
                         </div>

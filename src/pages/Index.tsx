@@ -1,10 +1,9 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { Book } from '@/types';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '@/hooks/use-toast';
 import { books } from '@/data/books';
-import BookDetailModal from '@/components/book-detail/BookDetailModal';
+import BookReader from '@/components/book-reader/BookReader';
 import FilterTabs from '@/components/FilterTabs';
 import Header from '@/components/layout/Header';
 import BookList from '@/components/books/BookList';
@@ -217,7 +216,7 @@ const Index = () => {
         </div>
       </div>
       
-      <BookDetailModal
+      <BookReader
         book={selectedBook}
         isOpen={isModalOpen}
         onClose={handleCloseModal}

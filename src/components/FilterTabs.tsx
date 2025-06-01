@@ -8,32 +8,25 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ChevronDown } from 'lucide-react';
+import { FilterOptions } from '@/types';
 
 interface FilterTabsProps {
-  selectedCategory: string;
-  selectedPages: string;
-  onCategoryChange: (category: string) => void;
-  onPagesChange: (pages: string) => void;
+  categories: string[];
+  onFilterChange: (filters: FilterOptions) => void;
+  activeFiltersCount: number;
+  currentFilters: FilterOptions;
+  minPages: number;
+  maxPages: number;
 }
 
 const FilterTabs: React.FC<FilterTabsProps> = ({
-  selectedCategory,
-  selectedPages,
-  onCategoryChange,
-  onPagesChange,
+  categories,
+  onFilterChange,
+  activeFiltersCount,
+  currentFilters,
+  minPages,
+  maxPages,
 }) => {
-  const categories = [
-    { value: 'all', label: 'همه دسته‌ها' },
-    { value: 'ادبیات', label: 'ادبیات' },
-    { value: 'تاریخ', label: 'تاریخ' },
-    { value: 'علوم', label: 'علوم' },
-    { value: 'فلسفه', label: 'فلسفه' },
-    { value: 'کودک و نوجوان', label: 'کودک و نوجوان' },
-    { value: 'روانشناسی', label: 'روانشناسی' },
-    { value: 'اقتصاد', label: 'اقتصاد' },
-    { value: 'هنر', label: 'هنر' },
-  ];
-
   const pageRanges = [
     { value: 'all', label: 'همه تعداد صفحات' },
     { value: '0-100', label: 'کمتر از 100 صفحه' },
@@ -42,13 +35,60 @@ const FilterTabs: React.FC<FilterTabsProps> = ({
     { value: '300+', label: 'بیش از 300 صفحه' },
   ];
 
-  const getCategoryLabel = (value: string) => {
-    return categories.find(cat => cat.value === value)?.label || 'همه دسته‌ها';
+  const handleCategoryChange = (category: string) => {
+    const newCategories = category === 'all' ? [] : [category];
+    onFilterChange({
+      ...currentFilters,
+      categories: newCategories,
+    });
   };
 
-  const getPagesLabel = (value: string) => {
-    return pageRanges.find(range => range.value === value)?.label || 'همه تعداد صفحات';
+  const handlePagesChange = (pages: string) => {
+    let newMinPages = minPages;
+    let newMaxPages = maxPages;
+    
+    if (pages === '0-100') {
+      newMinPages = 0;
+      newMaxPages = 100;
+    } else if (pages === '100-200') {
+      newMinPages = 100;
+      newMaxPages = 200;
+    } else if (pages === '200-300') {
+      newMinPages = 200;
+      newMaxPages = 300;
+    } else if (pages === '300+') {
+      newMinPages = 300;
+      newMaxPages = 1000;
+    } else {
+      newMinPages = 0;
+      newMaxPages = 1000;
+    }
+    
+    onFilterChange({
+      ...currentFilters,
+      minPages: newMinPages,
+      maxPages: newMaxPages,
+    });
   };
+
+  const getCategoryLabel = () => {
+    if (currentFilters.categories.length === 0) return 'همه دسته‌ها';
+    return currentFilters.categories[0];
+  };
+
+  const getPagesLabel = () => {
+    if (currentFilters.minPages === 0 && currentFilters.maxPages === 1000) return 'همه تعداد صفحات';
+    if (currentFilters.minPages === 0 && currentFilters.maxPages === 100) return 'کمتر از 100 صفحه';
+    if (currentFilters.minPages === 100 && currentFilters.maxPages === 200) return '100-200 صفحه';
+    if (currentFilters.minPages === 200 && currentFilters.maxPages === 300) return '200-300 صفحه';
+    if (currentFilters.minPages === 300) return 'بیش از 300 صفحه';
+    return 'همه تعداد صفحات';
+  };
+
+  const allCategories = [
+    { value: 'all', label: 'همه دسته‌ها' },
+    ...categories.map(cat => ({ value: cat, label: cat }))
+  ];
 
   return (
     <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-4 mb-6">
@@ -60,15 +100,15 @@ const FilterTabs: React.FC<FilterTabsProps> = ({
               variant="outline" 
               className="bg-white/20 border-white/30 text-white hover:bg-white/30 hover:text-white transition-all duration-200 min-w-[180px] justify-between"
             >
-              {getCategoryLabel(selectedCategory)}
+              {getCategoryLabel()}
               <ChevronDown className="h-4 w-4 ml-2" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="bg-white border border-gray-200 shadow-lg min-w-[180px] z-50">
-            {categories.map((category) => (
+            {allCategories.map((category) => (
               <DropdownMenuItem
                 key={category.value}
-                onClick={() => onCategoryChange(category.value)}
+                onClick={() => handleCategoryChange(category.value)}
                 className="text-gray-900 hover:bg-gray-100 cursor-pointer"
               >
                 {category.label}
@@ -84,7 +124,7 @@ const FilterTabs: React.FC<FilterTabsProps> = ({
               variant="outline" 
               className="bg-white/20 border-white/30 text-white hover:bg-white/30 hover:text-white transition-all duration-200 min-w-[180px] justify-between"
             >
-              {getPagesLabel(selectedPages)}
+              {getPagesLabel()}
               <ChevronDown className="h-4 w-4 ml-2" />
             </Button>
           </DropdownMenuTrigger>
@@ -92,7 +132,7 @@ const FilterTabs: React.FC<FilterTabsProps> = ({
             {pageRanges.map((range) => (
               <DropdownMenuItem
                 key={range.value}
-                onClick={() => onPagesChange(range.value)}
+                onClick={() => handlePagesChange(range.value)}
                 className="text-gray-900 hover:bg-gray-100 cursor-pointer"
               >
                 {range.label}
@@ -100,6 +140,12 @@ const FilterTabs: React.FC<FilterTabsProps> = ({
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
+
+        {activeFiltersCount > 0 && (
+          <div className="text-white/80 text-sm">
+            فیلترهای فعال: {activeFiltersCount}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ChevronDown, Search } from 'lucide-react';
+import { ChevronDown, Search, Filter, X } from 'lucide-react';
 import { FilterOptions } from '@/types';
 
 interface FilterTabsProps {
@@ -28,6 +28,8 @@ const FilterTabs: React.FC<FilterTabsProps> = ({
   minPages,
   maxPages,
 }) => {
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
+
   const pageRanges = [
     { value: 'all', label: 'همه تعداد صفحات' },
     { value: '0-100', label: 'کمتر از 100 صفحه' },
@@ -127,112 +129,137 @@ const FilterTabs: React.FC<FilterTabsProps> = ({
   ];
 
   return (
-    <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-3 mb-4">
-      <div className="flex flex-wrap gap-3 items-center justify-center">
-        {/* Search for Book Title - Made more compact */}
-        <div className="relative min-w-[180px]">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 h-4 w-4" />
-          <Input
-            type="text"
-            placeholder="جستجو در عنوان..."
-            value={currentFilters.search || ''}
-            onChange={(e) => handleSearchChange(e.target.value)}
-            className="bg-white/20 border-white/30 text-white placeholder:text-white/60 hover:bg-white/30 focus:bg-white/30 pl-10 h-8 text-sm"
-          />
-        </div>
-
-        {/* Search for Author - Made more compact */}
-        <div className="relative min-w-[180px]">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 h-4 w-4" />
-          <Input
-            type="text"
-            placeholder="جستجو نویسنده..."
-            value={currentFilters.authorSearch || ''}
-            onChange={(e) => handleAuthorSearchChange(e.target.value)}
-            className="bg-white/20 border-white/30 text-white placeholder:text-white/60 hover:bg-white/30 focus:bg-white/30 pl-10 h-8 text-sm"
-          />
-        </div>
-
-        {/* Category Dropdown - Made more compact */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button 
-              variant="outline" 
-              size="sm"
-              className="bg-white/20 border-white/30 text-white hover:bg-white/30 hover:text-white transition-all duration-200 min-w-[140px] justify-between h-8 text-sm"
-            >
-              {getCategoryLabel()}
-              <ChevronDown className="h-3 w-3 ml-1" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="bg-white border border-gray-200 shadow-lg min-w-[140px] z-50">
-            {allCategories.map((category) => (
-              <DropdownMenuItem
-                key={category.value}
-                onClick={() => handleCategoryChange(category.value)}
-                className="text-gray-900 hover:bg-gray-100 cursor-pointer text-sm"
-              >
-                {category.label}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        {/* Pages Dropdown - Made more compact */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button 
-              variant="outline" 
-              size="sm"
-              className="bg-white/20 border-white/30 text-white hover:bg-white/30 hover:text-white transition-all duration-200 min-w-[140px] justify-between h-8 text-sm"
-            >
-              {getPagesLabel()}
-              <ChevronDown className="h-3 w-3 ml-1" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="bg-white border border-gray-200 shadow-lg min-w-[140px] z-50">
-            {pageRanges.map((range) => (
-              <DropdownMenuItem
-                key={range.value}
-                onClick={() => handlePagesChange(range.value)}
-                className="text-gray-900 hover:bg-gray-100 cursor-pointer text-sm"
-              >
-                {range.label}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        {/* Age Range Dropdown - Made more compact */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button 
-              variant="outline" 
-              size="sm"
-              className="bg-white/20 border-white/30 text-white hover:bg-white/30 hover:text-white transition-all duration-200 min-w-[140px] justify-between h-8 text-sm"
-            >
-              {getAgeRangeLabel()}
-              <ChevronDown className="h-3 w-3 ml-1" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="bg-white border border-gray-200 shadow-lg min-w-[140px] z-50">
-            {ageRanges.map((range) => (
-              <DropdownMenuItem
-                key={range.value}
-                onClick={() => handleAgeRangeChange(range.value)}
-                className="text-gray-900 hover:bg-gray-100 cursor-pointer text-sm"
-              >
-                {range.label}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        {activeFiltersCount > 0 && (
-          <div className="text-white/80 text-xs bg-blue-500/30 px-2 py-1 rounded-full">
-            فیلتر: {activeFiltersCount}
+    <div className="mb-4">
+      {/* Mobile Filter Toggle Button */}
+      <div className="block md:hidden mb-3">
+        <Button
+          onClick={() => setShowMobileFilters(!showMobileFilters)}
+          variant="outline"
+          className="w-full bg-white/20 border-white/30 text-white hover:bg-white/30 hover:text-white transition-all duration-200 justify-between"
+        >
+          <div className="flex items-center gap-2">
+            <Filter className="h-4 w-4" />
+            <span>فیلترها</span>
+            {activeFiltersCount > 0 && (
+              <div className="text-xs bg-blue-500/50 px-2 py-1 rounded-full">
+                {activeFiltersCount}
+              </div>
+            )}
           </div>
-        )}
+          {showMobileFilters ? <X className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+        </Button>
+      </div>
+
+      {/* Filter Content */}
+      <div className={`bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-3 transition-all duration-300 ${
+        showMobileFilters ? 'block' : 'hidden md:block'
+      }`}>
+        <div className="flex flex-wrap gap-3 items-center justify-center">
+          {/* Search for Book Title - Made more compact */}
+          <div className="relative min-w-[180px]">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 h-4 w-4" />
+            <Input
+              type="text"
+              placeholder="جستجو در عنوان..."
+              value={currentFilters.search || ''}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              className="bg-white/20 border-white/30 text-white placeholder:text-white/60 hover:bg-white/30 focus:bg-white/30 pl-10 h-8 text-sm"
+            />
+          </div>
+
+          {/* Search for Author - Made more compact */}
+          <div className="relative min-w-[180px]">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 h-4 w-4" />
+            <Input
+              type="text"
+              placeholder="جستجو نویسنده..."
+              value={currentFilters.authorSearch || ''}
+              onChange={(e) => handleAuthorSearchChange(e.target.value)}
+              className="bg-white/20 border-white/30 text-white placeholder:text-white/60 hover:bg-white/30 focus:bg-white/30 pl-10 h-8 text-sm"
+            />
+          </div>
+
+          {/* Category Dropdown - Made more compact */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="bg-white/20 border-white/30 text-white hover:bg-white/30 hover:text-white transition-all duration-200 min-w-[140px] justify-between h-8 text-sm"
+              >
+                {getCategoryLabel()}
+                <ChevronDown className="h-3 w-3 ml-1" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="bg-white border border-gray-200 shadow-lg min-w-[140px] z-50">
+              {allCategories.map((category) => (
+                <DropdownMenuItem
+                  key={category.value}
+                  onClick={() => handleCategoryChange(category.value)}
+                  className="text-gray-900 hover:bg-gray-100 cursor-pointer text-sm"
+                >
+                  {category.label}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Pages Dropdown - Made more compact */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="bg-white/20 border-white/30 text-white hover:bg-white/30 hover:text-white transition-all duration-200 min-w-[140px] justify-between h-8 text-sm"
+              >
+                {getPagesLabel()}
+                <ChevronDown className="h-3 w-3 ml-1" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="bg-white border border-gray-200 shadow-lg min-w-[140px] z-50">
+              {pageRanges.map((range) => (
+                <DropdownMenuItem
+                  key={range.value}
+                  onClick={() => handlePagesChange(range.value)}
+                  className="text-gray-900 hover:bg-gray-100 cursor-pointer text-sm"
+                >
+                  {range.label}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Age Range Dropdown - Made more compact */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="bg-white/20 border-white/30 text-white hover:bg-white/30 hover:text-white transition-all duration-200 min-w-[140px] justify-between h-8 text-sm"
+              >
+                {getAgeRangeLabel()}
+                <ChevronDown className="h-3 w-3 ml-1" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="bg-white border border-gray-200 shadow-lg min-w-[140px] z-50">
+              {ageRanges.map((range) => (
+                <DropdownMenuItem
+                  key={range.value}
+                  onClick={() => handleAgeRangeChange(range.value)}
+                  className="text-gray-900 hover:bg-gray-100 cursor-pointer text-sm"
+                >
+                  {range.label}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {activeFiltersCount > 0 && (
+            <div className="text-white/80 text-xs bg-blue-500/30 px-2 py-1 rounded-full hidden md:block">
+              فیلتر: {activeFiltersCount}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

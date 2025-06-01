@@ -160,7 +160,7 @@ export const BookshelfView: React.FC<BookshelfViewProps> = ({ books }) => {
                                 border: '1px solid rgba(255,255,255,0.1)'
                               }}
                             >
-                              {/* Book spine content */}
+                              {/* Book spine content with corrected text direction */}
                               <div className="absolute inset-0 p-3 flex flex-col justify-between text-white">
                                 {/* Decorative top band */}
                                 <div 
@@ -168,16 +168,19 @@ export const BookshelfView: React.FC<BookshelfViewProps> = ({ books }) => {
                                   style={{ background: `linear-gradient(90deg, ${bookStyle.accent}, transparent, ${bookStyle.accent})` }}
                                 />
                                 
-                                {/* Title on spine */}
+                                {/* Corrected Title on spine - vertical but readable */}
                                 <div 
-                                  className="writing-vertical-rl transform rotate-180 text-center font-bold leading-tight overflow-hidden font-vazir flex-1 flex items-center justify-center"
+                                  className="text-center font-bold leading-tight overflow-hidden font-vazir flex-1 flex items-center justify-center"
                                   style={{ 
-                                    fontSize: '10px',
-                                    textShadow: '1px 1px 2px rgba(0,0,0,0.7)',
-                                    color: '#ffffff'
+                                    fontSize: '11px',
+                                    textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
+                                    color: '#ffffff',
+                                    fontWeight: 'bold'
                                   }}
                                 >
-                                  {book.title.slice(0, 35)}
+                                  <div className="transform -rotate-90 whitespace-nowrap max-w-full overflow-hidden text-ellipsis">
+                                    {book.title.slice(0, 30)}
+                                  </div>
                                 </div>
                                 
                                 {/* Middle decorative lines */}
@@ -187,15 +190,18 @@ export const BookshelfView: React.FC<BookshelfViewProps> = ({ books }) => {
                                   <div className="w-1/2 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
                                 </div>
                                 
-                                {/* Author on spine */}
+                                {/* Corrected Author on spine - vertical but readable */}
                                 <div 
-                                  className="writing-vertical-rl transform rotate-180 text-center opacity-90 font-vazir"
+                                  className="text-center opacity-90 font-vazir flex items-center justify-center"
                                   style={{ 
-                                    fontSize: '8px',
-                                    textShadow: '1px 1px 2px rgba(0,0,0,0.7)'
+                                    fontSize: '9px',
+                                    textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
+                                    fontWeight: '500'
                                   }}
                                 >
-                                  {book.author.slice(0, 30)}
+                                  <div className="transform -rotate-90 whitespace-nowrap max-w-full overflow-hidden text-ellipsis">
+                                    {book.author.slice(0, 25)}
+                                  </div>
                                 </div>
 
                                 {/* Decorative bottom band */}

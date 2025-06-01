@@ -316,7 +316,7 @@ export const LibraryShelfView: React.FC<LibraryShelfViewProps> = ({
                           transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
                         }}
                       >
-                        {/* Clean book content */}
+                        {/* Clean book content with fixed text direction */}
                         <div className="absolute inset-0 p-2 flex flex-col justify-between text-white">
                           {/* Minimal top accent */}
                           <div 
@@ -327,37 +327,38 @@ export const LibraryShelfView: React.FC<LibraryShelfViewProps> = ({
                             }}
                           />
                           
-                          {/* Clean title text */}
+                          {/* Fixed title text - horizontal layout */}
                           <div 
-                            className="text-center font-medium leading-tight overflow-hidden flex-1 flex items-center justify-center"
+                            className="text-center font-medium leading-tight overflow-hidden flex-1 flex items-center justify-center px-1"
                             style={{ 
-                              fontSize: '8px',
-                              textShadow: '1px 1px 2px rgba(0,0,0,0.8)',
+                              fontSize: '10px',
+                              textShadow: '2px 2px 4px rgba(0,0,0,0.9)',
                               color: bookStyle.accent,
-                              writingMode: 'vertical-rl',
-                              textOrientation: 'mixed',
-                              transform: 'rotate(180deg)'
+                              fontWeight: 'bold',
+                              lineHeight: '1.2'
                             }}
                           >
-                            {book.title.slice(0, 35)}
+                            <div className="transform -rotate-90 whitespace-nowrap max-w-full overflow-hidden text-ellipsis">
+                              {book.title.slice(0, 25)}
+                            </div>
                           </div>
                           
                           {/* Simple divider */}
                           <div className="w-full h-px bg-white/30 my-1"></div>
                           
-                          {/* Author text */}
+                          {/* Fixed author text - horizontal layout */}
                           <div 
-                            className="text-center opacity-70"
+                            className="text-center opacity-80 flex items-center justify-center px-1"
                             style={{ 
-                              fontSize: '7px',
-                              textShadow: '1px 1px 2px rgba(0,0,0,0.8)',
-                              writingMode: 'vertical-rl',
-                              textOrientation: 'mixed',
-                              transform: 'rotate(180deg)',
-                              color: bookStyle.accent
+                              fontSize: '8px',
+                              textShadow: '2px 2px 4px rgba(0,0,0,0.9)',
+                              color: bookStyle.accent,
+                              fontWeight: '500'
                             }}
                           >
-                            {book.author.slice(0, 25)}
+                            <div className="transform -rotate-90 whitespace-nowrap max-w-full overflow-hidden text-ellipsis">
+                              {book.author.slice(0, 20)}
+                            </div>
                           </div>
 
                           {/* Minimal bottom accent */}

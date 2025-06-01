@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -45,14 +44,18 @@ const Admin = () => {
     setLocalBooks(prev => [...prev, ...newBooks]);
   };
 
-  const handleUpdateBook = (bookId: string, updatedBook: Partial<Book>) => {
-    setLocalBooks(prev => prev.map(book => 
-      book.id === bookId ? { ...book, ...updatedBook } : book
-    ));
+  const handleEditBook = (book: Book) => {
+    console.log('Edit book:', book);
+    // Handle edit functionality here
   };
 
   const handleDeleteBook = (bookId: string) => {
     setLocalBooks(prev => prev.filter(book => book.id !== bookId));
+  };
+
+  const handleViewBook = (book: Book) => {
+    console.log('View book:', book);
+    // Handle view functionality here
   };
 
   // آمار محاسبه شده
@@ -147,8 +150,9 @@ const Admin = () => {
           <TabsContent value="manage-books">
             <BookManagementTable 
               books={localBooks}
-              onUpdateBook={handleUpdateBook}
+              onEditBook={handleEditBook}
               onDeleteBook={handleDeleteBook}
+              onViewBook={handleViewBook}
             />
           </TabsContent>
 

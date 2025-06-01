@@ -450,7 +450,7 @@ export const LibraryShelfView: React.FC<LibraryShelfViewProps> = ({
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes shimmer {
           0% { transform: translateX(-100%) skewX(-12deg); }
           100% { transform: translateX(300%) skewX(-12deg); }

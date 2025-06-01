@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Volume2, VolumeX } from 'lucide-react';
 import { audioManager } from '@/utils/audioUtils';
@@ -350,7 +349,7 @@ const FlipBook: React.FC<FlipBookProps> = ({ pages, width = 600, height = 700 })
         </div>
       )}
 
-      <style jsx>{`
+      <style>{`
         @keyframes flip-right {
           0% {
             transform: rotateY(0deg);

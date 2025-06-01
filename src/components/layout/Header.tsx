@@ -1,35 +1,29 @@
 
 import React from 'react';
-import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
+import { BookOpen, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Globe } from 'lucide-react';
 
-const Header = () => {
-  const { t, i18n } = useTranslation();
-
-  const toggleLanguage = () => {
-    const newLang = i18n.language === 'fa' ? 'en' : 'fa';
-    i18n.changeLanguage(newLang);
-  };
-
+const Header: React.FC = () => {
   return (
-    <header className="flex justify-between items-center mb-8">
-      <div>
-        <h1 className="text-4xl font-bold text-white mb-2">
-          کتابخانه دیجیتال فارسی
-        </h1>
-        <div className="h-1 w-20 bg-gradient-to-r from-blue-400 to-purple-500 rounded"></div>
+    <header className="bg-white/10 backdrop-blur-xl border-b border-white/10 shadow-lg sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          <Link to="/" className="flex items-center space-x-2 rtl:space-x-reverse">
+            <BookOpen className="h-8 w-8 text-white" />
+            <span className="text-xl font-bold text-white">کتابخانه دیجیتال فارسی</span>
+          </Link>
+          
+          <div className="flex items-center space-x-4 rtl:space-x-reverse">
+            <Link to="/admin">
+              <Button variant="ghost" size="sm" className="text-white hover:bg-white/10">
+                <Settings className="w-4 h-4 ml-2" />
+                پنل مدیریت
+              </Button>
+            </Link>
+          </div>
+        </div>
       </div>
-      
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={toggleLanguage}
-        className="bg-white/10 border-white/20 text-white hover:bg-white/20"
-      >
-        <Globe className="w-4 h-4 mr-2" />
-        {t('language')}
-      </Button>
     </header>
   );
 };

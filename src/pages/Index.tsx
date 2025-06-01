@@ -17,6 +17,7 @@ const Index = () => {
   const [categories, setCategories] = useState<string[]>([]);
   const [filters, setFilters] = useState<FilterOptions>({ 
     search: '', 
+    authorSearch: '',
     categories: [],
     sortBy: '',
     minPages: 0,
@@ -34,6 +35,7 @@ const Index = () => {
   useEffect(() => {
     let count = 0;
     if (filters.search) count++;
+    if (filters.authorSearch) count++;
     if (filters.categories.length > 0) count += 1;
     if (filters.sortBy) count++;
     if (filters.minPages !== undefined && filters.minPages > 0) count++;
@@ -47,12 +49,19 @@ const Index = () => {
   const processedBooks = useMemo(() => {
     let result = [...books];
     
-    // Apply search filter
+    // Apply search filter for book title
     if (filters.search) {
       const searchLower = filters.search.toLowerCase();
       result = result.filter(book => 
-        book.title.toLowerCase().includes(searchLower) || 
-        book.author.toLowerCase().includes(searchLower)
+        book.title.toLowerCase().includes(searchLower)
+      );
+    }
+    
+    // Apply search filter for author
+    if (filters.authorSearch) {
+      const authorSearchLower = filters.authorSearch.toLowerCase();
+      result = result.filter(book => 
+        book.author.toLowerCase().includes(authorSearchLower)
       );
     }
     

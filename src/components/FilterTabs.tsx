@@ -1,12 +1,14 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Search } from 'lucide-react';
 import { FilterOptions } from '@/types';
 
 interface FilterTabsProps {
@@ -41,6 +43,20 @@ const FilterTabs: React.FC<FilterTabsProps> = ({
     { value: '13-17', label: '۱۳-۱۷ سال (نوجوانان بزرگ)' },
     { value: '18+', label: '۱۸+ سال (بزرگسالان)' },
   ];
+
+  const handleSearchChange = (value: string) => {
+    onFilterChange({
+      ...currentFilters,
+      search: value,
+    });
+  };
+
+  const handleAuthorSearchChange = (value: string) => {
+    onFilterChange({
+      ...currentFilters,
+      authorSearch: value,
+    });
+  };
 
   const handleCategoryChange = (category: string) => {
     const newCategories = category === 'all' ? [] : [category];
@@ -113,6 +129,30 @@ const FilterTabs: React.FC<FilterTabsProps> = ({
   return (
     <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-4 mb-6">
       <div className="flex flex-wrap gap-4 items-center justify-center">
+        {/* Search for Book Title */}
+        <div className="relative min-w-[200px]">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 h-4 w-4" />
+          <Input
+            type="text"
+            placeholder="جستجو در عنوان کتاب..."
+            value={currentFilters.search || ''}
+            onChange={(e) => handleSearchChange(e.target.value)}
+            className="bg-white/20 border-white/30 text-white placeholder:text-white/60 hover:bg-white/30 focus:bg-white/30 pl-10"
+          />
+        </div>
+
+        {/* Search for Author */}
+        <div className="relative min-w-[200px]">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 h-4 w-4" />
+          <Input
+            type="text"
+            placeholder="جستجو در نام نویسنده..."
+            value={currentFilters.authorSearch || ''}
+            onChange={(e) => handleAuthorSearchChange(e.target.value)}
+            className="bg-white/20 border-white/30 text-white placeholder:text-white/60 hover:bg-white/30 focus:bg-white/30 pl-10"
+          />
+        </div>
+
         {/* Category Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

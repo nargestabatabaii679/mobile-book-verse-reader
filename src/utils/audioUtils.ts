@@ -1,4 +1,3 @@
-
 export class AudioManager {
   private audioContext: AudioContext | null = null;
   private soundEnabled: boolean = true;
@@ -21,8 +20,8 @@ export class AudioManager {
     try {
       const audioContext = this.audioContext;
       
-      // Create a more realistic paper flip sound with crispier texture
-      const duration = 0.4;
+      // Create a much more realistic paper flip sound
+      const duration = 0.6;
       const sampleRate = audioContext.sampleRate;
       const bufferSize = sampleRate * duration;
       const buffer = audioContext.createBuffer(2, bufferSize, sampleRate);
@@ -30,49 +29,81 @@ export class AudioManager {
       const leftChannel = buffer.getChannelData(0);
       const rightChannel = buffer.getChannelData(1);
 
-      // Enhanced paper sound generation - more emphasis on the crisp paper texture
+      // Generate realistic paper sound with multiple layers
       for (let i = 0; i < bufferSize; i++) {
         const t = i / sampleRate;
         
-        // More defined paper crinkle frequencies
-        const freq1 = 180 * Math.exp(-t * 10) * (1 + 0.1 * Math.sin(40 * t));
-        const freq2 = 220 * Math.exp(-t * 9) * (1 + 0.15 * Math.sin(30 * t));
+        // Paper crinkle - high frequency rustling
+        const crinkleFreq = 3000 + Math.sin(t * 50) * 1000;
+        const crinkle = Math.sin(2 * Math.PI * crinkleFreq * t) * 0.1 * Math.exp(-t * 8);
         
-        // Enhanced white noise for paper texture - more prominent at the beginning
-        const noiseIntensity = Math.exp(-t * 15); // faster decay for sharper sound
-        const noise = (Math.random() * 2 - 1) * 0.5 * noiseIntensity;
+        // Paper fiber noise - realistic paper texture
+        const fiberNoise = (Math.random() * 2 - 1) * 0.4 * Math.exp(-t * 6);
         
-        // Paper rustling mid-frequencies
-        const rustle1 = Math.sin(2 * Math.PI * freq1 * t) * 0.15 * Math.exp(-t * 7);
-        const rustle2 = Math.sin(2 * Math.PI * freq2 * t) * 0.12 * Math.exp(-t * 8);
+        // Paper fold sound - mid frequency
+        const foldFreq = 800 * Math.exp(-t * 4);
+        const fold = Math.sin(2 * Math.PI * foldFreq * t) * 0.08 * Math.exp(-t * 5);
         
-        // Combine all elements with more emphasis on the noise component for realistic paper sound
-        const sample1 = rustle1 + noise * 1.2;
-        const sample2 = rustle2 + noise * 1.2;
+        // Sharp initial impact - the moment page hits
+        const impact = Math.exp(-t * 40) * 0.3;
+        
+        // Paper rustling swoosh
+        const swoosh = Math.sin(2 * Math.PI * (200 + t * 150) * t) * 0.06 * Math.exp(-t * 3);
+        
+        // Subtle paper thickness resonance
+        const thickness = Math.sin(2 * Math.PI * 120 * t) * 0.03 * Math.exp(-t * 2);
+        
+        // Combine all elements for realistic paper sound
+        const sample1 = crinkle + fiberNoise + fold + impact + swoosh + thickness;
+        const sample2 = crinkle * 0.8 + fiberNoise * 1.1 + fold * 0.9 + impact + swoosh * 0.7 + thickness;
         
         leftChannel[i] = sample1;
         rightChannel[i] = sample2;
       }
 
-      // Add a slight "tap" at the beginning for the impact sound when page hits the book
-      const attackTime = 0.01; // very quick attack
-      for (let i = 0; i < sampleRate * attackTime; i++) {
-        const t = i / (sampleRate * attackTime);
-        const amplitude = t * (1 - t) * 4; // parabolic curve for natural attack
-        
-        leftChannel[i] *= 1 + amplitude;
-        rightChannel[i] *= 1 + amplitude;
+      // Add realistic envelope shaping
+      const attackSamples = Math.floor(sampleRate * 0.02); // 20ms attack
+      const releaseSamples = Math.floor(sampleRate * 0.3); // 300ms release
+      
+      // Attack phase - sharp rise
+      for (let i = 0; i < attackSamples; i++) {
+        const envelope = Math.sin((i / attackSamples) * Math.PI * 0.5);
+        leftChannel[i] *= envelope;
+        rightChannel[i] *= envelope;
+      }
+      
+      // Release phase - gradual fade
+      const releaseStart = bufferSize - releaseSamples;
+      for (let i = releaseStart; i < bufferSize; i++) {
+        const progress = (i - releaseStart) / releaseSamples;
+        const envelope = Math.cos(progress * Math.PI * 0.5);
+        leftChannel[i] *= envelope;
+        rightChannel[i] *= envelope;
       }
 
-      // Play the generated sound
+      // Apply subtle filtering to enhance paper characteristics
+      for (let i = 1; i < bufferSize - 1; i++) {
+        // High-pass filter to emphasize paper crispness
+        leftChannel[i] = leftChannel[i] * 0.7 + (leftChannel[i] - leftChannel[i-1]) * 0.3;
+        rightChannel[i] = rightChannel[i] * 0.7 + (rightChannel[i] - rightChannel[i-1]) * 0.3;
+      }
+
+      // Play the enhanced paper sound
       const source = audioContext.createBufferSource();
       const gainNode = audioContext.createGain();
+      const filterNode = audioContext.createBiquadFilter();
       
       source.buffer = buffer;
-      source.connect(gainNode);
+      source.connect(filterNode);
+      filterNode.connect(gainNode);
       gainNode.connect(audioContext.destination);
       
-      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime); // slightly louder
+      // Add subtle filtering for more realistic paper tone
+      filterNode.type = 'highpass';
+      filterNode.frequency.setValueAtTime(100, audioContext.currentTime);
+      filterNode.Q.setValueAtTime(0.5, audioContext.currentTime);
+      
+      gainNode.gain.setValueAtTime(0.4, audioContext.currentTime);
       gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
       
       source.start(audioContext.currentTime);

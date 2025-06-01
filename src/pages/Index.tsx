@@ -1,7 +1,6 @@
-
 import React, { useState, useMemo } from 'react';
-import { Header } from '@/components/layout/Header';
-import { BookList } from '@/components/books/BookList';
+import Header from '@/components/layout/Header';
+import BookList from '@/components/books/BookList';
 import FilterSidebar from '@/components/FilterSidebar';
 import FilterTabs from '@/components/FilterTabs';
 import { LibraryShelfView } from '@/components/library/LibraryShelfView';
@@ -91,7 +90,7 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       <Header />
       
-      <div className="container mx-auto px-4 py-2">
+      <div className="container mx-auto px-4">
         <FilterTabs
           categories={categories}
           onFilterChange={handleFilterChange}
@@ -138,7 +137,7 @@ const Index = () => {
               </div>
 
               {viewMode === 'grid' ? (
-                <BookList books={sortedBooks} />
+                <BookList books={sortedBooks} isLoading={false} onSelectBook={handleSelectBook} />
               ) : (
                 <LibraryShelfView 
                   books={sortedBooks}

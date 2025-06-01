@@ -10,6 +10,7 @@ export interface Book {
   publishYear: number;
   rating: number;
   isbn: string;
+  ageRange?: string;
 }
 
 export interface FilterOptions {

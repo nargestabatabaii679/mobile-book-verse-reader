@@ -16,7 +16,7 @@ const Header = () => {
     <header className="flex justify-between items-center mb-8">
       <div>
         <h1 className="text-4xl font-bold text-white mb-2">
-          {t('library_title')}
+          کتابخانه دیجیتال فارسی
         </h1>
         <div className="h-1 w-20 bg-gradient-to-r from-blue-400 to-purple-500 rounded"></div>
       </div>

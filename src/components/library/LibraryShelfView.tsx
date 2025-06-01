@@ -73,64 +73,10 @@ export const LibraryShelfView: React.FC<LibraryShelfViewProps> = ({
   return (
     <div className="w-full min-h-screen relative">
       <div 
-        className="min-h-screen relative overflow-hidden"
-        style={{
-          background: `
-            radial-gradient(ellipse at top, rgba(139, 69, 19, 0.4) 0%, transparent 50%),
-            linear-gradient(180deg, 
-              #2D1B14 0%, 
-              #3D2518 15%, 
-              #4A2E1A 30%, 
-              #5C371E 45%, 
-              #6B4023 55%, 
-              #5C371E 70%, 
-              #4A2E1A 85%, 
-              #2D1B14 100%
-            )
-          `,
-        }}
+        className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900"
       >
-        {/* Enhanced wood grain texture */}
-        <div 
-          className="absolute inset-0 opacity-30"
-          style={{
-            backgroundImage: `
-              repeating-linear-gradient(
-                90deg,
-                transparent,
-                transparent 25px,
-                rgba(101, 67, 33, 0.4) 26px,
-                rgba(101, 67, 33, 0.4) 28px,
-                transparent 29px,
-                transparent 60px
-              ),
-              repeating-linear-gradient(
-                0deg,
-                transparent,
-                transparent 12px,
-                rgba(160, 82, 45, 0.3) 13px,
-                rgba(160, 82, 45, 0.3) 15px,
-                transparent 16px,
-                transparent 35px
-              ),
-              radial-gradient(circle at 30% 20%, rgba(210, 180, 140, 0.1) 0%, transparent 50%),
-              radial-gradient(circle at 70% 80%, rgba(222, 184, 135, 0.1) 0%, transparent 50%)
-            `
-          }}
-        />
-
-        {/* Main title */}
-        <div className="text-center py-16 relative z-10">
-          <h1 className="text-5xl font-bold text-amber-100 drop-shadow-2xl">
-            کتابخانه دیجیتال سه‌بعدی
-          </h1>
-          <p className="text-xl text-amber-200 mt-4 drop-shadow-lg">
-            مجموعه‌ای از بهترین کتاب‌های فارسی
-          </p>
-        </div>
-
         {/* Enhanced Bookshelves */}
-        <div className="space-y-40 px-8 pb-20">
+        <div className="space-y-40 px-8 pb-20 pt-16">
           {shelves.map((shelf, shelfIndex) => (
             <div key={shelfIndex} className="relative">
               <div className="relative mx-auto perspective-1000" style={{ width: '90%', maxWidth: '1200px' }}>
@@ -143,58 +89,65 @@ export const LibraryShelfView: React.FC<LibraryShelfViewProps> = ({
                   {shelf.map((book, bookIndex) => {
                     const height = 220 + (bookIndex % 5) * 15;
                     const width = 38 + (bookIndex % 4) * 4;
-                    const thickness = 12 + (bookIndex % 3) * 4;
-                    const tilt = (Math.random() - 0.5) * 3;
-                    const lean = (Math.random() - 0.5) * 1.5;
+                    const thickness = 15 + (bookIndex % 3) * 5;
+                    const tilt = (Math.random() - 0.5) * 2;
+                    const lean = (Math.random() - 0.5) * 1;
                     const bookStyle = getBookStyle(shelfIndex * booksPerShelf + bookIndex);
                     
                     return (
                       <div
                         key={book.id}
-                        className="group cursor-pointer transition-all duration-700 hover:scale-110 hover:-translate-y-6 hover:rotate-1 hover:z-50 relative"
+                        className="group cursor-pointer transition-all duration-700 hover:scale-110 hover:-translate-y-8 hover:rotate-1 hover:z-50 relative"
                         style={{
                           width: `${width}px`,
                           height: `${height}px`,
-                          transform: `rotateY(${tilt}deg) rotateZ(${lean}deg) perspective(1500px)`,
+                          transform: `rotateY(${tilt}deg) rotateZ(${lean}deg) perspective(2000px)`,
                           transformStyle: 'preserve-3d',
-                          filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.4))'
+                          filter: 'drop-shadow(0 15px 30px rgba(0,0,0,0.6))'
                         }}
                         onClick={() => onSelectBook(book)}
                       >
-                        {/* Enhanced Book Structure */}
+                        {/* Enhanced Book Structure with better 3D */}
                         <div
-                          className="relative w-full h-full transition-all duration-700 group-hover:brightness-110"
+                          className="relative w-full h-full transition-all duration-700 group-hover:brightness-125 group-hover:shadow-2xl"
                           style={{
                             background: bookStyle.spine,
                             borderRadius: '4px 4px 2px 2px',
                             boxShadow: `
-                              ${thickness}px 0 0 rgba(0,0,0,0.4),
-                              ${thickness + 2}px 2px 12px ${bookStyle.shadow},
-                              ${thickness + 6}px 6px 24px rgba(0,0,0,0.5),
-                              ${thickness + 8}px 8px 32px rgba(0,0,0,0.3),
-                              inset 0 0 0 1px rgba(255,255,255,0.3),
-                              inset 3px 0 0 rgba(255,255,255,0.5),
-                              inset -2px 0 0 rgba(0,0,0,0.4),
-                              inset 0 2px 4px rgba(255,255,255,0.4),
-                              inset 0 -2px 4px rgba(0,0,0,0.3)
+                              ${thickness}px 0 0 rgba(0,0,0,0.6),
+                              ${thickness + 3}px 3px 15px ${bookStyle.shadow},
+                              ${thickness + 8}px 8px 30px rgba(0,0,0,0.7),
+                              ${thickness + 12}px 12px 40px rgba(0,0,0,0.4),
+                              inset 0 0 0 2px rgba(255,255,255,0.4),
+                              inset 4px 0 0 rgba(255,255,255,0.6),
+                              inset -3px 0 0 rgba(0,0,0,0.5),
+                              inset 0 3px 6px rgba(255,255,255,0.5),
+                              inset 0 -3px 6px rgba(0,0,0,0.4)
                             `,
-                            border: '1px solid rgba(255,255,255,0.2)',
+                            border: '2px solid rgba(255,255,255,0.3)',
                             position: 'relative'
                           }}
                         >
                           {/* Enhanced leather texture overlay */}
                           <div 
-                            className="absolute inset-0 opacity-60 rounded"
+                            className="absolute inset-0 opacity-70 rounded"
                             style={{
                               background: `
-                                radial-gradient(circle at 25% 25%, rgba(255,255,255,0.3) 0%, transparent 50%),
-                                radial-gradient(circle at 75% 75%, rgba(0,0,0,0.2) 0%, transparent 50%),
+                                radial-gradient(circle at 25% 25%, rgba(255,255,255,0.4) 0%, transparent 50%),
+                                radial-gradient(circle at 75% 75%, rgba(0,0,0,0.3) 0%, transparent 50%),
                                 repeating-linear-gradient(
                                   45deg,
                                   transparent,
                                   transparent 2px,
-                                  rgba(0,0,0,0.1) 3px,
-                                  rgba(0,0,0,0.1) 4px
+                                  rgba(0,0,0,0.15) 3px,
+                                  rgba(0,0,0,0.15) 4px
+                                ),
+                                repeating-linear-gradient(
+                                  135deg,
+                                  transparent,
+                                  transparent 3px,
+                                  rgba(255,255,255,0.1) 4px,
+                                  rgba(255,255,255,0.1) 5px
                                 )
                               `
                             }}
@@ -204,10 +157,10 @@ export const LibraryShelfView: React.FC<LibraryShelfViewProps> = ({
                           <div className="absolute inset-0 p-4 flex flex-col justify-between text-white relative z-10">
                             {/* Top decorative element */}
                             <div 
-                              className="w-full h-3 rounded-full mb-3 shadow-inner"
+                              className="w-full h-4 rounded-full mb-3 shadow-inner"
                               style={{ 
-                                background: `linear-gradient(90deg, ${bookStyle.accent}80, ${bookStyle.accent}40, ${bookStyle.accent}80)`,
-                                boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.3)'
+                                background: `linear-gradient(90deg, ${bookStyle.accent}90, ${bookStyle.accent}50, ${bookStyle.accent}90)`,
+                                boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.4)'
                               }}
                             />
                             
@@ -216,7 +169,7 @@ export const LibraryShelfView: React.FC<LibraryShelfViewProps> = ({
                               className="text-center font-bold leading-tight overflow-hidden flex-1 flex items-center justify-center relative"
                               style={{ 
                                 fontSize: '12px',
-                                textShadow: '3px 3px 6px rgba(0,0,0,0.9)',
+                                textShadow: '4px 4px 8px rgba(0,0,0,0.9)',
                                 color: '#ffffff',
                                 fontWeight: 'bold'
                               }}
@@ -226,7 +179,7 @@ export const LibraryShelfView: React.FC<LibraryShelfViewProps> = ({
                               </div>
                               {/* Title background glow */}
                               <div 
-                                className="absolute inset-0 rounded opacity-20"
+                                className="absolute inset-0 rounded opacity-25"
                                 style={{ background: `radial-gradient(ellipse, ${bookStyle.accent} 0%, transparent 70%)` }}
                               />
                             </div>
@@ -235,18 +188,18 @@ export const LibraryShelfView: React.FC<LibraryShelfViewProps> = ({
                             <div className="flex flex-col space-y-2 items-center my-4 relative">
                               <div 
                                 className="w-full h-px"
-                                style={{ background: `linear-gradient(90deg, transparent, ${bookStyle.accent}80, transparent)` }}
+                                style={{ background: `linear-gradient(90deg, transparent, ${bookStyle.accent}90, transparent)` }}
                               />
                               <div 
-                                className="w-4 h-4 rounded-full border-2 shadow-lg"
+                                className="w-5 h-5 rounded-full border-2 shadow-lg"
                                 style={{ 
                                   borderColor: bookStyle.accent,
-                                  background: `radial-gradient(circle, ${bookStyle.accent}60 0%, transparent 70%)`
+                                  background: `radial-gradient(circle, ${bookStyle.accent}70 0%, transparent 70%)`
                                 }}
                               />
                               <div 
                                 className="w-3/4 h-px"
-                                style={{ background: `linear-gradient(90deg, transparent, ${bookStyle.accent}60, transparent)` }}
+                                style={{ background: `linear-gradient(90deg, transparent, ${bookStyle.accent}70, transparent)` }}
                               />
                             </div>
                             
@@ -255,7 +208,7 @@ export const LibraryShelfView: React.FC<LibraryShelfViewProps> = ({
                               className="text-center opacity-95 flex items-center justify-center relative"
                               style={{ 
                                 fontSize: '10px',
-                                textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
+                                textShadow: '3px 3px 6px rgba(0,0,0,0.8)',
                                 fontWeight: '600'
                               }}
                             >
@@ -266,24 +219,24 @@ export const LibraryShelfView: React.FC<LibraryShelfViewProps> = ({
 
                             {/* Bottom decorative element */}
                             <div 
-                              className="w-full h-3 rounded-full mt-3 shadow-inner"
+                              className="w-full h-4 rounded-full mt-3 shadow-inner"
                               style={{ 
-                                background: `linear-gradient(90deg, ${bookStyle.accent}60, ${bookStyle.accent}30, ${bookStyle.accent}60)`,
-                                boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.3)'
+                                background: `linear-gradient(90deg, ${bookStyle.accent}70, ${bookStyle.accent}40, ${bookStyle.accent}70)`,
+                                boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.4)'
                               }}
                             />
                           </div>
 
-                          {/* Enhanced 3D edges */}
+                          {/* Enhanced 3D edges with better depth */}
                           <div 
                             className="absolute top-0 right-0 h-full"
                             style={{ 
                               width: `${thickness}px`,
-                              background: `linear-gradient(90deg, rgba(0,0,0,0.5) 0%, rgba(255,255,255,0.2) 30%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0.7) 100%)`,
+                              background: `linear-gradient(90deg, rgba(0,0,0,0.6) 0%, rgba(255,255,255,0.3) 20%, rgba(0,0,0,0.2) 40%, rgba(255,255,255,0.2) 60%, rgba(0,0,0,0.4) 80%, rgba(0,0,0,0.8) 100%)`,
                               transform: 'rotateY(90deg)',
                               transformOrigin: 'left center',
                               borderRadius: '0 4px 2px 0',
-                              boxShadow: 'inset 1px 0 2px rgba(255,255,255,0.3)'
+                              boxShadow: 'inset 2px 0 4px rgba(255,255,255,0.4), inset -2px 0 4px rgba(0,0,0,0.3)'
                             }}
                           />
 
@@ -291,31 +244,38 @@ export const LibraryShelfView: React.FC<LibraryShelfViewProps> = ({
                             className="absolute top-0 left-0 w-full"
                             style={{ 
                               height: `${thickness}px`,
-                              background: `linear-gradient(180deg, rgba(255,255,255,0.4) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.4) 100%)`,
+                              background: `linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(0,0,0,0.1) 30%, rgba(255,255,255,0.2) 50%, rgba(0,0,0,0.3) 80%, rgba(0,0,0,0.5) 100%)`,
                               transform: 'rotateX(90deg)',
                               transformOrigin: 'bottom center',
                               borderRadius: '4px 4px 0 0',
-                              boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.4)'
+                              boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.5), inset 0 -2px 4px rgba(0,0,0,0.3)'
                             }}
                           />
 
                           {/* Enhanced wear and aging effects */}
                           <div className="absolute inset-0 pointer-events-none">
-                            <div className="absolute top-3 right-2 w-3 h-3 bg-black/15 rounded-full blur-sm"></div>
-                            <div className="absolute bottom-4 left-3 w-2 h-4 bg-black/10 rounded blur-sm"></div>
-                            <div className="absolute top-1/3 left-0 right-0 h-px bg-black/25"></div>
-                            <div className="absolute top-2/3 left-0 right-0 h-px bg-black/20"></div>
+                            <div className="absolute top-3 right-2 w-3 h-3 bg-black/20 rounded-full blur-sm"></div>
+                            <div className="absolute bottom-4 left-3 w-2 h-4 bg-black/15 rounded blur-sm"></div>
+                            <div className="absolute top-1/3 left-0 right-0 h-px bg-black/30"></div>
+                            <div className="absolute top-2/3 left-0 right-0 h-px bg-black/25"></div>
                             
                             {/* Aging spots */}
-                            <div className="absolute top-1/4 right-1 w-1 h-1 bg-amber-800/30 rounded-full blur-sm"></div>
-                            <div className="absolute bottom-1/3 left-2 w-1 h-2 bg-amber-700/20 rounded blur-sm"></div>
+                            <div className="absolute top-1/4 right-1 w-1 h-1 bg-amber-800/40 rounded-full blur-sm"></div>
+                            <div className="absolute bottom-1/3 left-2 w-1 h-2 bg-amber-700/30 rounded blur-sm"></div>
                           </div>
 
-                          {/* Enhanced shimmer effect on hover */}
-                          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+                          {/* Enhanced selection glow effect */}
+                          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none">
                             <div 
-                              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 animate-pulse"
-                              style={{ animation: 'shimmer 2s infinite' }}
+                              className="absolute inset-0 rounded"
+                              style={{
+                                background: `radial-gradient(ellipse at center, ${bookStyle.accent}40 0%, ${bookStyle.accent}20 30%, transparent 70%)`,
+                                boxShadow: `0 0 30px ${bookStyle.accent}60, inset 0 0 20px ${bookStyle.accent}30`
+                              }}
+                            />
+                            <div 
+                              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent transform -skew-x-12"
+                              style={{ animation: 'shimmer 1.5s ease-in-out' }}
                             />
                           </div>
                         </div>

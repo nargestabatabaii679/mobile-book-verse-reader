@@ -1,5 +1,16 @@
 
-import { FilterOptions } from '@/types';
+import React from 'react';
+import { Book, FilterOptions } from '@/types';
 
-// This file is kept for compatibility with the existing code
-export type { FilterOptions };
+interface FilterSidebarProps {
+  books: Book[];
+  onFilter: (filtered: Book[]) => void;
+}
+
+const FilterSidebar: React.FC<FilterSidebarProps> = ({ books, onFilter }) => {
+  // This is a placeholder component for compatibility
+  // The actual filtering is now handled by FilterTabs
+  return null;
+};
+
+export default FilterSidebar;

@@ -1,34 +1,92 @@
 
 import React, { useState } from 'react';
-import { Header } from '@/components/layout/Header';
-import { BookList } from '@/components/books/BookList';
-import { FilterSidebar } from '@/components/FilterSidebar';
-import { FilterTabs } from '@/components/FilterTabs';
+import Header from '@/components/layout/Header';
+import BookList from '@/components/books/BookList';
+import FilterTabs from '@/components/FilterTabs';
 import { LibraryShelfView } from '@/components/library/LibraryShelfView';
 import { books } from '@/data/books';
-import { Book } from '@/types';
+import { Book, FilterOptions } from '@/types';
 
 const Index = () => {
   const [filteredBooks, setFilteredBooks] = useState<Book[]>(books);
   const [viewMode, setViewMode] = useState<'grid' | 'shelf'>('grid');
   const [searchTerm, setSearchTerm] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedBook, setSelectedBook] = useState<Book | null>(null);
 
-  const handleFilter = (filtered: Book[]) => {
+  // Get unique categories from books
+  const categories = [...new Set(books.map(book => book.category))];
+
+  // Get min and max pages
+  const minPages = Math.min(...books.map(book => book.pages));
+  const maxPages = Math.max(...books.map(book => book.pages));
+
+  // Current filters state
+  const [currentFilters, setCurrentFilters] = useState<FilterOptions>({
+    search: '',
+    authorSearch: '',
+    categories: [],
+    minPages: minPages,
+    maxPages: maxPages,
+    ageRange: '',
+  });
+
+  const handleFilterChange = (filters: FilterOptions) => {
+    setCurrentFilters(filters);
+    
+    let filtered = books;
+
+    // Apply search filter
+    if (filters.search && filters.search.trim() !== '') {
+      filtered = filtered.filter(book =>
+        book.title.toLowerCase().includes(filters.search!.toLowerCase())
+      );
+    }
+
+    // Apply author search filter
+    if (filters.authorSearch && filters.authorSearch.trim() !== '') {
+      filtered = filtered.filter(book =>
+        book.author.toLowerCase().includes(filters.authorSearch!.toLowerCase())
+      );
+    }
+
+    // Apply category filter
+    if (filters.categories && filters.categories.length > 0) {
+      filtered = filtered.filter(book =>
+        filters.categories!.includes(book.category)
+      );
+    }
+
+    // Apply pages filter
+    if (filters.minPages !== undefined && filters.maxPages !== undefined) {
+      filtered = filtered.filter(book =>
+        book.pages >= filters.minPages! && book.pages <= filters.maxPages!
+      );
+    }
+
+    // Apply age range filter
+    if (filters.ageRange && filters.ageRange !== '') {
+      // This would need to be implemented based on your book data structure
+      // For now, we'll skip this filter
+    }
+
     setFilteredBooks(filtered);
   };
 
-  const handleSearch = (term: string) => {
-    setSearchTerm(term);
-    if (term.trim() === '') {
-      setFilteredBooks(books);
-    } else {
-      const filtered = books.filter(book =>
-        book.title.toLowerCase().includes(term.toLowerCase()) ||
-        book.author.toLowerCase().includes(term.toLowerCase()) ||
-        book.category.toLowerCase().includes(term.toLowerCase())
-      );
-      setFilteredBooks(filtered);
-    }
+  const getActiveFiltersCount = () => {
+    let count = 0;
+    if (currentFilters.search && currentFilters.search.trim() !== '') count++;
+    if (currentFilters.authorSearch && currentFilters.authorSearch.trim() !== '') count++;
+    if (currentFilters.categories && currentFilters.categories.length > 0) count++;
+    if (currentFilters.minPages !== minPages || currentFilters.maxPages !== maxPages) count++;
+    if (currentFilters.ageRange && currentFilters.ageRange !== '') count++;
+    return count;
+  };
+
+  const handleSelectBook = (book: Book) => {
+    setSelectedBook(book);
+    // You can add more logic here like opening a modal
+    console.log('Selected book:', book);
   };
 
   return (
@@ -96,7 +154,7 @@ const Index = () => {
 
       {/* Main content with glass morphism effect */}
       <div className="relative z-10">
-        <Header onSearch={handleSearch} onViewModeChange={setViewMode} currentViewMode={viewMode} />
+        <Header />
         
         {/* Hero section with hyper-realistic elements */}
         <div className="relative py-16 px-6">
@@ -229,10 +287,14 @@ const Index = () => {
               }}
             >
               <div className="p-6">
-                <FilterTabs onFilter={handleFilter} books={books} />
-                <div className="mt-6">
-                  <FilterSidebar onFilter={handleFilter} books={books} />
-                </div>
+                <FilterTabs 
+                  categories={categories}
+                  onFilterChange={handleFilterChange}
+                  activeFiltersCount={getActiveFiltersCount()}
+                  currentFilters={currentFilters}
+                  minPages={minPages}
+                  maxPages={maxPages}
+                />
               </div>
             </div>
 
@@ -240,9 +302,17 @@ const Index = () => {
             <div className="flex-1">
               <div className="p-8">
                 {viewMode === 'grid' ? (
-                  <BookList books={filteredBooks} />
+                  <BookList 
+                    books={filteredBooks} 
+                    isLoading={isLoading}
+                    onSelectBook={handleSelectBook}
+                  />
                 ) : (
-                  <LibraryShelfView books={filteredBooks} />
+                  <LibraryShelfView 
+                    books={filteredBooks}
+                    isLoading={isLoading}
+                    onSelectBook={handleSelectBook}
+                  />
                 )}
               </div>
             </div>

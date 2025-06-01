@@ -13,7 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import { Upload, Plus, FileText, Lock, BookOpen, Download } from 'lucide-react';
+import { Upload, Plus, FileText, Lock, BookOpen, Download, Edit, Trash2, BarChart3, Eye, Users, TrendingUp } from 'lucide-react';
 import { Book } from '@/types';
 import { books } from '@/data/books';
 
@@ -25,10 +25,26 @@ const Admin = () => {
   const [localBooks, setLocalBooks] = useState<Book[]>(books);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [isAddBookDialogOpen, setIsAddBookDialogOpen] = useState(false);
+  const [editingBook, setEditingBook] = useState<Book | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
   const form = useForm<Partial<Book>>({
+    defaultValues: {
+      title: '',
+      author: '',
+      category: '',
+      pages: 0,
+      coverUrl: '',
+      description: '',
+      publishYear: new Date().getFullYear(),
+      rating: 0,
+      isbn: ''
+    }
+  });
+
+  const editForm = useForm<Partial<Book>>({
     defaultValues: {
       title: '',
       author: '',
@@ -77,14 +93,40 @@ const Admin = () => {
     form.reset();
   };
 
+  const handleEditBook = (book: Book) => {
+    setEditingBook(book);
+    editForm.reset(book);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleUpdateBook = (data: Partial<Book>) => {
+    if (!editingBook) return;
+    
+    const updatedBook: Book = {
+      ...editingBook,
+      ...data
+    };
+
+    setLocalBooks(prev => prev.map(book => 
+      book.id === editingBook.id ? updatedBook : book
+    ));
+    
+    toast.success('کتاب با موفقیت ویرایش شد');
+    setIsEditDialogOpen(false);
+    setEditingBook(null);
+  };
+
+  const handleDeleteBook = (bookId: string) => {
+    setLocalBooks(prev => prev.filter(book => book.id !== bookId));
+    toast.success('کتاب با موفقیت حذف شد');
+  };
+
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       setUploadedFile(file);
-      // در پروژه واقعی باید فایل اکسل پردازش شود
       toast.success('فایل اکسل آپلود شد - پردازش در حال انجام...');
       
-      // شبیه‌سازی پردازش فایل اکسل
       setTimeout(() => {
         const sampleBooksFromExcel: Book[] = [
           {
@@ -109,9 +151,14 @@ const Admin = () => {
   };
 
   const downloadExcelTemplate = () => {
-    // در پروژه واقعی باید فایل اکسل نمونه ایجاد شود
     toast.info('فایل نمونه اکسل در حال دانلود...');
   };
+
+  // آمار محاسبه شده
+  const totalBooks = localBooks.length;
+  const categories = [...new Set(localBooks.map(book => book.category))];
+  const averageRating = localBooks.reduce((sum, book) => sum + book.rating, 0) / totalBooks || 0;
+  const totalPages = localBooks.reduce((sum, book) => sum + book.pages, 0);
 
   if (!isAuthenticated) {
     return (
@@ -160,12 +207,84 @@ const Admin = () => {
           </Button>
         </div>
 
-        <Tabs defaultValue="add-book" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
+        <Tabs defaultValue="dashboard" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-5">
+            <TabsTrigger value="dashboard">داشبورد</TabsTrigger>
             <TabsTrigger value="add-book">افزودن کتاب</TabsTrigger>
             <TabsTrigger value="bulk-upload">بارگذاری گروهی</TabsTrigger>
             <TabsTrigger value="manage-books">مدیریت کتاب‌ها</TabsTrigger>
+            <TabsTrigger value="analytics">آمار و گزارش</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="dashboard">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">کل کتاب‌ها</p>
+                      <p className="text-3xl font-bold text-blue-600">{totalBooks}</p>
+                    </div>
+                    <BookOpen className="w-8 h-8 text-blue-500" />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">دسته‌بندی‌ها</p>
+                      <p className="text-3xl font-bold text-green-600">{categories.length}</p>
+                    </div>
+                    <BarChart3 className="w-8 h-8 text-green-500" />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">میانگین امتیاز</p>
+                      <p className="text-3xl font-bold text-yellow-600">{averageRating.toFixed(1)}</p>
+                    </div>
+                    <TrendingUp className="w-8 h-8 text-yellow-500" />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">کل صفحات</p>
+                      <p className="text-3xl font-bold text-purple-600">{totalPages.toLocaleString()}</p>
+                    </div>
+                    <FileText className="w-8 h-8 text-purple-500" />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>خلاصه فعالیت‌ها</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
+                    <span>کتاب‌های اضافه شده امروز</span>
+                    <span className="font-bold text-blue-600">0</span>
+                  </div>
+                  <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg">
+                    <span>محبوب‌ترین دسته‌بندی</span>
+                    <span className="font-bold text-green-600">{categories[0] || 'نامشخص'}</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           <TabsContent value="add-book">
             <Card>
@@ -423,7 +542,8 @@ const Admin = () => {
                         <TableHead>نویسنده</TableHead>
                         <TableHead>دسته‌بندی</TableHead>
                         <TableHead>صفحات</TableHead>
-                        <TableHead>سال انتشار</TableHead>
+                        <TableHead>امتیاز</TableHead>
+                        <TableHead>عملیات</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -433,7 +553,25 @@ const Admin = () => {
                           <TableCell>{book.author}</TableCell>
                           <TableCell>{book.category}</TableCell>
                           <TableCell>{book.pages}</TableCell>
-                          <TableCell>{book.publishYear}</TableCell>
+                          <TableCell>{book.rating}</TableCell>
+                          <TableCell>
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleEditBook(book)}
+                              >
+                                <Edit className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                onClick={() => handleDeleteBook(book.id)}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -441,6 +579,170 @@ const Admin = () => {
                 </div>
               </CardContent>
             </Card>
+
+            <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+              <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle>ویرایش کتاب</DialogTitle>
+                </DialogHeader>
+                <Form {...editForm}>
+                  <form onSubmit={editForm.handleSubmit(handleUpdateBook)} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={editForm.control}
+                      name="title"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>عنوان کتاب</FormLabel>
+                          <FormControl>
+                            <Input {...field} placeholder="عنوان کتاب را وارد کنید" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={editForm.control}
+                      name="author"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>نام نویسنده</FormLabel>
+                          <FormControl>
+                            <Input {...field} placeholder="نام نویسنده را وارد کنید" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={editForm.control}
+                      name="category"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>دسته‌بندی</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger className="bg-white">
+                                <SelectValue placeholder="دسته‌بندی را انتخاب کنید" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="bg-white border border-gray-200 shadow-lg">
+                              <SelectItem value="ادبیات">ادبیات</SelectItem>
+                              <SelectItem value="تاریخ">تاریخ</SelectItem>
+                              <SelectItem value="علوم">علوم</SelectItem>
+                              <SelectItem value="فلسفه">فلسفه</SelectItem>
+                              <SelectItem value="کودک و نوجوان">کودک و نوجوان</SelectItem>
+                              <SelectItem value="روانشناسی">روانشناسی</SelectItem>
+                              <SelectItem value="اقتصاد">اقتصاد</SelectItem>
+                              <SelectItem value="هنر">هنر</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={editForm.control}
+                      name="pages"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>تعداد صفحات</FormLabel>
+                          <FormControl>
+                            <Input {...field} type="number" placeholder="تعداد صفحات" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <div className="md:col-span-2">
+                      <FormField
+                        control={editForm.control}
+                        name="description"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>توضیحات</FormLabel>
+                            <FormControl>
+                              <Textarea {...field} placeholder="توضیحات کتاب" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <div className="md:col-span-2 flex gap-2">
+                      <Button type="submit" className="flex-1">
+                        ذخیره تغییرات
+                      </Button>
+                      <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+                        انصراف
+                      </Button>
+                    </div>
+                  </form>
+                </Form>
+              </DialogContent>
+            </Dialog>
+          </TabsContent>
+
+          <TabsContent value="analytics">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>توزیع کتاب‌ها بر اساس دسته‌بندی</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {categories.map(category => {
+                      const count = localBooks.filter(book => book.category === category).length;
+                      const percentage = (count / totalBooks * 100).toFixed(1);
+                      return (
+                        <div key={category} className="flex items-center justify-between">
+                          <span className="text-sm font-medium">{category}</span>
+                          <div className="flex items-center gap-2">
+                            <div className="w-20 bg-gray-200 rounded-full h-2">
+                              <div 
+                                className="bg-blue-600 h-2 rounded-full" 
+                                style={{ width: `${percentage}%` }}
+                              ></div>
+                            </div>
+                            <span className="text-sm text-gray-600">{count} ({percentage}%)</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>آمار کلی</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
+                      <span>میانگین تعداد صفحات</span>
+                      <span className="font-bold">{Math.round(totalPages / totalBooks) || 0}</span>
+                    </div>
+                    <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
+                      <span>بالاترین امتیاز</span>
+                      <span className="font-bold">{Math.max(...localBooks.map(b => b.rating))}</span>
+                    </div>
+                    <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
+                      <span>کمترین امتیاز</span>
+                      <span className="font-bold">{Math.min(...localBooks.map(b => b.rating))}</span>
+                    </div>
+                    <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
+                      <span>جدیدترین کتاب</span>
+                      <span className="font-bold">{Math.max(...localBooks.map(b => b.publishYear))}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
         </Tabs>
       </div>

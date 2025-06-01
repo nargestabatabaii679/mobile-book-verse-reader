@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -33,6 +32,14 @@ const FilterTabs: React.FC<FilterTabsProps> = ({
     { value: '100-200', label: '100-200 صفحه' },
     { value: '200-300', label: '200-300 صفحه' },
     { value: '300+', label: 'بیش از 300 صفحه' },
+  ];
+
+  const ageRanges = [
+    { value: '', label: 'همه گروه‌های سنی' },
+    { value: '0-6', label: '۰-۶ سال (کودکان)' },
+    { value: '7-12', label: '۷-۱۲ سال (نوجوانان)' },
+    { value: '13-17', label: '۱۳-۱۷ سال (نوجوانان بزرگ)' },
+    { value: '18+', label: '۱۸+ سال (بزرگسالان)' },
   ];
 
   const handleCategoryChange = (category: string) => {
@@ -71,6 +78,13 @@ const FilterTabs: React.FC<FilterTabsProps> = ({
     });
   };
 
+  const handleAgeRangeChange = (ageRange: string) => {
+    onFilterChange({
+      ...currentFilters,
+      ageRange: ageRange,
+    });
+  };
+
   const getCategoryLabel = () => {
     if (currentFilters.categories.length === 0) return 'همه دسته‌ها';
     return currentFilters.categories[0];
@@ -83,6 +97,12 @@ const FilterTabs: React.FC<FilterTabsProps> = ({
     if (currentFilters.minPages === 200 && currentFilters.maxPages === 300) return '200-300 صفحه';
     if (currentFilters.minPages === 300) return 'بیش از 300 صفحه';
     return 'همه تعداد صفحات';
+  };
+
+  const getAgeRangeLabel = () => {
+    if (!currentFilters.ageRange) return 'همه گروه‌های سنی';
+    const range = ageRanges.find(r => r.value === currentFilters.ageRange);
+    return range ? range.label : 'همه گروه‌های سنی';
   };
 
   const allCategories = [
@@ -133,6 +153,30 @@ const FilterTabs: React.FC<FilterTabsProps> = ({
               <DropdownMenuItem
                 key={range.value}
                 onClick={() => handlePagesChange(range.value)}
+                className="text-gray-900 hover:bg-gray-100 cursor-pointer"
+              >
+                {range.label}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {/* Age Range Dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button 
+              variant="outline" 
+              className="bg-white/20 border-white/30 text-white hover:bg-white/30 hover:text-white transition-all duration-200 min-w-[180px] justify-between"
+            >
+              {getAgeRangeLabel()}
+              <ChevronDown className="h-4 w-4 ml-2" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="bg-white border border-gray-200 shadow-lg min-w-[180px] z-50">
+            {ageRanges.map((range) => (
+              <DropdownMenuItem
+                key={range.value}
+                onClick={() => handleAgeRangeChange(range.value)}
                 className="text-gray-900 hover:bg-gray-100 cursor-pointer"
               >
                 {range.label}

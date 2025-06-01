@@ -5,12 +5,14 @@ import BookList from '@/components/books/BookList';
 import FilterSidebar from '@/components/FilterSidebar';
 import FilterTabs from '@/components/FilterTabs';
 import { LibraryShelfView } from '@/components/library/LibraryShelfView';
+import BookDetailModal from '@/components/book-detail/BookDetailModal';
 import { books } from '@/data/books';
 import { Book, FilterOptions } from '@/types';
 
 const Index = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'shelf'>('shelf');
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentFilters, setCurrentFilters] = useState<FilterOptions>({
     search: '',
     authorSearch: '',
@@ -84,7 +86,14 @@ const Index = () => {
   };
 
   const handleSelectBook = (book: Book) => {
+    console.log('Book selected:', book.title);
     setSelectedBook(book);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedBook(null);
   };
 
   return (
@@ -150,6 +159,12 @@ const Index = () => {
           </div>
         </main>
       </div>
+
+      <BookDetailModal
+        book={selectedBook}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+      />
     </div>
   );
 };

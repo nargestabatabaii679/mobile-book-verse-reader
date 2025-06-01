@@ -95,8 +95,8 @@ const BookDetailModal: React.FC<BookDetailModalProps> = ({ book, isOpen, onClose
               {book.pagesContent && book.pagesContent.length > 0 ? (
                 <FlipBook 
                   pages={book.pagesContent}
-                  width={500}
-                  height={600}
+                  width={1000}
+                  height={1200}
                 />
               ) : (
                 <div className="text-center text-white py-12">

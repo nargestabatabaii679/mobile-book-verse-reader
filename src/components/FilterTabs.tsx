@@ -68,37 +68,48 @@ const FilterTabs: React.FC<FilterTabsProps> = ({
   };
 
   return (
-    <div className="bg-white/5 backdrop-blur-md rounded-2xl p-8 border border-white/10 shadow-xl">
+    <div className="bg-white/8 backdrop-blur-xl rounded-3xl p-6 border border-white/15 shadow-2xl mb-6">
+      {/* Tab Header */}
+      <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
+        <Filter className="w-5 h-5 text-white/70" />
+        <h3 className="text-lg font-medium text-white/90">{t('filters')}</h3>
+        {activeFiltersCount > 0 && (
+          <Badge variant="secondary" className="bg-gradient-to-r from-blue-500/30 to-purple-500/30 text-white border-white/20 rounded-full px-2 py-1 text-xs">
+            {activeFiltersCount}
+          </Badge>
+        )}
+      </div>
+
       {/* Search Bar */}
-      <div className="relative mb-8">
-        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/60 w-5 h-5" />
+      <div className="relative mb-6">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50 w-4 h-4" />
         <Input
           type="text"
           placeholder={t('search_placeholder')}
           value={currentFilters.search}
           onChange={handleSearchChange}
-          className="pl-12 h-12 bg-white/10 border-white/20 rounded-xl text-white placeholder:text-white/60 focus:bg-white/15 focus:border-white/40 transition-all duration-300"
+          className="pl-10 h-10 bg-white/8 border-white/15 rounded-2xl text-white placeholder:text-white/50 focus:bg-white/12 focus:border-white/30 transition-all duration-300 text-sm"
         />
       </div>
 
       {/* Filter Controls */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
         {/* Category Filter */}
         <div>
-          <label className="block text-sm font-medium text-white/90 mb-3">
+          <label className="block text-xs font-medium text-white/70 mb-2">
             {t('filter_by_category')}
           </label>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5">
             {categories.map(category => (
               <Button
                 key={category}
                 variant={currentFilters.categories.includes(category) ? "default" : "outline"}
                 size="sm"
                 onClick={() => handleCategoryChange(category)}
-                className={`text-xs rounded-full px-4 py-2 transition-all duration-200 ${
+                className={`text-xs rounded-full px-3 py-1.5 h-7 transition-all duration-200 ${
                   currentFilters.categories.includes(category)
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg'
-                    : 'bg-white/10 border-white/20 text-white/80 hover:bg-white/20 hover:border-white/40'
+                    ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-md'
+                    : 'bg-white/8 border-white/15 text-white/70 hover:bg-white/15 hover:border-white/30 hover:text-white/90'
                 }`}
               >
                 {category}
@@ -109,11 +120,11 @@ const FilterTabs: React.FC<FilterTabsProps> = ({
 
         {/* Sort By */}
         <div>
-          <label className="block text-sm font-medium text-white/90 mb-3">
+          <label className="block text-xs font-medium text-white/70 mb-2">
             {t('sort_by')}
           </label>
           <Select value={currentFilters.sortBy} onValueChange={handleSortChange}>
-            <SelectTrigger className="bg-white/10 border-white/20 rounded-xl text-white h-10 focus:bg-white/15 focus:border-white/40 transition-all duration-300">
+            <SelectTrigger className="bg-white/8 border-white/15 rounded-xl text-white h-8 focus:bg-white/12 focus:border-white/30 transition-all duration-300 text-sm">
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="bg-gray-900 border-gray-700 rounded-xl">
@@ -127,28 +138,28 @@ const FilterTabs: React.FC<FilterTabsProps> = ({
 
         {/* Page Range */}
         <div>
-          <label className="block text-sm font-medium text-white/90 mb-3">
+          <label className="block text-xs font-medium text-white/70 mb-2">
             {t('page_range')}: {currentFilters.minPages}-{currentFilters.maxPages}
           </label>
-          <div className="px-2">
+          <div className="px-1 mt-2">
             <Slider
               value={[currentFilters.minPages, currentFilters.maxPages]}
               onValueChange={handlePageRangeChange}
               max={maxPages}
               min={minPages}
               step={10}
-              className="mt-3"
+              className="mt-1"
             />
           </div>
         </div>
 
         {/* Age Range */}
         <div>
-          <label className="block text-sm font-medium text-white/90 mb-3">
+          <label className="block text-xs font-medium text-white/70 mb-2">
             {t('age_range')}
           </label>
           <Select value={currentFilters.ageRange} onValueChange={handleAgeRangeChange}>
-            <SelectTrigger className="bg-white/10 border-white/20 rounded-xl text-white h-10 focus:bg-white/15 focus:border-white/40 transition-all duration-300">
+            <SelectTrigger className="bg-white/8 border-white/15 rounded-xl text-white h-8 focus:bg-white/12 focus:border-white/30 transition-all duration-300 text-sm">
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="bg-gray-900 border-gray-700 rounded-xl">
@@ -161,22 +172,16 @@ const FilterTabs: React.FC<FilterTabsProps> = ({
         </div>
       </div>
 
-      {/* Active Filters & Clear Button */}
+      {/* Clear Filters Button */}
       {activeFiltersCount > 0 && (
-        <div className="flex items-center justify-between pt-6 border-t border-white/10">
-          <div className="flex items-center gap-3">
-            <Filter className="w-4 h-4 text-white/70" />
-            <Badge variant="secondary" className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-white border-white/20 rounded-full px-3 py-1">
-              {activeFiltersCount} {t('active_filters')}
-            </Badge>
-          </div>
+        <div className="flex justify-end pt-3 border-t border-white/8">
           <Button
             variant="ghost"
             size="sm"
             onClick={clearFilters}
-            className="text-white/80 hover:bg-white/10 rounded-xl px-4 py-2 transition-all duration-200"
+            className="text-white/60 hover:bg-white/8 rounded-xl px-3 py-1.5 h-7 transition-all duration-200 text-xs"
           >
-            <X className="w-4 h-4 mr-2" />
+            <X className="w-3 h-3 mr-1.5" />
             {t('clear_filters')}
           </Button>
         </div>

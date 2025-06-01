@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Book } from '@/types';
@@ -45,48 +46,48 @@ const BookDetailModal: React.FC<BookDetailModalProps> = ({ book, isOpen, onClose
           ? 'max-w-[95vw] w-[95vw] max-h-[95vh] h-[95vh]' 
           : 'max-w-7xl max-h-[95vh]'
       } overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 border-gray-700`}>
-        <DialogHeader className="pb-4">
-          <DialogTitle className="text-3xl font-bold text-white text-center">
+        <DialogHeader className="pb-0">
+          <DialogTitle className="text-2xl font-bold text-white text-center">
             {book.title}
           </DialogTitle>
-          <div className="text-center text-gray-300">
+          <div className="text-center text-gray-300 text-sm">
             نوشته {book.author} • {book.category}
           </div>
         </DialogHeader>
         
-        {/* Tab Navigation */}
-        <div className="flex justify-center gap-4 mb-6">
+        {/* More compact Tab Navigation */}
+        <div className="flex justify-center gap-2 mt-1 mb-1">
           <button
             onClick={() => setActiveTab('read')}
-            className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all ${
+            className={`flex items-center gap-1 px-3 py-1 rounded-lg text-sm font-medium transition-all ${
               activeTab === 'read'
                 ? 'bg-blue-600 text-white shadow-lg'
                 : 'bg-white/10 text-white/70 hover:bg-white/20'
             }`}
           >
-            <BookIcon className="w-5 h-5" />
+            <BookIcon className="w-4 h-4" />
             مطالعه کتاب
           </button>
           <button
             onClick={() => setActiveTab('info')}
-            className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all ${
+            className={`flex items-center gap-1 px-3 py-1 rounded-lg text-sm font-medium transition-all ${
               activeTab === 'info'
                 ? 'bg-blue-600 text-white shadow-lg'
                 : 'bg-white/10 text-white/70 hover:bg-white/20'
             }`}
           >
-            <Star className="w-5 h-5" />
+            <Star className="w-4 h-4" />
             اطلاعات کتاب
           </button>
           <button
             onClick={() => setActiveTab('access')}
-            className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all ${
+            className={`flex items-center gap-1 px-3 py-1 rounded-lg text-sm font-medium transition-all ${
               activeTab === 'access'
                 ? 'bg-blue-600 text-white shadow-lg'
                 : 'bg-white/10 text-white/70 hover:bg-white/20'
             }`}
           >
-            <QrCode className="w-5 h-5" />
+            <QrCode className="w-4 h-4" />
             دسترسی سریع
           </button>
         </div>
@@ -98,8 +99,8 @@ const BookDetailModal: React.FC<BookDetailModalProps> = ({ book, isOpen, onClose
               {book.pagesContent && book.pagesContent.length > 0 ? (
                 <FlipBook 
                   pages={book.pagesContent}
-                  width={Math.min(900, window.innerWidth * 0.6)}
-                  height={Math.min(1200, window.innerHeight * 0.75)}
+                  width={Math.min(750, window.innerWidth * 0.5)}
+                  height={Math.min(1000, window.innerHeight * 0.8)}
                 />
               ) : (
                 <div className="text-center text-white py-12">

@@ -11,6 +11,8 @@ export interface Book {
   rating: number;
   isbn: string;
   ageRange?: string;
+  pagesContent?: string[];
+  downloadUrl?: string;
 }
 
 export interface FilterOptions {

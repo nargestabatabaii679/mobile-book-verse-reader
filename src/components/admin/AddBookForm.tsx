@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,7 +8,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import { Plus } from 'lucide-react';
+import { Plus, Upload, X } from 'lucide-react';
 import { Book } from '@/types';
 
 interface AddBookFormProps {
@@ -16,6 +16,9 @@ interface AddBookFormProps {
 }
 
 export const AddBookForm: React.FC<AddBookFormProps> = ({ onAddBook }) => {
+  const [coverImage, setCoverImage] = useState<string>('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  
   const form = useForm<Partial<Book>>({
     defaultValues: {
       title: '',
@@ -30,6 +33,27 @@ export const AddBookForm: React.FC<AddBookFormProps> = ({ onAddBook }) => {
     }
   });
 
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const imageUrl = e.target?.result as string;
+        setCoverImage(imageUrl);
+        form.setValue('coverUrl', imageUrl);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeCoverImage = () => {
+    setCoverImage('');
+    form.setValue('coverUrl', '');
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   const handleAddSingleBook = (data: Partial<Book>) => {
     const newBook: Book = {
       id: Date.now().toString(),
@@ -37,7 +61,7 @@ export const AddBookForm: React.FC<AddBookFormProps> = ({ onAddBook }) => {
       author: data.author || '',
       category: data.category || '',
       pages: data.pages || 0,
-      coverUrl: data.coverUrl || 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=600&fit=crop',
+      coverUrl: coverImage || data.coverUrl || 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=600&fit=crop',
       description: data.description || '',
       publishYear: data.publishYear || new Date().getFullYear(),
       rating: data.rating || 0,
@@ -47,6 +71,7 @@ export const AddBookForm: React.FC<AddBookFormProps> = ({ onAddBook }) => {
     onAddBook(newBook);
     toast.success('کتاب با موفقیت اضافه شد');
     form.reset();
+    setCoverImage('');
   };
 
   return (
@@ -60,6 +85,54 @@ export const AddBookForm: React.FC<AddBookFormProps> = ({ onAddBook }) => {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleAddSingleBook)} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* آپلود عکس جلد */}
+            <div className="md:col-span-2 mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                عکس جلد کتاب
+              </label>
+              <div className="flex items-start gap-4">
+                <div className="flex-1">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="w-full h-24 border-2 border-dashed border-gray-300 hover:border-blue-400 transition-colors"
+                  >
+                    <div className="flex flex-col items-center">
+                      <Upload className="w-6 h-6 mb-2 text-gray-400" />
+                      <span className="text-sm text-gray-500">انتخاب عکس جلد</span>
+                    </div>
+                  </Button>
+                </div>
+                
+                {coverImage && (
+                  <div className="relative">
+                    <img 
+                      src={coverImage} 
+                      alt="Cover preview" 
+                      className="w-20 h-24 object-cover rounded border"
+                    />
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={removeCoverImage}
+                      className="absolute -top-2 -right-2 w-6 h-6 rounded-full p-0"
+                    >
+                      <X className="w-3 h-3" />
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+
             <FormField
               control={form.control}
               name="title"
@@ -214,7 +287,7 @@ export const AddBookForm: React.FC<AddBookFormProps> = ({ onAddBook }) => {
               name="coverUrl"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>آدرس تصویر جلد</FormLabel>
+                  <FormLabel>آدرس تصویر جلد (اختیاری)</FormLabel>
                   <FormControl>
                     <Input {...field} placeholder="آدرس URL تصویر جلد" />
                   </FormControl>

@@ -25,6 +25,26 @@ export const BulkUploadSection: React.FC<BulkUploadSectionProps> = ({ onBulkAddB
   const pdfInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
 
+  const createExcelTemplate = () => {
+    // ساخت محتوای CSV به عنوان فایل نمونه
+    const csvContent = 'عنوان,نویسنده,دسته‌بندی,تعداد صفحات,ISBN,سال انتشار,توضیحات,امتیاز\n' +
+      'نمونه کتاب اول,نویسنده نمونه,ادبیات,200,978-123-456-789-0,2024,این یک کتاب نمونه است,4.5\n' +
+      'نمونه کتاب دوم,نویسنده دوم,تاریخ,300,978-987-654-321-0,2023,کتاب تاریخی جالب,4.0\n' +
+      'نمونه کتاب سوم,نویسنده سوم,علوم,150,978-111-222-333-0,2024,کتاب علمی مفید,4.2';
+    
+    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'نمونه_فایل_کتاب‌ها.csv');
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    toast.success('فایل نمونه دانلود شد');
+  };
+
   const handleFileUpload = (files: FileList | null, type: 'excel' | 'pdf' | 'image') => {
     if (!files) return;
 
@@ -120,7 +140,7 @@ export const BulkUploadSection: React.FC<BulkUploadSectionProps> = ({ onBulkAddB
     const files = e.dataTransfer.files;
     if (files.length > 0) {
       const file = files[0];
-      if (file.type.includes('sheet') || file.name.endsWith('.xlsx') || file.name.endsWith('.xls')) {
+      if (file.type.includes('sheet') || file.name.endsWith('.xlsx') || file.name.endsWith('.xls') || file.name.endsWith('.csv')) {
         handleFileUpload(files, 'excel');
       } else if (file.type === 'application/pdf') {
         handleFileUpload(files, 'pdf');
@@ -132,10 +152,6 @@ export const BulkUploadSection: React.FC<BulkUploadSectionProps> = ({ onBulkAddB
 
   const removeFile = (fileToRemove: UploadFile) => {
     setUploadedFiles(prev => prev.filter(f => f !== fileToRemove));
-  };
-
-  const downloadExcelTemplate = () => {
-    toast.info('فایل نمونه اکسل در حال دانلود...');
   };
 
   const getFileIcon = (type: string) => {
@@ -169,7 +185,7 @@ export const BulkUploadSection: React.FC<BulkUploadSectionProps> = ({ onBulkAddB
           {/* دانلود فایل نمونه */}
           <div className="text-center">
             <Button 
-              onClick={downloadExcelTemplate} 
+              onClick={createExcelTemplate} 
               variant="outline" 
               className="mb-6 bg-white hover:bg-blue-50 border-blue-200 text-blue-700 shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105"
             >
@@ -177,7 +193,7 @@ export const BulkUploadSection: React.FC<BulkUploadSectionProps> = ({ onBulkAddB
               دانلود فایل نمونه اکسل
             </Button>
             <p className="text-sm text-gray-600 mb-6 bg-blue-50 p-4 rounded-lg border-r-4 border-blue-400">
-              فایل اکسل باید شامل ستون‌های: عنوان، نویسنده، دسته‌بندی، تعداد صفحات، ISBN، سال انتشار، توضیحات باشد
+              فایل اکسل باید شامل ستون‌های: عنوان، نویسنده، دسته‌بندی، تعداد صفحات، ISBN، سال انتشار، توضیحات، امتیاز باشد
             </p>
           </div>
 
@@ -208,7 +224,7 @@ export const BulkUploadSection: React.FC<BulkUploadSectionProps> = ({ onBulkAddB
               <input
                 ref={excelInputRef}
                 type="file"
-                accept=".xlsx,.xls"
+                accept=".xlsx,.xls,.csv"
                 onChange={(e) => handleFileUpload(e.target.files, 'excel')}
                 className="hidden"
               />
@@ -219,7 +235,7 @@ export const BulkUploadSection: React.FC<BulkUploadSectionProps> = ({ onBulkAddB
                 <div className="flex flex-col items-center space-y-3">
                   <FileText className="w-12 h-12" />
                   <div className="text-center">
-                    <div className="font-bold text-lg">فایل اکسل</div>
+                    <div className="font-bold text-lg">فایل اکسل/CSV</div>
                     <div className="text-sm opacity-90">اطلاعات کتاب‌ها</div>
                   </div>
                 </div>

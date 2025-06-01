@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Book } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -511,16 +510,18 @@ export const LibraryShelfView: React.FC<LibraryShelfViewProps> = ({
         </div>
       </div>
 
-      <style jsx>{`
-        @keyframes shimmer {
-          0% { transform: translateX(-100%); }
-          100% { transform: translateX(100%); }
-        }
-        @keyframes scan {
-          0% { top: 0%; }
-          100% { top: 100%; }
-        }
-      `}</style>
+      <style>
+        {`
+          @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+          }
+          @keyframes scan {
+            0% { top: 0%; }
+            100% { top: 100%; }
+          }
+        `}
+      </style>
     </div>
   );
 };

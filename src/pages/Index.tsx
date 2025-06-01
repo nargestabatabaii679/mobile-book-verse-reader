@@ -1,238 +1,272 @@
 
-import React, { useState, useEffect, useMemo } from 'react';
-import { Book } from '@/types';
-import { useTranslation } from 'react-i18next';
-import { useToast } from '@/hooks/use-toast';
-import { books } from '@/data/books';
-import BookReader from '@/components/book-reader/BookReader';
-import FilterTabs from '@/components/FilterTabs';
-import Header from '@/components/layout/Header';
+import React, { useState } from 'react';
+import { Header } from '@/components/layout/Header';
+import { BookList } from '@/components/books/BookList';
+import { FilterSidebar } from '@/components/FilterSidebar';
+import { FilterTabs } from '@/components/FilterTabs';
 import { LibraryShelfView } from '@/components/library/LibraryShelfView';
-import { FilterOptions } from '@/components/FilterSidebar';
+import { books } from '@/data/books';
+import { Book } from '@/types';
 
 const Index = () => {
-  // State management
-  const [filteredBooks, setFilteredBooks] = useState<Book[]>([]);
-  const [selectedBook, setSelectedBook] = useState<Book | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [categories, setCategories] = useState<string[]>([]);
-  const [filters, setFilters] = useState<FilterOptions>({ 
-    search: '', 
-    authorSearch: '',
-    categories: [],
-    sortBy: '',
-    minPages: 0,
-    maxPages: 1000,
-    ageRange: ''
-  });
-  const [isLoading, setIsLoading] = useState(true);
-  const [activeFiltersCount, setActiveFiltersCount] = useState(0);
-  
-  const { t, i18n } = useTranslation();
-  const { toast } = useToast();
+  const [filteredBooks, setFilteredBooks] = useState<Book[]>(books);
+  const [viewMode, setViewMode] = useState<'grid' | 'shelf'>('grid');
+  const [searchTerm, setSearchTerm] = useState('');
 
-  useEffect(() => {
-    let count = 0;
-    if (filters.search) count++;
-    if (filters.authorSearch) count++;
-    if (filters.categories.length > 0) count += 1;
-    if (filters.sortBy) count++;
-    if (filters.minPages !== undefined && filters.minPages > 0) count++;
-    if (filters.maxPages !== undefined && filters.maxPages < 1000) count++;
-    if (filters.ageRange) count++;
-    
-    setActiveFiltersCount(count);
-  }, [filters]);
+  const handleFilter = (filtered: Book[]) => {
+    setFilteredBooks(filtered);
+  };
 
-  const processedBooks = useMemo(() => {
-    let result = [...books];
-    
-    if (filters.search) {
-      const searchLower = filters.search.toLowerCase();
-      result = result.filter(book => 
-        book.title.toLowerCase().includes(searchLower)
-      );
-    }
-    
-    if (filters.authorSearch) {
-      const authorSearchLower = filters.authorSearch.toLowerCase();
-      result = result.filter(book => 
-        book.author.toLowerCase().includes(authorSearchLower)
-      );
-    }
-    
-    if (filters.categories.length > 0) {
-      result = result.filter(book => filters.categories.includes(book.category));
-    }
-    
-    if (filters.minPages !== undefined || filters.maxPages !== undefined) {
-      result = result.filter(book => {
-        if (filters.minPages !== undefined && book.pages < filters.minPages) return false;
-        if (filters.maxPages !== undefined && book.pages > filters.maxPages) return false;
-        return true;
-      });
-    }
-    
-    if (filters.ageRange) {
-      result = result.filter(book => {
-        if (filters.ageRange === "0-6") {
-          return book.pages < 30;
-        }
-        else if (filters.ageRange === "7-12") {
-          return book.pages >= 30 && book.pages < 100;
-        }
-        else if (filters.ageRange === "13-17") {
-          return book.pages >= 100 && book.pages < 300;
-        }
-        else if (filters.ageRange === "18+") {
-          return book.pages >= 300;
-        }
-        return true;
-      });
-    }
-    
-    if (filters.sortBy) {
-      switch(filters.sortBy) {
-        case 'title-asc':
-          result.sort((a, b) => a.title.localeCompare(b.title));
-          break;
-        case 'title-desc':
-          result.sort((a, b) => b.title.localeCompare(a.title));
-          break;
-        case 'pages-asc':
-          result.sort((a, b) => a.pages - b.pages);
-          break;
-        case 'pages-desc':
-          result.sort((a, b) => b.pages - a.pages);
-          break;
-      }
-    }
-    
-    return result;
-  }, [filters]);
-
-  useEffect(() => {
-    setIsLoading(true);
-    const timer = setTimeout(() => {
-      setFilteredBooks(processedBooks);
-      setIsLoading(false);
-    }, 300);
-    
-    return () => clearTimeout(timer);
-  }, [processedBooks]);
-
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const bookId = urlParams.get('book');
-    
-    if (bookId) {
-      const book = books.find(b => b.id === bookId);
-      if (book) {
-        setSelectedBook(book);
-        setIsModalOpen(true);
-      } else {
-        toast({
-          title: t('book_not_found'),
-          description: t('book_not_found_desc'),
-          variant: "destructive"
-        });
-      }
-    }
-    
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 800);
-    
-    return () => clearTimeout(timer);
-  }, [t, toast]);
-
-  useEffect(() => {
-    const uniqueCategories = Array.from(new Set(books.map(book => book.category)));
-    setCategories(uniqueCategories);
-  }, []);
-
-  useEffect(() => {
-    const direction = i18n.language === 'fa' ? 'rtl' : 'ltr';
-    document.documentElement.dir = direction;
-    document.documentElement.lang = i18n.language;
-    
-    if (direction === 'rtl') {
-      document.body.classList.add('font-farsi', 'rtl');
+  const handleSearch = (term: string) => {
+    setSearchTerm(term);
+    if (term.trim() === '') {
+      setFilteredBooks(books);
     } else {
-      document.body.classList.remove('font-farsi', 'rtl');
+      const filtered = books.filter(book =>
+        book.title.toLowerCase().includes(term.toLowerCase()) ||
+        book.author.toLowerCase().includes(term.toLowerCase()) ||
+        book.category.toLowerCase().includes(term.toLowerCase())
+      );
+      setFilteredBooks(filtered);
     }
-  }, [i18n.language]);
-
-  const handleSelectBook = (book: Book) => {
-    setSelectedBook(book);
-    setIsModalOpen(true);
-    
-    const url = new URL(window.location.href);
-    url.searchParams.set('book', book.id);
-    window.history.pushState({}, '', url);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedBook(null);
-    
-    const url = new URL(window.location.href);
-    url.searchParams.delete('book');
-    window.history.pushState({}, '', url);
-  };
-
-  const handleFilterChange = (newFilters: FilterOptions) => {
-    setFilters(newFilters);
   };
 
   return (
-    <div 
-      className="min-h-screen overflow-x-hidden"
-      style={{
-        background: 'linear-gradient(180deg, #8B4513 0%, #A0522D 50%, #8B4513 100%)',
-        backgroundImage: `
-          radial-gradient(circle at 20% 50%, rgba(139, 69, 19, 0.3) 0%, transparent 50%),
-          radial-gradient(circle at 80% 50%, rgba(160, 82, 45, 0.3) 0%, transparent 50%),
-          linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.1) 50%, transparent 100%)
-        `
-      }}
-    >
-      <div className="container mx-auto px-4 py-6">
-        {/* عنوان کتابخانه */}
-        <div className="text-center py-8">
-          <h1 className="text-5xl font-bold text-white drop-shadow-lg mb-4" style={{ fontFamily: 'Vazir, IRANSans, sans-serif' }}>
-            📚 کتابخانه دیجیتال چندنقطه‌ای
-          </h1>
-          <p className="text-white/80 text-lg">کتابخانه‌ای برای همه علاقه‌مندان کتاب و مطالعه</p>
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Hyper-realistic background with multiple layers */}
+      <div 
+        className="fixed inset-0 z-0"
+        style={{
+          background: `
+            radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.2) 0%, transparent 50%),
+            radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.15) 0%, transparent 50%),
+            linear-gradient(135deg, 
+              #0f1419 0%, 
+              #1a1f3a 15%, 
+              #2d1b3d 30%, 
+              #1a1f3a 45%, 
+              #0f1419 60%,
+              #1e293b 75%,
+              #0f172a 100%
+            )
+          `
+        }}
+      />
+
+      {/* Realistic paper texture overlay */}
+      <div 
+        className="fixed inset-0 z-0 opacity-[0.03]"
+        style={{
+          backgroundImage: `
+            radial-gradient(circle at 25% 25%, #fff 1px, transparent 1px),
+            radial-gradient(circle at 75% 75%, #fff 0.5px, transparent 0.5px),
+            linear-gradient(0deg, 
+              transparent 48%, 
+              rgba(255,255,255,0.08) 49%, 
+              rgba(255,255,255,0.08) 51%, 
+              transparent 52%
+            ),
+            linear-gradient(90deg, 
+              transparent 48%, 
+              rgba(255,255,255,0.04) 49%, 
+              rgba(255,255,255,0.04) 51%, 
+              transparent 52%
+            )
+          `,
+          backgroundSize: '30px 30px, 50px 50px, 25px 25px, 40px 40px'
+        }}
+      />
+
+      {/* Floating particles effect */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        {[...Array(20)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-1 h-1 bg-blue-300/20 rounded-full animate-pulse"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 5}s`,
+              animationDuration: `${3 + Math.random() * 4}s`
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Main content with glass morphism effect */}
+      <div className="relative z-10">
+        <Header onSearch={handleSearch} onViewModeChange={setViewMode} currentViewMode={viewMode} />
+        
+        {/* Hero section with hyper-realistic elements */}
+        <div className="relative py-16 px-6">
+          <div className="max-w-7xl mx-auto text-center">
+            {/* Glowing title with realistic text effects */}
+            <div className="relative mb-8">
+              <h1 
+                className="text-6xl md:text-8xl font-bold text-transparent bg-clip-text mb-4 relative"
+                style={{
+                  backgroundImage: `
+                    linear-gradient(135deg, 
+                      #60a5fa 0%, 
+                      #a78bfa 25%, 
+                      #60a5fa 50%, 
+                      #34d399 75%, 
+                      #60a5fa 100%
+                    )
+                  `,
+                  textShadow: `
+                    0 0 20px rgba(96, 165, 250, 0.5),
+                    0 0 40px rgba(167, 139, 250, 0.3),
+                    0 0 60px rgba(52, 211, 153, 0.2)
+                  `
+                }}
+              >
+                کتابخانه دیجیتال
+              </h1>
+              
+              {/* Realistic glow effect behind title */}
+              <div 
+                className="absolute inset-0 blur-3xl opacity-30 -z-10"
+                style={{
+                  background: `
+                    radial-gradient(ellipse at center, 
+                      rgba(96, 165, 250, 0.6) 0%, 
+                      rgba(167, 139, 250, 0.4) 50%, 
+                      transparent 100%
+                    )
+                  `
+                }}
+              />
+            </div>
+
+            {/* Subtitle with elegant styling */}
+            <p className="text-xl md:text-2xl text-blue-100/90 mb-12 leading-relaxed font-light">
+              مجموعه‌ای منحصر به فرد از کتاب‌های فارسی با تجربه‌ای فراتر از واقعیت
+            </p>
+
+            {/* Statistics cards with realistic glass effect */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto mb-16">
+              {[
+                { number: books.length, label: 'کتاب', icon: '📚' },
+                { number: [...new Set(books.map(b => b.category))].length, label: 'دسته‌بندی', icon: '🏷️' },
+                { number: books.reduce((sum, book) => sum + book.pages, 0), label: 'صفحه', icon: '📄' }
+              ].map((stat, index) => (
+                <div
+                  key={index}
+                  className="relative group cursor-pointer"
+                  style={{
+                    background: `
+                      linear-gradient(135deg, 
+                        rgba(255, 255, 255, 0.1) 0%, 
+                        rgba(255, 255, 255, 0.05) 100%
+                      )
+                    `,
+                    backdropFilter: 'blur(20px)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    borderRadius: '20px',
+                    boxShadow: `
+                      0 8px 32px rgba(0, 0, 0, 0.3),
+                      inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                      inset 0 -1px 0 rgba(0, 0, 0, 0.1)
+                    `
+                  }}
+                >
+                  <div className="p-8 text-center transition-all duration-500 group-hover:scale-105">
+                    <div className="text-4xl mb-4 filter drop-shadow-lg">{stat.icon}</div>
+                    <div className="text-3xl font-bold text-white mb-2 relative">
+                      {stat.number.toLocaleString()}
+                      <div className="absolute inset-0 blur-sm bg-blue-400/20 -z-10 rounded"></div>
+                    </div>
+                    <div className="text-blue-200/80 font-medium">{stat.label}</div>
+                  </div>
+                  
+                  {/* Hover glow effect */}
+                  <div 
+                    className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10"
+                    style={{
+                      background: `
+                        radial-gradient(circle at center, 
+                          rgba(96, 165, 250, 0.3) 0%, 
+                          transparent 70%
+                        )
+                      `,
+                      filter: 'blur(20px)'
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-        
-        <Header />
-        
-        <FilterTabs 
-          categories={categories}
-          onFilterChange={handleFilterChange}
-          activeFiltersCount={activeFiltersCount}
-          currentFilters={filters}
-          minPages={0}
-          maxPages={1000}
-        />
-        
-        <div className="flex flex-col mt-4">
-          <div className="w-full">
-            <LibraryShelfView 
-              books={filteredBooks}
-              isLoading={isLoading}
-              onSelectBook={handleSelectBook}
-            />
+
+        {/* Main content area with realistic depth */}
+        <div 
+          className="relative"
+          style={{
+            background: `
+              linear-gradient(180deg, 
+                rgba(15, 23, 42, 0.95) 0%, 
+                rgba(30, 41, 59, 0.98) 100%
+              )
+            `,
+            backdropFilter: 'blur(10px)',
+            borderTop: '1px solid rgba(255, 255, 255, 0.1)'
+          }}
+        >
+          <div className="flex">
+            {/* Enhanced sidebar with realistic styling */}
+            <div 
+              className="w-80 min-h-screen border-r border-white/10"
+              style={{
+                background: `
+                  linear-gradient(180deg, 
+                    rgba(15, 23, 42, 0.9) 0%, 
+                    rgba(30, 41, 59, 0.95) 100%
+                  )
+                `,
+                backdropFilter: 'blur(15px)'
+              }}
+            >
+              <div className="p-6">
+                <FilterTabs onFilter={handleFilter} books={books} />
+                <div className="mt-6">
+                  <FilterSidebar onFilter={handleFilter} books={books} />
+                </div>
+              </div>
+            </div>
+
+            {/* Enhanced main content area */}
+            <div className="flex-1">
+              <div className="p-8">
+                {viewMode === 'grid' ? (
+                  <BookList books={filteredBooks} />
+                ) : (
+                  <LibraryShelfView books={filteredBooks} />
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      
-      <BookReader
-        book={selectedBook}
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-      />
+
+      {/* Ambient lighting effects */}
+      <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-0">
+        <div 
+          className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full opacity-10"
+          style={{
+            background: 'radial-gradient(circle, rgba(96, 165, 250, 0.8) 0%, transparent 70%)',
+            filter: 'blur(60px)'
+          }}
+        />
+        <div 
+          className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full opacity-10"
+          style={{
+            background: 'radial-gradient(circle, rgba(167, 139, 250, 0.8) 0%, transparent 70%)',
+            filter: 'blur(80px)'
+          }}
+        />
+      </div>
     </div>
   );
 };

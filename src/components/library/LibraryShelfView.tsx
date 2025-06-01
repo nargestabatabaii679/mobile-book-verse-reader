@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Book } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -65,37 +64,38 @@ export const LibraryShelfView: React.FC<LibraryShelfViewProps> = ({
     );
   }
 
-  const getRealisticBookStyle = (index: number, shelfIndex: number) => {
+  const getMinimalBookStyle = (index: number, shelfIndex: number) => {
+    // Minimal monochromatic color palette
     const bookColors = [
       {
-        spine: 'linear-gradient(180deg, #8B0000 0%, #DC143C 20%, #B22222 40%, #8B0000 60%, #A0202F 80%, #8B0000 100%)',
-        accent: '#FFD700',
-        shadow: 'rgba(139, 0, 0, 0.8)'
+        spine: 'linear-gradient(180deg, #2D3748 0%, #4A5568 20%, #718096 40%, #4A5568 60%, #2D3748 80%, #1A202C 100%)',
+        accent: '#E2E8F0',
+        shadow: 'rgba(45, 55, 72, 0.8)'
       },
       {
-        spine: 'linear-gradient(180deg, #000080 0%, #4169E1 20%, #0000CD 40%, #000080 60%, #1E40AF 80%, #000080 100%)',
-        accent: '#87CEEB',
-        shadow: 'rgba(0, 0, 128, 0.8)'
+        spine: 'linear-gradient(180deg, #1A202C 0%, #2D3748 20%, #4A5568 40%, #2D3748 60%, #1A202C 80%, #171923 100%)',
+        accent: '#CBD5E0',
+        shadow: 'rgba(26, 32, 44, 0.8)'
       },
       {
-        spine: 'linear-gradient(180deg, #006400 0%, #228B22 20%, #32CD32 40%, #006400 60%, #008000 80%, #006400 100%)',
-        accent: '#90EE90',
-        shadow: 'rgba(0, 100, 0, 0.8)'
+        spine: 'linear-gradient(180deg, #4A5568 0%, #718096 20%, #A0AEC0 40%, #718096 60%, #4A5568 80%, #2D3748 100%)',
+        accent: '#F7FAFC',
+        shadow: 'rgba(74, 85, 104, 0.8)'
       },
       {
-        spine: 'linear-gradient(180deg, #8B4513 0%, #D2691E 20%, #CD853F 40%, #8B4513 60%, #A0522D 80%, #8B4513 100%)',
-        accent: '#F4A460',
-        shadow: 'rgba(139, 69, 19, 0.8)'
+        spine: 'linear-gradient(180deg, #2C5282 0%, #3182CE 20%, #4299E1 40%, #3182CE 60%, #2C5282 80%, #2A4365 100%)',
+        accent: '#EBF8FF',
+        shadow: 'rgba(44, 82, 130, 0.8)'
       },
       {
-        spine: 'linear-gradient(180deg, #4B0082 0%, #8A2BE2 20%, #9370DB 40%, #4B0082 60%, #6A5ACD 80%, #4B0082 100%)',
-        accent: '#DDA0DD',
-        shadow: 'rgba(75, 0, 130, 0.8)'
+        spine: 'linear-gradient(180deg, #553C9A 0%, #6B46C1 20%, #8B5CF6 40%, #6B46C1 60%, #553C9A 80%, #44337A 100%)',
+        accent: '#F3E8FF',
+        shadow: 'rgba(85, 60, 154, 0.8)'
       },
       {
-        spine: 'linear-gradient(180deg, #2F4F4F 0%, #708090 20%, #696969 40%, #2F4F4F 60%, #556B2F 80%, #2F4F4F 100%)',
-        accent: '#C0C0C0',
-        shadow: 'rgba(47, 79, 79, 0.8)'
+        spine: 'linear-gradient(180deg, #065F46 0%, #047857 20%, #10B981 40%, #047857 60%, #065F46 80%, #064E3B 100%)',
+        accent: '#ECFDF5',
+        shadow: 'rgba(6, 95, 70, 0.8)'
       }
     ];
     
@@ -105,24 +105,30 @@ export const LibraryShelfView: React.FC<LibraryShelfViewProps> = ({
   const handleBookSelect = (book: Book, event: React.MouseEvent) => {
     const bookElement = event.currentTarget as HTMLElement;
     
-    // Add pickup animation class
+    // Enhanced pickup animation
     bookElement.style.transition = 'all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
     bookElement.style.transform = 'perspective(1200px) translateZ(80px) translateY(-40px) rotateX(-15deg) rotateY(15deg) scale(1.1)';
     bookElement.style.zIndex = '1000';
     bookElement.style.filter = 'drop-shadow(0 20px 60px rgba(0,0,0,0.8))';
     
-    // Create a subtle shake effect
-    setTimeout(() => {
-      bookElement.style.transform = 'perspective(1200px) translateZ(85px) translateY(-42px) rotateX(-15deg) rotateY(15deg) scale(1.1)';
-    }, 100);
+    // Add particle effect
+    const particles = document.createElement('div');
+    particles.className = 'absolute inset-0 pointer-events-none';
+    particles.innerHTML = Array.from({ length: 6 }, (_, i) => 
+      `<div class="absolute w-1 h-1 bg-white rounded-full animate-ping" style="
+        top: ${20 + i * 15}%; 
+        left: ${30 + (i % 3) * 20}%; 
+        animation-delay: ${i * 0.1}s;
+        animation-duration: 1s;
+      "></div>`
+    ).join('');
+    bookElement.appendChild(particles);
     
-    setTimeout(() => {
-      bookElement.style.transform = 'perspective(1200px) translateZ(80px) translateY(-40px) rotateX(-15deg) rotateY(15deg) scale(1.1)';
-    }, 200);
-    
-    // Call the actual book selection after animation
     setTimeout(() => {
       onSelectBook(book);
+      if (particles.parentNode) {
+        particles.parentNode.removeChild(particles);
+      }
     }, 400);
   };
 
@@ -276,7 +282,7 @@ export const LibraryShelfView: React.FC<LibraryShelfViewProps> = ({
                   const width = 32 + (bookIndex % 3) * 4;
                   const thickness = 8 + (bookIndex % 2) * 2;
                   const tilt = (Math.random() - 0.5) * 3;
-                  const bookStyle = getRealisticBookStyle(bookIndex, shelfIndex);
+                  const bookStyle = getMinimalBookStyle(bookIndex, shelfIndex);
                   
                   return (
                     <div
@@ -314,10 +320,10 @@ export const LibraryShelfView: React.FC<LibraryShelfViewProps> = ({
                         <div className="absolute inset-0 p-2 flex flex-col justify-between text-white">
                           {/* Minimal top accent */}
                           <div 
-                            className="w-full h-2 rounded-full"
+                            className="w-full h-1 rounded-full"
                             style={{ 
                               background: `linear-gradient(90deg, transparent, ${bookStyle.accent}, transparent)`,
-                              opacity: 0.7
+                              opacity: 0.6
                             }}
                           />
                           
@@ -327,7 +333,7 @@ export const LibraryShelfView: React.FC<LibraryShelfViewProps> = ({
                             style={{ 
                               fontSize: '8px',
                               textShadow: '1px 1px 2px rgba(0,0,0,0.8)',
-                              color: '#ffffff',
+                              color: bookStyle.accent,
                               writingMode: 'vertical-rl',
                               textOrientation: 'mixed',
                               transform: 'rotate(180deg)'
@@ -337,17 +343,18 @@ export const LibraryShelfView: React.FC<LibraryShelfViewProps> = ({
                           </div>
                           
                           {/* Simple divider */}
-                          <div className="w-full h-px bg-white/40 my-1"></div>
+                          <div className="w-full h-px bg-white/30 my-1"></div>
                           
                           {/* Author text */}
                           <div 
-                            className="text-center opacity-80"
+                            className="text-center opacity-70"
                             style={{ 
                               fontSize: '7px',
                               textShadow: '1px 1px 2px rgba(0,0,0,0.8)',
                               writingMode: 'vertical-rl',
                               textOrientation: 'mixed',
-                              transform: 'rotate(180deg)'
+                              transform: 'rotate(180deg)',
+                              color: bookStyle.accent
                             }}
                           >
                             {book.author.slice(0, 25)}
@@ -355,10 +362,10 @@ export const LibraryShelfView: React.FC<LibraryShelfViewProps> = ({
 
                           {/* Minimal bottom accent */}
                           <div 
-                            className="w-full h-2 rounded-full"
+                            className="w-full h-1 rounded-full"
                             style={{ 
                               background: `linear-gradient(90deg, transparent, ${bookStyle.accent}, transparent)`,
-                              opacity: 0.5
+                              opacity: 0.4
                             }}
                           />
                         </div>
@@ -403,21 +410,21 @@ export const LibraryShelfView: React.FC<LibraryShelfViewProps> = ({
                         <div className="absolute inset-0 pointer-events-none">
                           <div className="absolute top-3 right-1 w-1 h-1 bg-black/15 rounded-full blur-sm"></div>
                           <div className="absolute bottom-4 left-1 w-1 h-2 bg-black/10 rounded blur-sm"></div>
-                          <div className="absolute top-1/3 left-0 right-0 h-px bg-black/20"></div>
-                          <div className="absolute top-2/3 left-0 right-0 h-px bg-black/15"></div>
+                          <div className="absolute top-1/3 left-0 right-0 h-px bg-black/15"></div>
+                          <div className="absolute top-2/3 left-0 right-0 h-px bg-black/10"></div>
                         </div>
 
                         {/* Premium page stack */}
-                        <div className="absolute right-1 top-2 bottom-2 w-px bg-white/40"></div>
-                        <div className="absolute right-2 top-2 bottom-2 w-px bg-white/25"></div>
+                        <div className="absolute right-1 top-2 bottom-2 w-px bg-white/30"></div>
+                        <div className="absolute right-2 top-2 bottom-2 w-px bg-white/20"></div>
 
                         {/* Enhanced glow on hover */}
                         <div className="absolute inset-0 opacity-0 group-hover/book:opacity-100 transition-opacity duration-300 pointer-events-none">
                           <div 
                             className="absolute inset-0 rounded-lg"
                             style={{
-                              background: `radial-gradient(ellipse at center, ${bookStyle.accent}15 0%, transparent 60%)`,
-                              boxShadow: `0 0 15px ${bookStyle.accent}30`
+                              background: `radial-gradient(ellipse at center, ${bookStyle.accent}10 0%, transparent 60%)`,
+                              boxShadow: `0 0 15px ${bookStyle.accent}20`
                             }}
                           />
                         </div>

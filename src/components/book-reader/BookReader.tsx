@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, Download, QrCode, X, Maximize2, Minimize2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Download, QrCode, X, Maximize2, Minimize2, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
 import { QRCodeGenerator } from './QRCodeGenerator';
 import './BookReader.css';
 
@@ -26,20 +26,29 @@ const BookReader: React.FC<BookReaderProps> = ({ book, isOpen, onClose }) => {
   const [isBookOpening, setIsBookOpening] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null);
+  const [zoom, setZoom] = useState(1);
+  const [bookPosition, setBookPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [isBookClosed, setIsBookClosed] = useState(true);
 
   if (!book) return null;
 
-  // Generate mock pages for demonstration
   const totalPages = Math.min(book.pages, 20);
 
-  // Reset page when book changes and trigger opening animation
   useEffect(() => {
     if (book && isOpen) {
       setCurrentPage(1);
+      setIsBookClosed(true);
       setIsBookOpening(true);
+      
+      // Book opening sequence
+      setTimeout(() => {
+        setIsBookClosed(false);
+      }, 800);
+      
       setTimeout(() => {
         setIsBookOpening(false);
-      }, 1200);
+      }, 1500);
     }
   }, [book, isOpen]);
 
@@ -67,6 +76,19 @@ const BookReader: React.FC<BookReaderProps> = ({ book, isOpen, onClose }) => {
     }
   };
 
+  const handleZoomIn = () => {
+    setZoom(prev => Math.min(prev + 0.2, 2));
+  };
+
+  const handleZoomOut = () => {
+    setZoom(prev => Math.max(prev - 0.2, 0.5));
+  };
+
+  const resetView = () => {
+    setZoom(1);
+    setBookPosition({ x: 0, y: 0 });
+  };
+
   const handleDownload = () => {
     const content = `
 عنوان: ${book.title}
@@ -78,6 +100,11 @@ const BookReader: React.FC<BookReaderProps> = ({ book, isOpen, onClose }) => {
 
 توضیحات:
 ${book.description}
+
+محتوای کامل کتاب:
+${Array.from({ length: totalPages }, (_, i) => 
+  `صفحه ${i + 1}:\n${book.description}\n\n`
+).join('')}
     `;
     
     const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
@@ -187,6 +214,7 @@ ${book.description}
   };
 
   const handlePageClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (isDragging) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
     const isRightSide = clickX > rect.width / 2;
@@ -195,6 +223,30 @@ ${book.description}
       nextPage();
     } else {
       prevPage();
+    }
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (zoom > 1) {
+      setIsDragging(true);
+      const startX = e.clientX - bookPosition.x;
+      const startY = e.clientY - bookPosition.y;
+      
+      const handleMouseMove = (e: MouseEvent) => {
+        setBookPosition({
+          x: e.clientX - startX,
+          y: e.clientY - startY
+        });
+      };
+      
+      const handleMouseUp = () => {
+        setIsDragging(false);
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      };
+      
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
     }
   };
 
@@ -212,9 +264,9 @@ ${book.description}
     
     if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
       if (deltaX > 0) {
-        prevPage(); // Swipe right - previous page
+        prevPage();
       } else {
-        nextPage(); // Swipe left - next page
+        nextPage();
       }
     }
     
@@ -231,6 +283,30 @@ ${book.description}
               <span>{book.title}</span>
             </DialogTitle>
             <div className="flex items-center space-x-2 rtl:space-x-reverse">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleZoomIn}
+                className="text-blue-300 hover:bg-blue-800/50 hover:text-white transition-all duration-300"
+              >
+                <ZoomIn className="w-4 h-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleZoomOut}
+                className="text-blue-300 hover:bg-blue-800/50 hover:text-white transition-all duration-300"
+              >
+                <ZoomOut className="w-4 h-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={resetView}
+                className="text-blue-300 hover:bg-blue-800/50 hover:text-white transition-all duration-300"
+              >
+                <RotateCcw className="w-4 h-4" />
+              </Button>
               <Button
                 variant="ghost"
                 size="sm"
@@ -269,94 +345,136 @@ ${book.description}
           </div>
         </DialogHeader>
         
-        <div className="flex-1 p-6 relative">
+        <div className="flex-1 p-6 relative overflow-hidden">
           {showQR ? (
             <div className="flex justify-center items-center h-96">
               <QRCodeGenerator book={book} />
             </div>
           ) : (
             <>
-              {/* Enhanced Modern Book Reader */}
-              <div className="max-w-6xl mx-auto perspective-1200">
+              <div className="max-w-6xl mx-auto perspective-1200 h-full flex items-center justify-center">
                 <div 
-                  className={`modern-book-container relative bg-gradient-to-br from-white via-blue-50 to-amber-50 rounded-3xl shadow-2xl overflow-hidden border border-white/30 cursor-pointer transition-all duration-1000 ${
-                    isBookOpening ? 'scale-95 opacity-70 rotate-x-10' : 'scale-100 opacity-100 rotate-x-0'
-                  }`}
+                  className={`realistic-book-container relative transition-all duration-1000 ${
+                    isBookClosed ? 'closed-book' : 'open-book'
+                  } ${isBookOpening ? 'book-opening' : ''}`}
+                  style={{
+                    transform: `scale(${zoom}) translate(${bookPosition.x}px, ${bookPosition.y}px)`,
+                    cursor: zoom > 1 ? 'grab' : 'pointer',
+                    transformStyle: 'preserve-3d'
+                  }}
                   onClick={handlePageClick}
+                  onMouseDown={handleMouseDown}
                   onTouchStart={handleTouchStart}
                   onTouchEnd={handleTouchEnd}
                 >
-                  {/* Modern book spine with glowing effect */}
-                  <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-slate-800 via-blue-800 to-slate-700 shadow-inner z-20 rounded-l-3xl">
-                    <div className="absolute inset-1 bg-gradient-to-r from-blue-400/20 to-amber-400/20 rounded-l-2xl animate-pulse"></div>
-                  </div>
-                  
-                  {/* Enhanced double page spread */}
-                  <div className="flex min-h-[650px] relative">
-                    {/* Left Page */}
-                    {currentPage > 1 && (
-                      <div 
-                        className="w-1/2 border-r border-slate-300/30 relative transition-all duration-800 ease-out transform-gpu hover:bg-gradient-to-r hover:from-white/50 hover:to-blue-50/30"
-                        style={{
-                          ...getPageFlipStyle(false),
-                          backfaceVisibility: 'hidden'
-                        }}
-                      >
-                        <div className="absolute inset-0 p-8 ml-12">
-                          <div className="h-full bg-white/95 rounded-2xl shadow-lg p-8 overflow-y-auto relative backdrop-blur-sm border border-white/40">
-                            <div className="absolute top-0 right-0 w-12 h-12 bg-gradient-to-bl from-slate-200/50 to-transparent opacity-40 transform rotate-45 rounded-full"></div>
-                            {getPageContent(currentPage - 1)}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {/* Right Page */}
-                    <div 
-                      className={`${currentPage === 1 ? 'w-full' : 'w-1/2'} relative transition-all duration-800 ease-out transform-gpu hover:bg-gradient-to-l hover:from-white/50 hover:to-amber-50/30`}
-                      style={{
-                        ...getPageFlipStyle(true),
-                        backfaceVisibility: 'hidden'
-                      }}
-                    >
-                      <div className={`absolute inset-0 p-8 ${currentPage === 1 ? 'ml-12' : ''}`}>
-                        <div className="h-full bg-white/95 rounded-2xl shadow-lg p-8 overflow-y-auto relative backdrop-blur-sm border border-white/40">
-                          <div className="absolute top-0 left-0 w-12 h-12 bg-gradient-to-br from-slate-200/50 to-transparent opacity-40 transform -rotate-45 rounded-full"></div>
-                          {getPageContent(currentPage)}
-                        </div>
+                  {/* Book Cover - Only visible when closed */}
+                  <div 
+                    className={`book-cover absolute inset-0 transition-all duration-1000 ${
+                      isBookClosed ? 'opacity-100 z-30' : 'opacity-0 z-0 pointer-events-none'
+                    }`}
+                    style={{
+                      background: 'linear-gradient(145deg, #2D3748 0%, #4A5568 50%, #2D3748 100%)',
+                      borderRadius: '15px 5px 5px 15px',
+                      boxShadow: '15px 0 0 rgba(0,0,0,0.3), 20px 5px 20px rgba(0,0,0,0.4)',
+                      width: '600px',
+                      height: '650px'
+                    }}
+                  >
+                    <div className="h-full flex items-center justify-center p-8">
+                      <div className="text-center">
+                        <img
+                          src={book.coverUrl}
+                          alt={book.title}
+                          className="w-32 h-44 object-cover mx-auto rounded-lg shadow-xl mb-4"
+                        />
+                        <h3 className="text-2xl font-bold text-white mb-2">{book.title}</h3>
+                        <p className="text-lg text-gray-300">{book.author}</p>
                       </div>
                     </div>
                   </div>
-                  
-                  {/* Enhanced modern lighting effects */}
-                  <div className="absolute inset-0 pointer-events-none">
-                    <div className="absolute top-0 left-12 right-0 h-6 bg-gradient-to-b from-black/10 to-transparent rounded-t-3xl"></div>
-                    <div className="absolute bottom-0 left-12 right-0 h-6 bg-gradient-to-t from-black/15 to-transparent rounded-b-3xl"></div>
-                    <div className="absolute top-0 bottom-0 left-1/2 w-6 bg-gradient-to-r from-black/5 via-black/10 to-black/5 transform -translate-x-1/2"></div>
-                    
-                    {isPageTurning && (
-                      <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-white/20 to-amber-500/10 transition-opacity duration-300 animate-pulse"></div>
-                    )}
-                    
-                    {isBookOpening && (
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse"></div>
-                    )}
-                  </div>
 
-                  {/* Interactive hover indicators */}
-                  <div className="absolute inset-0 pointer-events-none">
-                    <div className="absolute left-0 top-0 bottom-0 w-1/2 pointer-events-auto cursor-w-resize transition-colors duration-300 hover:bg-gradient-to-r hover:from-blue-500/5 hover:to-transparent" title="صفحه قبل"></div>
-                    <div className="absolute right-0 top-0 bottom-0 w-1/2 pointer-events-auto cursor-e-resize transition-colors duration-300 hover:bg-gradient-to-l hover:from-amber-500/5 hover:to-transparent" title="صفحه بعد"></div>
+                  {/* Book Pages - Visible when open */}
+                  <div 
+                    className={`book-pages transition-all duration-1000 ${
+                      isBookClosed ? 'opacity-0 scale-0' : 'opacity-100 scale-100'
+                    }`}
+                    style={{
+                      width: '1200px',
+                      height: '650px',
+                      background: 'linear-gradient(to right, #f8f9fa 0%, #ffffff 50%, #f8f9fa 100%)',
+                      borderRadius: '15px',
+                      boxShadow: '0 25px 50px rgba(0,0,0,0.3)',
+                      transformStyle: 'preserve-3d'
+                    }}
+                  >
+                    {/* Book spine */}
+                    <div 
+                      className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-slate-800 via-blue-800 to-slate-700 shadow-inner z-20 rounded-l-2xl"
+                      style={{
+                        background: 'linear-gradient(90deg, #2D3748 0%, #4A5568 50%, #2D3748 100%)',
+                        boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5)'
+                      }}
+                    >
+                      <div className="absolute inset-1 bg-gradient-to-r from-blue-400/20 to-amber-400/20 rounded-l-xl animate-pulse"></div>
+                    </div>
+                    
+                    {/* Double page spread */}
+                    <div className="flex min-h-[650px] relative">
+                      {/* Left Page */}
+                      {currentPage > 1 && (
+                        <div 
+                          className="w-1/2 border-r border-slate-300/30 relative transition-all duration-800 ease-out transform-gpu"
+                          style={{
+                            ...getPageFlipStyle(false),
+                            backfaceVisibility: 'hidden'
+                          }}
+                        >
+                          <div className="absolute inset-0 p-8 ml-12">
+                            <div className="h-full bg-white/95 rounded-2xl shadow-lg p-8 overflow-y-auto relative backdrop-blur-sm border border-white/40">
+                              <div className="absolute top-0 right-0 w-12 h-12 bg-gradient-to-bl from-slate-200/50 to-transparent opacity-40 transform rotate-45 rounded-full"></div>
+                              {getPageContent(currentPage - 1)}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Right Page */}
+                      <div 
+                        className={`${currentPage === 1 ? 'w-full' : 'w-1/2'} relative transition-all duration-800 ease-out transform-gpu`}
+                        style={{
+                          ...getPageFlipStyle(true),
+                          backfaceVisibility: 'hidden'
+                        }}
+                      >
+                        <div className={`absolute inset-0 p-8 ${currentPage === 1 ? 'ml-12' : ''}`}>
+                          <div className="h-full bg-white/95 rounded-2xl shadow-lg p-8 overflow-y-auto relative backdrop-blur-sm border border-white/40">
+                            <div className="absolute top-0 left-0 w-12 h-12 bg-gradient-to-br from-slate-200/50 to-transparent opacity-40 transform -rotate-45 rounded-full"></div>
+                            {getPageContent(currentPage)}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Enhanced lighting effects */}
+                    <div className="absolute inset-0 pointer-events-none">
+                      <div className="absolute top-0 left-12 right-0 h-6 bg-gradient-to-b from-black/10 to-transparent rounded-t-2xl"></div>
+                      <div className="absolute bottom-0 left-12 right-0 h-6 bg-gradient-to-t from-black/15 to-transparent rounded-b-2xl"></div>
+                      <div className="absolute top-0 bottom-0 left-1/2 w-6 bg-gradient-to-r from-black/5 via-black/10 to-black/5 transform -translate-x-1/2"></div>
+                      
+                      {isPageTurning && (
+                        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-white/20 to-amber-500/10 transition-opacity duration-300 animate-pulse"></div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
               
-              {/* Modern Navigation Controls */}
+              {/* Enhanced Navigation Controls */}
               <div className="flex items-center justify-between mt-8 max-w-6xl mx-auto">
                 <Button
                   variant="outline"
                   onClick={prevPage}
-                  disabled={currentPage === 1 || isPageTurning}
+                  disabled={currentPage === 1 || isPageTurning || isBookClosed}
                   className="bg-gradient-to-r from-blue-600 to-blue-700 border-blue-500 text-white hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 px-8 py-4 text-lg transition-all duration-300 hover:scale-110 active:scale-95 shadow-lg hover:shadow-blue-500/25"
                 >
                   <ChevronRight className="w-5 h-5 mr-2" />
@@ -378,12 +496,15 @@ ${book.description}
                   <span className="text-lg text-blue-300 font-bold">
                     {Math.round((currentPage / totalPages) * 100)}%
                   </span>
+                  <div className="text-sm text-gray-400">
+                    زوم: {Math.round(zoom * 100)}%
+                  </div>
                 </div>
                 
                 <Button
                   variant="outline"
                   onClick={nextPage}
-                  disabled={currentPage === totalPages || isPageTurning}
+                  disabled={currentPage === totalPages || isPageTurning || isBookClosed}
                   className="bg-gradient-to-r from-amber-600 to-orange-600 border-amber-500 text-white hover:from-amber-700 hover:to-orange-700 disabled:opacity-50 px-8 py-4 text-lg transition-all duration-300 hover:scale-110 active:scale-95 shadow-lg hover:shadow-amber-500/25"
                 >
                   صفحه بعد
@@ -391,7 +512,7 @@ ${book.description}
                 </Button>
               </div>
               
-              {/* Modern page turning indicator */}
+              {/* Status indicators */}
               {isPageTurning && (
                 <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-blue-900/90 to-purple-900/90 text-white px-6 py-3 rounded-full text-lg z-50 backdrop-blur-sm border border-white/20 shadow-2xl">
                   <div className="flex items-center space-x-3 rtl:space-x-reverse">
@@ -401,7 +522,6 @@ ${book.description}
                 </div>
               )}
 
-              {/* Modern opening book indicator */}
               {isBookOpening && (
                 <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-slate-900/95 to-blue-900/95 text-white px-8 py-4 rounded-2xl text-xl z-50 backdrop-blur-sm border border-white/20 shadow-2xl">
                   <div className="flex items-center space-x-4 rtl:space-x-reverse">

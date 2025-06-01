@@ -14,6 +14,7 @@ export interface Book {
 
 export interface FilterOptions {
   search: string;
+  authorSearch: string;
   categories: string[];
   sortBy: string;
   minPages: number;

@@ -45,176 +45,223 @@ export const BookshelfView: React.FC<BookshelfViewProps> = ({ books }) => {
             className="min-h-screen relative overflow-hidden"
             style={{
               background: `
-                radial-gradient(circle at 20% 30%, rgba(139, 69, 19, 0.8) 0%, transparent 40%),
-                radial-gradient(circle at 80% 70%, rgba(160, 82, 45, 0.6) 0%, transparent 40%),
-                radial-gradient(circle at 40% 80%, rgba(101, 67, 33, 0.4) 0%, transparent 30%),
-                linear-gradient(135deg, #8B4513 0%, #A0522D 25%, #CD853F 50%, #D2B48C 75%, #F4A460 100%)
+                radial-gradient(circle at 25% 25%, rgba(139, 69, 19, 0.9) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(160, 82, 45, 0.7) 0%, transparent 50%),
+                radial-gradient(circle at 50% 10%, rgba(218, 165, 32, 0.5) 0%, transparent 40%),
+                linear-gradient(145deg, #654321 0%, #8B4513 25%, #A0522D 50%, #CD853F 75%, #DEB887 100%)
               `,
-              backgroundSize: '100% 100%, 100% 100%, 100% 100%, 100% 100%'
+              backgroundSize: '100% 100%, 100% 100%, 100% 100%, 100% 100%',
+              perspective: '2000px'
             }}
           >
-            {/* نور محیطی */}
-            <div className="absolute inset-0 opacity-20">
-              <div className="absolute top-20 left-1/4 w-96 h-96 bg-yellow-300 rounded-full blur-3xl opacity-30"></div>
-              <div className="absolute bottom-20 right-1/4 w-80 h-80 bg-orange-200 rounded-full blur-3xl opacity-20"></div>
+            {/* نور محیطی پیشرفته */}
+            <div className="absolute inset-0 opacity-30">
+              <div className="absolute top-20 left-1/4 w-96 h-96 bg-yellow-400 rounded-full blur-3xl opacity-40 animate-pulse"></div>
+              <div className="absolute bottom-20 right-1/4 w-80 h-80 bg-orange-300 rounded-full blur-3xl opacity-30"></div>
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-amber-200 rounded-full blur-2xl opacity-20"></div>
             </div>
 
-            {/* عنوان با افکت نئون */}
-            <div className="text-center py-12 relative z-10">
-              <h1 className="text-5xl font-bold text-white drop-shadow-2xl font-vazir relative">
-                <span className="absolute inset-0 text-amber-300 blur-sm">کتابخانه دیجیتال پیشرفته</span>
-                <span className="relative">کتابخانه دیجیتال پیشرفته</span>
+            {/* عنوان با افکت نئون پیشرفته */}
+            <div className="text-center py-16 relative z-10">
+              <h1 className="text-6xl font-bold text-white drop-shadow-2xl font-vazir relative transform hover:scale-105 transition-transform duration-500">
+                <span className="absolute inset-0 text-amber-300 blur-md opacity-80">کتابخانه دیجیتال سه‌بعدی</span>
+                <span className="absolute inset-0 text-yellow-200 blur-sm opacity-60">کتابخانه دیجیتال سه‌بعدی</span>
+                <span className="relative text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-300 to-amber-200">کتابخانه دیجیتال سه‌بعدی</span>
               </h1>
-              <div className="mt-4 w-32 h-1 bg-gradient-to-r from-transparent via-amber-400 to-transparent mx-auto rounded-full"></div>
+              <div className="mt-6 w-40 h-2 bg-gradient-to-r from-transparent via-amber-400 to-transparent mx-auto rounded-full shadow-lg"></div>
+              <div className="mt-2 w-24 h-1 bg-gradient-to-r from-transparent via-yellow-300 to-transparent mx-auto rounded-full"></div>
             </div>
 
-            {/* قفسه های کتاب */}
-            <div className="space-y-20 px-8 pb-16 relative z-10">
+            {/* قفسه های کتاب پیشرفته */}
+            <div className="space-y-24 px-8 pb-20 relative z-10">
               {shelves.map((shelf, shelfIndex) => (
-                <div key={shelfIndex} className="relative group">
-                  {/* قفسه چوبی پیشرفته */}
+                <div key={shelfIndex} className="relative group perspective-[2000px]">
+                  {/* قفسه چوبی پیشرفته با عمق واقعی */}
                   <div 
-                    className="relative mx-auto transform transition-all duration-700 hover:scale-105"
+                    className="relative mx-auto transform transition-all duration-1000 hover:scale-[1.02] hover:-translate-y-2"
                     style={{
-                      width: '95%',
-                      height: '280px',
+                      width: '92%',
+                      height: '320px',
                       background: `
                         linear-gradient(180deg, 
-                          #F4E4BC 0%, 
-                          #E6D7B8 5%, 
-                          #D2B48C 15%, 
-                          #CD853F 30%, 
-                          #B8860B 60%, 
-                          #A0522D 85%, 
-                          #8B4513 100%
+                          #F5E6D3 0%, 
+                          #E8D5C4 3%, 
+                          #DBC5A8 8%, 
+                          #CD853F 20%, 
+                          #B8860B 40%, 
+                          #A0522D 70%, 
+                          #8B4513 90%, 
+                          #654321 100%
                         )
                       `,
-                      borderRadius: '12px 12px 6px 6px',
+                      borderRadius: '15px 15px 8px 8px',
                       boxShadow: `
-                        0 25px 50px rgba(0,0,0,0.4),
-                        0 15px 30px rgba(139, 69, 19, 0.3),
-                        inset 0 4px 8px rgba(255,255,255,0.3),
-                        inset 0 -4px 8px rgba(0,0,0,0.3),
-                        inset 0 0 0 1px rgba(255,255,255,0.1)
+                        0 35px 80px rgba(0,0,0,0.6),
+                        0 25px 50px rgba(139, 69, 19, 0.4),
+                        0 15px 30px rgba(101, 67, 33, 0.3),
+                        inset 0 6px 12px rgba(255,255,255,0.4),
+                        inset 0 -6px 12px rgba(0,0,0,0.4),
+                        inset 0 0 0 2px rgba(255,255,255,0.15),
+                        inset 0 0 0 4px rgba(139, 69, 19, 0.2)
                       `,
-                      transform: 'perspective(1200px) rotateX(8deg)',
+                      transform: 'perspective(2000px) rotateX(12deg) rotateY(2deg)',
                       transformStyle: 'preserve-3d'
                     }}
                   >
-                    {/* رگه های چوب پیشرفته */}
+                    {/* رگه های چوب بسیار پیشرفته */}
                     <div 
-                      className="absolute inset-0 opacity-40 rounded-xl"
+                      className="absolute inset-0 opacity-50 rounded-xl"
                       style={{
                         backgroundImage: `
                           repeating-linear-gradient(
-                            90deg,
+                            88deg,
                             transparent,
-                            transparent 15px,
-                            rgba(139, 69, 19, 0.2) 16px,
-                            rgba(139, 69, 19, 0.2) 18px,
-                            transparent 19px,
-                            transparent 40px,
-                            rgba(101, 67, 33, 0.3) 41px,
-                            rgba(101, 67, 33, 0.3) 43px
+                            transparent 12px,
+                            rgba(139, 69, 19, 0.25) 13px,
+                            rgba(139, 69, 19, 0.25) 15px,
+                            transparent 16px,
+                            transparent 35px,
+                            rgba(101, 67, 33, 0.35) 36px,
+                            rgba(101, 67, 33, 0.35) 38px,
+                            transparent 39px,
+                            transparent 65px,
+                            rgba(160, 82, 45, 0.2) 66px,
+                            rgba(160, 82, 45, 0.2) 68px
                           ),
                           repeating-linear-gradient(
-                            0deg,
+                            2deg,
                             transparent,
-                            transparent 80px,
-                            rgba(160, 82, 45, 0.15) 81px,
-                            rgba(160, 82, 45, 0.15) 85px
-                          )
+                            transparent 70px,
+                            rgba(160, 82, 45, 0.18) 71px,
+                            rgba(160, 82, 45, 0.18) 76px,
+                            transparent 77px,
+                            transparent 120px,
+                            rgba(139, 69, 19, 0.12) 121px,
+                            rgba(139, 69, 19, 0.12) 125px
+                          ),
+                          radial-gradient(ellipse at 30% 40%, rgba(101, 67, 33, 0.3) 0%, transparent 60%),
+                          radial-gradient(ellipse at 80% 70%, rgba(160, 82, 45, 0.2) 0%, transparent 50%)
                         `
                       }}
                     />
                     
-                    {/* پایه قفسه */}
+                    {/* پایه قفسه پیشرفته */}
                     <div 
                       className="absolute bottom-0 left-1/2 transform -translate-x-1/2"
                       style={{
-                        width: '98%',
-                        height: '30px',
-                        background: 'linear-gradient(180deg, #A0522D 0%, #8B4513 50%, #654321 100%)',
-                        borderRadius: '0 0 12px 12px',
+                        width: '100%',
+                        height: '40px',
+                        background: `
+                          linear-gradient(180deg, 
+                            #A0522D 0%, 
+                            #8B4513 30%, 
+                            #654321 60%, 
+                            #4A3018 85%, 
+                            #2F1F0F 100%
+                          )
+                        `,
+                        borderRadius: '0 0 15px 15px',
                         boxShadow: `
-                          0 8px 20px rgba(0,0,0,0.5),
-                          inset 0 2px 4px rgba(255,255,255,0.2)
-                        `
+                          0 12px 30px rgba(0,0,0,0.7),
+                          0 6px 15px rgba(0,0,0,0.5),
+                          inset 0 3px 6px rgba(255,255,255,0.25),
+                          inset 0 -2px 4px rgba(0,0,0,0.3)
+                        `,
+                        transform: 'perspective(1000px) rotateX(-5deg)'
                       }}
                     />
 
-                    {/* نگهدارنده های فلزی */}
-                    <div className="absolute left-6 top-1/2 transform -translate-y-1/2 w-3 h-12 bg-gradient-to-b from-yellow-300 via-yellow-500 to-yellow-700 rounded-full shadow-xl border border-yellow-600"></div>
-                    <div className="absolute right-6 top-1/2 transform -translate-y-1/2 w-3 h-12 bg-gradient-to-b from-yellow-300 via-yellow-500 to-yellow-700 rounded-full shadow-xl border border-yellow-600"></div>
+                    {/* لبه های فلزی طلایی */}
+                    <div className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-16 bg-gradient-to-b from-yellow-200 via-yellow-400 to-yellow-600 rounded-full shadow-xl border-2 border-yellow-500 opacity-90"></div>
+                    <div className="absolute right-4 top-1/2 transform -translate-y-1/2 w-4 h-16 bg-gradient-to-b from-yellow-200 via-yellow-400 to-yellow-600 rounded-full shadow-xl border-2 border-yellow-500 opacity-90"></div>
 
                     {/* کتاب ها */}
-                    <div className="absolute top-6 left-1/2 transform -translate-x-1/2 flex justify-center items-end space-x-4 rtl:space-x-reverse h-52">
+                    <div className="absolute top-8 left-1/2 transform -translate-x-1/2 flex justify-center items-end space-x-6 rtl:space-x-reverse h-60">
                       {shelf.map((book, bookIndex) => {
-                        const height = 160 + Math.sin(bookIndex) * 25;
-                        const rotation = (Math.random() - 0.5) * 8;
+                        const height = 180 + Math.sin(bookIndex * 1.5) * 30;
+                        const rotation = (Math.random() - 0.5) * 12;
+                        const tilt = (Math.random() - 0.5) * 8;
                         return (
                           <div
                             key={book.id}
                             className={`
-                              group/book cursor-pointer transition-all duration-700 hover:scale-110 hover:-translate-y-4 hover:rotate-0
+                              group/book cursor-pointer transition-all duration-1000 hover:scale-110 hover:-translate-y-6 hover:rotate-0 hover:z-50
                               ${getBookColor(shelfIndex * booksPerShelf + bookIndex)}
                               relative overflow-hidden
                             `}
                             style={{
-                              width: '70px',
+                              width: '80px',
                               height: `${height}px`,
-                              borderRadius: '4px 4px 0 0',
+                              borderRadius: '6px 6px 0 0',
                               boxShadow: `
-                                4px 0 12px rgba(0,0,0,0.4),
-                                8px 0 20px rgba(0,0,0,0.2),
-                                inset 0 0 0 1px rgba(255,255,255,0.2),
-                                inset 4px 0 0 rgba(255,255,255,0.3),
-                                inset -2px 0 0 rgba(0,0,0,0.2)
+                                6px 0 20px rgba(0,0,0,0.6),
+                                12px 0 35px rgba(0,0,0,0.3),
+                                18px 0 50px rgba(0,0,0,0.1),
+                                inset 0 0 0 2px rgba(255,255,255,0.25),
+                                inset 6px 0 0 rgba(255,255,255,0.4),
+                                inset -3px 0 0 rgba(0,0,0,0.25),
+                                inset 0 3px 6px rgba(255,255,255,0.2),
+                                inset 0 -3px 6px rgba(0,0,0,0.2)
                               `,
-                              transform: `perspective(1000px) rotateY(${rotation}deg) rotateX(2deg)`,
+                              transform: `perspective(1200px) rotateY(${rotation}deg) rotateX(${tilt}deg) rotateZ(${rotation * 0.3}deg)`,
                               transformStyle: 'preserve-3d',
                               transformOrigin: 'bottom center'
                             }}
                           >
-                            {/* طلایی کاری روی جلد */}
-                            <div className="absolute inset-0 opacity-30">
-                              <div className="absolute top-4 left-1 right-1 h-0.5 bg-gradient-to-r from-transparent via-yellow-300 to-transparent"></div>
-                              <div className="absolute bottom-4 left-1 right-1 h-0.5 bg-gradient-to-r from-transparent via-yellow-300 to-transparent"></div>
-                              <div className="absolute top-8 bottom-8 left-1 w-0.5 bg-gradient-to-b from-transparent via-yellow-300 to-transparent"></div>
-                              <div className="absolute top-8 bottom-8 right-1 w-0.5 bg-gradient-to-b from-transparent via-yellow-300 to-transparent"></div>
+                            {/* طلایی کاری پیشرفته روی جلد */}
+                            <div className="absolute inset-0 opacity-40">
+                              <div className="absolute top-6 left-2 right-2 h-1 bg-gradient-to-r from-transparent via-yellow-300 to-transparent rounded-full shadow-sm"></div>
+                              <div className="absolute bottom-6 left-2 right-2 h-1 bg-gradient-to-r from-transparent via-yellow-300 to-transparent rounded-full shadow-sm"></div>
+                              <div className="absolute top-12 bottom-12 left-2 w-1 bg-gradient-to-b from-transparent via-yellow-300 to-transparent rounded-full shadow-sm"></div>
+                              <div className="absolute top-12 bottom-12 right-2 w-1 bg-gradient-to-b from-transparent via-yellow-300 to-transparent rounded-full shadow-sm"></div>
+                              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 border-2 border-yellow-300 rounded-full opacity-60"></div>
                             </div>
 
                             {/* عنوان کتاب */}
-                            <div className="absolute inset-3 flex flex-col justify-between items-center text-white">
-                              <div className="text-xs font-bold text-center leading-tight overflow-hidden writing-vertical-rl transform rotate-180 font-vazir">
-                                {book.title.slice(0, 25)}
+                            <div className="absolute inset-4 flex flex-col justify-between items-center text-white">
+                              <div className="text-xs font-bold text-center leading-tight overflow-hidden writing-vertical-rl transform rotate-180 font-vazir drop-shadow-lg">
+                                {book.title.slice(0, 30)}
                               </div>
-                              <div className="w-full h-0.5 bg-gradient-to-r from-transparent via-white/40 to-transparent my-2"></div>
-                              <div className="text-xs opacity-80 text-center writing-vertical-rl transform rotate-180 font-vazir">
-                                {book.author.slice(0, 20)}
+                              <div className="w-full h-1 bg-gradient-to-r from-transparent via-white/50 to-transparent my-3 rounded-full"></div>
+                              <div className="text-xs opacity-90 text-center writing-vertical-rl transform rotate-180 font-vazir drop-shadow-md">
+                                {book.author.slice(0, 25)}
                               </div>
                             </div>
 
-                            {/* جلد سه بعدی */}
+                            {/* جلد سه بعدی با عمق واقعی */}
                             <div 
-                              className="absolute top-0 right-0 w-2 h-full bg-gradient-to-b from-white/40 via-black/20 to-black/40"
+                              className="absolute top-0 right-0 w-3 h-full"
                               style={{ 
+                                background: 'linear-gradient(90deg, rgba(255,255,255,0.5) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.6) 100%)',
                                 transformOrigin: 'right', 
-                                transform: 'rotateY(-90deg) translateZ(1px)',
-                                boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.2)'
+                                transform: 'rotateY(-90deg) translateZ(2px)',
+                                boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.3), inset 2px 0 4px rgba(0,0,0,0.4)'
                               }}
                             />
 
-                            {/* نور انعکاسی */}
-                            <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent opacity-0 group-hover/book:opacity-100 transition-opacity duration-500"></div>
+                            {/* پشت کتاب */}
+                            <div 
+                              className="absolute top-0 left-0 w-full h-full opacity-70"
+                              style={{ 
+                                background: 'linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.6) 100%)',
+                                transform: 'translateZ(-3px)',
+                                borderRadius: '6px 6px 0 0'
+                              }}
+                            />
 
-                            {/* tooltip پیشرفته */}
-                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-4 px-4 py-3 bg-black/90 backdrop-blur-sm text-white text-xs rounded-xl opacity-0 group-hover/book:opacity-100 transition-all duration-300 whitespace-nowrap z-20 border border-white/20">
-                              <div className="font-bold text-amber-300 mb-1 font-vazir">{book.title}</div>
-                              <div className="text-gray-300 mb-1 font-vazir">{book.author}</div>
+                            {/* نور انعکاسی دینامیک */}
+                            <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent opacity-0 group-hover/book:opacity-100 transition-all duration-700 rounded-t-md"></div>
+                            <div className="absolute top-0 left-0 w-full h-1/3 bg-gradient-to-b from-white/20 to-transparent opacity-0 group-hover/book:opacity-100 transition-all duration-500 rounded-t-md"></div>
+
+                            {/* tooltip فوق‌العاده پیشرفته */}
+                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-6 px-6 py-4 bg-black/95 backdrop-blur-md text-white text-sm rounded-2xl opacity-0 group-hover/book:opacity-100 transition-all duration-500 whitespace-nowrap z-30 border border-white/30 shadow-2xl">
+                              <div className="font-bold text-amber-300 mb-2 font-vazir text-base">{book.title}</div>
+                              <div className="text-gray-300 mb-2 font-vazir">{book.author}</div>
                               <div className="text-blue-300 mb-1">📄 {book.pages} صفحه</div>
-                              <div className="text-yellow-400">⭐ {book.rating}/5</div>
-                              <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-black/90"></div>
+                              <div className="text-yellow-400 mb-1">⭐ {book.rating}/5</div>
+                              <div className="text-green-300">📚 {book.category}</div>
+                              <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-8 border-transparent border-t-black/95"></div>
+                              <div className="absolute -top-1 -left-1 -right-1 -bottom-1 bg-gradient-to-r from-amber-400/20 via-transparent to-amber-400/20 rounded-2xl -z-10"></div>
                             </div>
                           </div>
                         );
@@ -224,39 +271,43 @@ export const BookshelfView: React.FC<BookshelfViewProps> = ({ books }) => {
                       {Array.from({ length: Math.max(0, booksPerShelf - shelf.length) }, (_, index) => (
                         <div
                           key={`empty-${index}`}
-                          className="bg-gradient-to-br from-gray-300/20 via-gray-400/20 to-gray-500/20 opacity-40 border-2 border-dashed border-gray-400/30"
+                          className="bg-gradient-to-br from-gray-400/20 via-gray-500/20 to-gray-600/20 opacity-30 border-2 border-dashed border-gray-400/40 backdrop-blur-sm"
                           style={{
-                            width: '70px',
-                            height: `${140 + Math.random() * 30}px`,
-                            borderRadius: '4px 4px 0 0',
+                            width: '80px',
+                            height: `${160 + Math.random() * 40}px`,
+                            borderRadius: '6px 6px 0 0',
+                            boxShadow: '0 8px 20px rgba(0,0,0,0.2), inset 0 2px 4px rgba(255,255,255,0.1)'
                           }}
                         />
                       ))}
                     </div>
 
-                    {/* نور زیرین قفسه */}
-                    <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-full h-4 bg-gradient-radial from-amber-200/30 via-amber-100/20 to-transparent blur-sm"></div>
+                    {/* نور زیرین قفسه پیشرفته */}
+                    <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-full h-8 bg-gradient-radial from-amber-300/40 via-amber-200/30 to-transparent blur-md opacity-80"></div>
+                    <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 w-3/4 h-6 bg-gradient-radial from-yellow-400/30 via-orange-300/20 to-transparent blur-lg opacity-60"></div>
                   </div>
                 </div>
               ))}
             </div>
 
-            {/* اطلاعات کلی با طراحی مدرن */}
-            <div className="text-center text-white pb-12 relative z-10">
-              <div className="bg-black/40 backdrop-blur-lg rounded-2xl p-8 mx-auto max-w-lg border border-white/20 shadow-2xl">
-                <h3 className="text-2xl font-bold mb-6 text-amber-300 font-vazir">📊 آمار کتابخانه</h3>
-                <div className="grid grid-cols-2 gap-6">
-                  <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                    <div className="text-3xl font-bold text-blue-400 mb-2">{books.length}</div>
-                    <div className="text-sm text-gray-300 font-vazir">کل کتاب‌ها</div>
+            {/* اطلاعات کلی با طراحی فوق‌العاده مدرن */}
+            <div className="text-center text-white pb-16 relative z-10">
+              <div className="bg-black/50 backdrop-blur-xl rounded-3xl p-10 mx-auto max-w-2xl border border-white/30 shadow-2xl transform hover:scale-105 transition-all duration-500">
+                <h3 className="text-3xl font-bold mb-8 text-amber-300 font-vazir drop-shadow-lg">📊 آمار کتابخانه سه‌بعدی</h3>
+                <div className="grid grid-cols-2 gap-8">
+                  <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-6 border border-white/30 transform hover:scale-105 transition-all duration-300 shadow-xl">
+                    <div className="text-4xl font-bold text-blue-400 mb-3 drop-shadow-lg">{books.length}</div>
+                    <div className="text-base text-gray-300 font-vazir">کل کتاب‌ها</div>
                   </div>
-                  <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                    <div className="text-3xl font-bold text-emerald-400 mb-2">{shelves.length}</div>
-                    <div className="text-sm text-gray-300 font-vazir">تعداد قفسه</div>
+                  <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-6 border border-white/30 transform hover:scale-105 transition-all duration-300 shadow-xl">
+                    <div className="text-4xl font-bold text-emerald-400 mb-3 drop-shadow-lg">{shelves.length}</div>
+                    <div className="text-base text-gray-300 font-vazir">تعداد قفسه</div>
                   </div>
                 </div>
-                <div className="mt-4 text-xs text-gray-400 font-vazir">
-                  آخرین بروزرسانی: {new Date().toLocaleDateString('fa-IR')}
+                <div className="mt-6 p-4 bg-white/10 rounded-xl border border-white/20">
+                  <div className="text-sm text-gray-400 font-vazir">
+                    آخرین بروزرسانی: {new Date().toLocaleDateString('fa-IR')}
+                  </div>
                 </div>
               </div>
             </div>

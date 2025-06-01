@@ -20,6 +20,7 @@ interface UploadFile {
 export const BulkUploadSection: React.FC<BulkUploadSectionProps> = ({ onBulkAddBooks }) => {
   const [uploadedFiles, setUploadedFiles] = useState<UploadFile[]>([]);
   const [isDragging, setIsDragging] = useState(false);
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const excelInputRef = useRef<HTMLInputElement>(null);
   const pdfInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
@@ -35,6 +36,19 @@ export const BulkUploadSection: React.FC<BulkUploadSectionProps> = ({ onBulkAddB
     }));
 
     setUploadedFiles(prev => [...prev, ...newFiles]);
+
+    // Process image files
+    if (type === 'image') {
+      Array.from(files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          if (e.target?.result) {
+            setUploadedImages(prev => [...prev, e.target.result as string]);
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+    }
 
     // شبیه‌سازی آپلود فایل‌ها
     newFiles.forEach((uploadFile, index) => {
@@ -148,7 +162,7 @@ export const BulkUploadSection: React.FC<BulkUploadSectionProps> = ({ onBulkAddB
         <CardHeader className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
           <CardTitle className="flex items-center gap-3 text-2xl">
             <Upload className="w-6 h-6" />
-            بارگذاری گروهی فایل‌ها
+            بارگذاری گروهی فایل‌ها و تصاویر
           </CardTitle>
         </CardHeader>
         <CardContent className="p-8 space-y-8">
@@ -182,7 +196,7 @@ export const BulkUploadSection: React.FC<BulkUploadSectionProps> = ({ onBulkAddB
               <div className="w-20 h-20 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center shadow-lg">
                 <Upload className="w-10 h-10 text-white" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-700">فایل‌ها را اینجا بکشید و رها کنید</h3>
+              <h3 className="text-xl font-semibold text-gray-700">فایل‌ها و تصاویر را اینجا بکشید و رها کنید</h3>
               <p className="text-gray-500">یا روی دکمه‌های زیر کلیک کنید</p>
             </div>
           </div>
@@ -200,11 +214,14 @@ export const BulkUploadSection: React.FC<BulkUploadSectionProps> = ({ onBulkAddB
               />
               <Button 
                 onClick={() => excelInputRef.current?.click()}
-                className="w-full h-24 bg-gradient-to-br from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group-hover:shadow-green-200"
+                className="w-full h-32 bg-gradient-to-br from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group-hover:shadow-green-200"
               >
-                <div className="flex flex-col items-center space-y-2">
-                  <FileText className="w-8 h-8" />
-                  <span className="font-medium">فایل اکسل</span>
+                <div className="flex flex-col items-center space-y-3">
+                  <FileText className="w-12 h-12" />
+                  <div className="text-center">
+                    <div className="font-bold text-lg">فایل اکسل</div>
+                    <div className="text-sm opacity-90">اطلاعات کتاب‌ها</div>
+                  </div>
                 </div>
               </Button>
             </div>
@@ -221,11 +238,14 @@ export const BulkUploadSection: React.FC<BulkUploadSectionProps> = ({ onBulkAddB
               />
               <Button 
                 onClick={() => pdfInputRef.current?.click()}
-                className="w-full h-24 bg-gradient-to-br from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group-hover:shadow-red-200"
+                className="w-full h-32 bg-gradient-to-br from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group-hover:shadow-red-200"
               >
-                <div className="flex flex-col items-center space-y-2">
-                  <FileIcon className="w-8 h-8" />
-                  <span className="font-medium">فایل‌های PDF</span>
+                <div className="flex flex-col items-center space-y-3">
+                  <FileIcon className="w-12 h-12" />
+                  <div className="text-center">
+                    <div className="font-bold text-lg">فایل‌های PDF</div>
+                    <div className="text-sm opacity-90">متن کامل کتاب‌ها</div>
+                  </div>
                 </div>
               </Button>
             </div>
@@ -242,15 +262,48 @@ export const BulkUploadSection: React.FC<BulkUploadSectionProps> = ({ onBulkAddB
               />
               <Button 
                 onClick={() => imageInputRef.current?.click()}
-                className="w-full h-24 bg-gradient-to-br from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group-hover:shadow-purple-200"
+                className="w-full h-32 bg-gradient-to-br from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group-hover:shadow-purple-200"
               >
-                <div className="flex flex-col items-center space-y-2">
-                  <ImageIcon className="w-8 h-8" />
-                  <span className="font-medium">تصاویر جلد</span>
+                <div className="flex flex-col items-center space-y-3">
+                  <ImageIcon className="w-12 h-12" />
+                  <div className="text-center">
+                    <div className="font-bold text-lg">تصاویر جلد</div>
+                    <div className="text-sm opacity-90">عکس‌های جلد کتاب‌ها</div>
+                  </div>
                 </div>
               </Button>
             </div>
           </div>
+
+          {/* نمایش تصاویر آپلود شده */}
+          {uploadedImages.length > 0 && (
+            <div className="space-y-4">
+              <h4 className="text-lg font-semibold text-gray-700 border-b border-gray-200 pb-2">
+                تصاویر جلد آپلود شده
+              </h4>
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                {uploadedImages.map((image, index) => (
+                  <div key={index} className="relative group">
+                    <img 
+                      src={image} 
+                      alt={`Cover ${index + 1}`}
+                      className="w-full h-32 object-cover rounded-lg shadow-md group-hover:shadow-lg transition-shadow"
+                    />
+                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all rounded-lg flex items-center justify-center">
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        className="opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={() => setUploadedImages(prev => prev.filter((_, i) => i !== index))}
+                      >
+                        <XCircle className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* لیست فایل‌های آپلود شده */}
           {uploadedFiles.length > 0 && (
@@ -269,7 +322,11 @@ export const BulkUploadSection: React.FC<BulkUploadSectionProps> = ({ onBulkAddB
                       className="flex items-center space-x-4 space-x-reverse p-4 bg-white rounded-lg border shadow-sm hover:shadow-md transition-shadow"
                     >
                       <div className="flex-shrink-0">
-                        <FileIcon className="w-8 h-8 text-blue-500" />
+                        <FileIcon className={`w-8 h-8 ${
+                          uploadFile.type === 'excel' ? 'text-green-500' :
+                          uploadFile.type === 'pdf' ? 'text-red-500' :
+                          'text-purple-500'
+                        }`} />
                       </div>
                       
                       <div className="flex-1 min-w-0">
@@ -277,7 +334,7 @@ export const BulkUploadSection: React.FC<BulkUploadSectionProps> = ({ onBulkAddB
                           {uploadFile.file.name}
                         </p>
                         <p className="text-xs text-gray-500">
-                          {(uploadFile.file.size / 1024 / 1024).toFixed(2)} MB
+                          {(uploadFile.file.size / 1024 / 1024).toFixed(2)} MB • {uploadFile.type.toUpperCase()}
                         </p>
                       </div>
 

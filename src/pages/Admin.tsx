@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -13,6 +14,8 @@ import { AddBookForm } from '@/components/admin/AddBookForm';
 import { BulkUploadSection } from '@/components/admin/BulkUploadSection';
 import { BookManagementTable } from '@/components/admin/BookManagementTable';
 import { AnalyticsCharts } from '@/components/admin/AnalyticsCharts';
+import { BookshelfView } from '@/components/admin/BookshelfView';
+import { ReadingReports } from '@/components/admin/ReadingReports';
 
 const ADMIN_PASSWORD = '123';
 
@@ -109,11 +112,13 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="dashboard" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-7">
             <TabsTrigger value="dashboard">داشبورد</TabsTrigger>
             <TabsTrigger value="add-book">افزودن کتاب</TabsTrigger>
             <TabsTrigger value="bulk-upload">بارگذاری گروهی</TabsTrigger>
             <TabsTrigger value="manage-books">مدیریت کتاب‌ها</TabsTrigger>
+            <TabsTrigger value="bookshelf">قفسه کتاب</TabsTrigger>
+            <TabsTrigger value="reports">گزارش مطالعه</TabsTrigger>
             <TabsTrigger value="analytics">آمار و گزارش</TabsTrigger>
           </TabsList>
 
@@ -154,6 +159,14 @@ const Admin = () => {
               onDeleteBook={handleDeleteBook}
               onViewBook={handleViewBook}
             />
+          </TabsContent>
+
+          <TabsContent value="bookshelf">
+            <BookshelfView books={localBooks} />
+          </TabsContent>
+
+          <TabsContent value="reports">
+            <ReadingReports books={localBooks} />
           </TabsContent>
 
           <TabsContent value="analytics">

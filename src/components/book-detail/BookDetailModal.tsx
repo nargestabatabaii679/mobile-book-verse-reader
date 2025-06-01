@@ -43,78 +43,97 @@ const BookDetailModal: React.FC<BookDetailModalProps> = ({ book, isOpen, onClose
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className={`${
         activeTab === 'read' 
-          ? 'max-w-[95vw] w-[95vw] max-h-[95vh] h-[95vh]' 
+          ? 'max-w-[98vw] w-[98vw] max-h-[98vh] h-[98vh]' 
           : 'max-w-7xl max-h-[95vh]'
       } overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 border-gray-700`}>
-        <DialogHeader className="pb-0">
-          <DialogTitle className="text-2xl font-bold text-white text-center">
+        <DialogHeader className="pb-0 px-2">
+          <DialogTitle className="text-lg font-bold text-white text-center">
             {book.title}
           </DialogTitle>
-          <div className="text-center text-gray-300 text-sm">
+          <div className="text-center text-gray-300 text-xs">
             نوشته {book.author} • {book.category}
           </div>
         </DialogHeader>
         
-        {/* More compact Tab Navigation */}
-        <div className="flex justify-center gap-2 mt-1 mb-1">
+        {/* Smaller and more compact Tab Navigation */}
+        <div className="flex justify-center gap-1 mt-0 mb-1 px-2">
           <button
             onClick={() => setActiveTab('read')}
-            className={`flex items-center gap-1 px-3 py-1 rounded-lg text-sm font-medium transition-all ${
+            className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-all ${
               activeTab === 'read'
                 ? 'bg-blue-600 text-white shadow-lg'
                 : 'bg-white/10 text-white/70 hover:bg-white/20'
             }`}
           >
-            <BookIcon className="w-4 h-4" />
+            <BookIcon className="w-3 h-3" />
             مطالعه کتاب
           </button>
           <button
             onClick={() => setActiveTab('info')}
-            className={`flex items-center gap-1 px-3 py-1 rounded-lg text-sm font-medium transition-all ${
+            className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-all ${
               activeTab === 'info'
                 ? 'bg-blue-600 text-white shadow-lg'
                 : 'bg-white/10 text-white/70 hover:bg-white/20'
             }`}
           >
-            <Star className="w-4 h-4" />
+            <Star className="w-3 h-3" />
             اطلاعات کتاب
           </button>
           <button
             onClick={() => setActiveTab('access')}
-            className={`flex items-center gap-1 px-3 py-1 rounded-lg text-sm font-medium transition-all ${
+            className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-all ${
               activeTab === 'access'
                 ? 'bg-blue-600 text-white shadow-lg'
                 : 'bg-white/10 text-white/70 hover:bg-white/20'
             }`}
           >
-            <QrCode className="w-4 h-4" />
+            <QrCode className="w-3 h-3" />
             دسترسی سریع
           </button>
         </div>
 
-        <div className="overflow-y-auto flex-1">
+        <div className="overflow-y-auto flex-1 relative">
           {/* Reading Tab */}
           {activeTab === 'read' && (
-            <div className="flex justify-center h-full">
-              {book.pagesContent && book.pagesContent.length > 0 ? (
-                <FlipBook 
-                  pages={book.pagesContent}
-                  width={Math.min(750, window.innerWidth * 0.5)}
-                  height={Math.min(1000, window.innerHeight * 0.8)}
-                />
-              ) : (
-                <div className="text-center text-white py-12">
-                  <BookOpen className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-                  <p className="text-xl">محتوای کتاب در دسترس نیست</p>
-                  <p className="text-gray-400 mt-2">برای مطالعه کامل فایل PDF را دانلود کنید</p>
+            <div className="flex flex-col h-full">
+              {/* Book container with more space */}
+              <div className="flex-1 flex justify-center items-center px-4 py-2">
+                {book.pagesContent && book.pagesContent.length > 0 ? (
+                  <FlipBook 
+                    pages={book.pagesContent}
+                    width={Math.min(600, window.innerWidth * 0.45)}
+                    height={Math.min(800, window.innerHeight * 0.7)}
+                  />
+                ) : (
+                  <div className="text-center text-white py-12">
+                    <BookOpen className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+                    <p className="text-xl">محتوای کتاب در دسترس نیست</p>
+                    <p className="text-gray-400 mt-2">برای مطالعه کامل فایل PDF را دانلود کنید</p>
+                  </div>
+                )}
+              </div>
+              
+              {/* Smaller navigation controls at the bottom */}
+              <div className="bg-gradient-to-r from-slate-800/90 to-blue-800/90 backdrop-blur-sm border-t border-slate-700 px-4 py-2">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-white/70">صفحه قبل</span>
+                  <div className="flex items-center space-x-4 rtl:space-x-reverse">
+                    <span className="text-sm font-medium text-white">
+                      صفحه 1 از 3
+                    </span>
+                    <span className="text-xs text-blue-300">
+                      33% مطالعه شده
+                    </span>
+                  </div>
+                  <span className="text-white/70">صفحه بعد</span>
                 </div>
-              )}
+              </div>
             </div>
           )}
 
           {/* Info Tab */}
           {activeTab === 'info' && (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 p-6">
               {/* Book Cover */}
               <div className="lg:col-span-1">
                 <div className="sticky top-0">
@@ -183,7 +202,7 @@ const BookDetailModal: React.FC<BookDetailModalProps> = ({ book, isOpen, onClose
 
           {/* Access Tab */}
           {activeTab === 'access' && (
-            <div className="flex flex-col lg:flex-row items-center justify-center gap-12">
+            <div className="flex flex-col lg:flex-row items-center justify-center gap-12 p-6">
               {/* QR Code Section */}
               <div className="text-center">
                 <h3 className="text-2xl font-bold text-white mb-6">کد QR دسترسی سریع</h3>

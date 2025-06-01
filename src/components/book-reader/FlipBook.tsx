@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Volume2, VolumeX } from 'lucide-react';
 import { audioManager } from '@/utils/audioUtils';
@@ -287,45 +288,45 @@ const FlipBook: React.FC<FlipBookProps> = ({ pages, width = 800, height = 900 })
         </div>
       </div>
 
-      {/* Enhanced Controls */}
-      <div className="flex items-center justify-between w-full max-w-5xl mt-12">
+      {/* Compact Controls */}
+      <div className="flex items-center justify-between w-full max-w-5xl mt-6">
         <button
           onClick={prevPage}
           disabled={currentPage === 0 || isFlipping}
-          className="flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-2xl disabled:opacity-50 disabled:cursor-not-allowed hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg hover:shadow-blue-500/30 transform hover:scale-105 active:scale-95 font-medium text-lg"
+          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-md hover:shadow-blue-500/20 transform hover:scale-105 active:scale-95 font-medium text-sm"
         >
-          <ChevronRight className="w-6 h-6" />
+          <ChevronRight className="w-4 h-4" />
           صفحه قبل
         </button>
 
-        <div className="flex items-center gap-8">
-          {/* Sound Toggle */}
+        <div className="flex items-center gap-4">
+          {/* Compact Sound Toggle */}
           <button
             onClick={() => setSoundEnabled(!soundEnabled)}
-            className={`p-4 rounded-full transition-all duration-300 shadow-lg ${
+            className={`p-2 rounded-full transition-all duration-300 shadow-md ${
               soundEnabled 
-                ? 'bg-green-600 hover:bg-green-700 text-white shadow-green-500/30' 
-                : 'bg-gray-600 hover:bg-gray-700 text-gray-300 shadow-gray-500/30'
+                ? 'bg-green-600 hover:bg-green-700 text-white shadow-green-500/20' 
+                : 'bg-gray-600 hover:bg-gray-700 text-gray-300 shadow-gray-500/20'
             }`}
             title={soundEnabled ? 'غیرفعال کردن صدا' : 'فعال کردن صدا'}
           >
-            {soundEnabled ? <Volume2 className="w-6 h-6" /> : <VolumeX className="w-6 h-6" />}
+            {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
           </button>
 
-          {/* Enhanced Page Indicator */}
+          {/* Compact Page Indicator */}
           <div className="text-center">
-            <div className="text-2xl font-bold text-white mb-3">
+            <div className="text-lg font-bold text-white mb-2">
               صفحه {currentPage + 1} از {pages.length}
             </div>
-            <div className="w-64 bg-gray-700 rounded-full h-4 overflow-hidden shadow-inner">
+            <div className="w-48 bg-gray-700 rounded-full h-2 overflow-hidden shadow-inner">
               <div 
-                className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 h-4 rounded-full transition-all duration-700 shadow-lg relative"
+                className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 h-2 rounded-full transition-all duration-700 shadow-sm relative"
                 style={{ width: `${((currentPage + 1) / pages.length) * 100}%` }}
               >
                 <div className="absolute inset-0 bg-white/20 rounded-full animate-pulse"></div>
               </div>
             </div>
-            <div className="text-sm text-gray-400 mt-2">
+            <div className="text-xs text-gray-400 mt-1">
               {Math.round(((currentPage + 1) / pages.length) * 100)}% مطالعه شده
             </div>
           </div>
@@ -334,10 +335,10 @@ const FlipBook: React.FC<FlipBookProps> = ({ pages, width = 800, height = 900 })
         <button
           onClick={nextPage}
           disabled={currentPage === pages.length - 1 || isFlipping}
-          className="flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-2xl disabled:opacity-50 disabled:cursor-not-allowed hover:from-purple-700 hover:to-purple-800 transition-all duration-300 shadow-lg hover:shadow-purple-500/30 transform hover:scale-105 active:scale-95 font-medium text-lg"
+          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:from-purple-700 hover:to-purple-800 transition-all duration-300 shadow-md hover:shadow-purple-500/20 transform hover:scale-105 active:scale-95 font-medium text-sm"
         >
           صفحه بعد
-          <ChevronLeft className="w-6 h-6" />
+          <ChevronLeft className="w-4 h-4" />
         </button>
       </div>
 

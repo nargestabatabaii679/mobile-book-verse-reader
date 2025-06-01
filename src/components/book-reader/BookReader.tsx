@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Book } from '@/types';
 import {
   Dialog,
@@ -20,29 +21,41 @@ const BookReader: React.FC<BookReaderProps> = ({ book, isOpen, onClose }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [showQR, setShowQR] = useState(false);
   const [isPageTurning, setIsPageTurning] = useState(false);
+  const [pageFlipDirection, setPageFlipDirection] = useState<'left' | 'right' | null>(null);
 
   if (!book) return null;
 
   // Generate mock pages for demonstration
   const totalPages = Math.min(book.pages, 20); // Limit to 20 pages for demo
 
+  // Reset page when book changes
+  useEffect(() => {
+    if (book) {
+      setCurrentPage(1);
+    }
+  }, [book]);
+
   const nextPage = () => {
     if (currentPage < totalPages && !isPageTurning) {
       setIsPageTurning(true);
+      setPageFlipDirection('left');
       setTimeout(() => {
         setCurrentPage(currentPage + 1);
         setIsPageTurning(false);
-      }, 300);
+        setPageFlipDirection(null);
+      }, 600);
     }
   };
 
   const prevPage = () => {
     if (currentPage > 1 && !isPageTurning) {
       setIsPageTurning(true);
+      setPageFlipDirection('right');
       setTimeout(() => {
         setCurrentPage(currentPage - 1);
         setIsPageTurning(false);
-      }, 300);
+        setPageFlipDirection(null);
+      }, 600);
     }
   };
 
@@ -121,6 +134,26 @@ ${book.description}
     }
   };
 
+  const getPageFlipStyle = (isRightPage: boolean) => {
+    if (!isPageTurning) return {};
+    
+    if (pageFlipDirection === 'left') {
+      return isRightPage ? {
+        transform: 'perspective(1000px) rotateY(-180deg)',
+        transformOrigin: 'left center',
+        zIndex: 10
+      } : {};
+    } else if (pageFlipDirection === 'right') {
+      return !isRightPage ? {
+        transform: 'perspective(1000px) rotateY(180deg)',
+        transformOrigin: 'right center',
+        zIndex: 10
+      } : {};
+    }
+    
+    return {};
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-7xl max-h-[95vh] bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200 p-0 overflow-hidden">
@@ -167,21 +200,27 @@ ${book.description}
             </div>
           ) : (
             <>
-              {/* Book Reader with realistic book appearance */}
-              <div className="max-w-6xl mx-auto">
+              {/* Enhanced Book Reader with realistic 3D page turning effect */}
+              <div className="max-w-6xl mx-auto perspective-1000">
                 <div className="relative bg-gradient-to-br from-amber-100 to-yellow-50 rounded-2xl shadow-2xl overflow-hidden border-4 border-amber-200">
-                  {/* Book binding effect */}
-                  <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-amber-800 to-amber-600 shadow-inner"></div>
+                  {/* Book spine effect */}
+                  <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-amber-800 to-amber-600 shadow-inner z-20"></div>
                   
-                  {/* Double page spread layout */}
-                  <div className="flex min-h-[600px]">
+                  {/* Enhanced double page spread with realistic book effect */}
+                  <div className="flex min-h-[600px] relative">
                     {/* Left Page */}
                     {currentPage > 1 && (
-                      <div className={`w-1/2 border-r-2 border-amber-300/50 relative transition-all duration-300 ${
-                        isPageTurning ? 'transform -skew-y-1 opacity-50' : ''
-                      }`}>
+                      <div 
+                        className="w-1/2 border-r-2 border-amber-300/50 relative transition-all duration-600 ease-in-out transform-gpu"
+                        style={{
+                          ...getPageFlipStyle(false),
+                          backfaceVisibility: 'hidden'
+                        }}
+                      >
                         <div className="absolute inset-0 p-8 ml-8">
-                          <div className="h-full bg-white/80 rounded-lg shadow-inner p-6 overflow-y-auto">
+                          <div className="h-full bg-white/90 rounded-lg shadow-inner p-6 overflow-y-auto relative">
+                            {/* Page curl shadow effect */}
+                            <div className="absolute top-0 right-0 w-8 h-8 bg-gradient-to-bl from-gray-300/50 to-transparent opacity-30 transform rotate-45"></div>
                             {getPageContent(currentPage - 1)}
                           </div>
                         </div>
@@ -189,32 +228,46 @@ ${book.description}
                     )}
                     
                     {/* Right Page */}
-                    <div className={`${currentPage === 1 ? 'w-full' : 'w-1/2'} relative transition-all duration-300 ${
-                      isPageTurning ? 'transform skew-y-1 opacity-50' : ''
-                    }`}>
+                    <div 
+                      className={`${currentPage === 1 ? 'w-full' : 'w-1/2'} relative transition-all duration-600 ease-in-out transform-gpu`}
+                      style={{
+                        ...getPageFlipStyle(true),
+                        backfaceVisibility: 'hidden'
+                      }}
+                    >
                       <div className={`absolute inset-0 p-8 ${currentPage === 1 ? 'ml-8' : ''}`}>
-                        <div className="h-full bg-white/90 rounded-lg shadow-inner p-6 overflow-y-auto">
+                        <div className="h-full bg-white/95 rounded-lg shadow-inner p-6 overflow-y-auto relative">
+                          {/* Page curl shadow effect */}
+                          <div className="absolute top-0 left-0 w-8 h-8 bg-gradient-to-br from-gray-300/50 to-transparent opacity-30 transform -rotate-45"></div>
                           {getPageContent(currentPage)}
                         </div>
                       </div>
                     </div>
                   </div>
                   
-                  {/* Page shadow effects */}
+                  {/* Enhanced shadow and lighting effects */}
                   <div className="absolute inset-0 pointer-events-none">
-                    <div className="absolute top-0 left-0 right-0 h-4 bg-gradient-to-b from-black/10 to-transparent"></div>
-                    <div className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-black/10 to-transparent"></div>
+                    {/* Top shadow */}
+                    <div className="absolute top-0 left-8 right-0 h-4 bg-gradient-to-b from-black/15 to-transparent"></div>
+                    {/* Bottom shadow */}
+                    <div className="absolute bottom-0 left-8 right-0 h-4 bg-gradient-to-t from-black/15 to-transparent"></div>
+                    {/* Center binding shadow */}
+                    <div className="absolute top-0 bottom-0 left-1/2 w-4 bg-gradient-to-r from-black/10 via-black/5 to-black/10 transform -translate-x-1/2"></div>
+                    {/* Page turning shadow overlay */}
+                    {isPageTurning && (
+                      <div className="absolute inset-0 bg-black/5 transition-opacity duration-300"></div>
+                    )}
                   </div>
                 </div>
               </div>
               
-              {/* Enhanced Navigation Controls */}
+              {/* Enhanced Navigation Controls with page turning feedback */}
               <div className="flex items-center justify-between mt-8 max-w-6xl mx-auto">
                 <Button
                   variant="outline"
                   onClick={prevPage}
                   disabled={currentPage === 1 || isPageTurning}
-                  className="bg-amber-100 border-amber-300 text-amber-800 hover:bg-amber-200 disabled:opacity-50 px-6 py-3 text-lg"
+                  className="bg-amber-100 border-amber-300 text-amber-800 hover:bg-amber-200 disabled:opacity-50 px-6 py-3 text-lg transition-all duration-200 hover:scale-105 active:scale-95"
                 >
                   <ChevronRight className="w-5 h-5 mr-2" />
                   صفحه قبل
@@ -222,13 +275,13 @@ ${book.description}
                 
                 <div className="flex items-center space-x-6 rtl:space-x-reverse text-amber-800">
                   <span className="text-lg font-medium">{currentPage} از {totalPages}</span>
-                  <div className="w-48 bg-amber-200 rounded-full h-3 overflow-hidden">
+                  <div className="w-48 bg-amber-200 rounded-full h-3 overflow-hidden shadow-inner">
                     <div 
-                      className="bg-gradient-to-r from-amber-500 to-orange-500 h-3 rounded-full transition-all duration-500 ease-out"
+                      className="bg-gradient-to-r from-amber-500 to-orange-500 h-3 rounded-full transition-all duration-700 ease-out shadow-sm"
                       style={{ width: `${(currentPage / totalPages) * 100}%` }}
                     />
                   </div>
-                  <span className="text-sm text-amber-600">
+                  <span className="text-sm text-amber-600 font-medium">
                     {Math.round((currentPage / totalPages) * 100)}%
                   </span>
                 </div>
@@ -237,12 +290,19 @@ ${book.description}
                   variant="outline"
                   onClick={nextPage}
                   disabled={currentPage === totalPages || isPageTurning}
-                  className="bg-amber-100 border-amber-300 text-amber-800 hover:bg-amber-200 disabled:opacity-50 px-6 py-3 text-lg"
+                  className="bg-amber-100 border-amber-300 text-amber-800 hover:bg-amber-200 disabled:opacity-50 px-6 py-3 text-lg transition-all duration-200 hover:scale-105 active:scale-95"
                 >
                   صفحه بعد
                   <ChevronLeft className="w-5 h-5 ml-2" />
                 </Button>
               </div>
+              
+              {/* Page turning indicator */}
+              {isPageTurning && (
+                <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black/70 text-white px-4 py-2 rounded-full text-sm z-50">
+                  در حال ورق زدن...
+                </div>
+              )}
             </>
           )}
         </div>

@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import Header from '@/components/layout/Header';
 import BookList from '@/components/books/BookList';
@@ -115,8 +114,7 @@ const Index = () => {
             <FilterSidebar books={books} onFilter={() => {}} />
             
             <div className="flex-1">
-              <div className="flex items-center justify-between mb-6">
-                <h1 className="text-3xl font-bold text-white">کتابخانه دیجیتال</h1>
+              <div className="flex items-center justify-end mb-6">
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-2">
                     <button

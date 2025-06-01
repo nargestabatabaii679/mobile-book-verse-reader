@@ -8,7 +8,7 @@ interface FlipBookProps {
   height?: number;
 }
 
-const FlipBook: React.FC<FlipBookProps> = ({ pages, width = 600, height = 700 }) => {
+const FlipBook: React.FC<FlipBookProps> = ({ pages, width = 800, height = 900 }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [isFlipping, setIsFlipping] = useState(false);
   const [flipDirection, setFlipDirection] = useState<'left' | 'right' | null>(null);

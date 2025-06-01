@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Book } from '@/types';
 
@@ -82,7 +83,7 @@ export const LibraryShelfView: React.FC<LibraryShelfViewProps> = ({
                 
                 {/* Books on shelf */}
                 <div 
-                  className="flex justify-center items-end"
+                  className="flex justify-center items-end gap-2"
                   style={{ minHeight: '280px' }}
                 >
                   {shelf.map((book, bookIndex) => {
@@ -102,8 +103,7 @@ export const LibraryShelfView: React.FC<LibraryShelfViewProps> = ({
                           height: `${height}px`,
                           transform: `rotateY(${tilt}deg) rotateZ(${lean}deg) perspective(2000px)`,
                           transformStyle: 'preserve-3d',
-                          filter: 'drop-shadow(0 15px 30px rgba(0,0,0,0.6))',
-                          marginLeft: bookIndex > 0 ? '-8px' : '0'
+                          filter: 'drop-shadow(0 15px 30px rgba(0,0,0,0.6))'
                         }}
                         onClick={() => onSelectBook(book)}
                       >

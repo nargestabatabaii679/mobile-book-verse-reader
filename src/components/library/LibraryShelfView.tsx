@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Book } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -100,6 +99,30 @@ export const LibraryShelfView: React.FC<LibraryShelfViewProps> = ({
     ];
     
     return bookColors[(shelfIndex * booksPerShelf + index) % bookColors.length];
+  };
+
+  const handleBookSelect = (book: Book, event: React.MouseEvent) => {
+    const bookElement = event.currentTarget as HTMLElement;
+    
+    // Add pickup animation class
+    bookElement.style.transition = 'all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    bookElement.style.transform = 'perspective(1200px) translateZ(80px) translateY(-40px) rotateX(-15deg) rotateY(15deg) scale(1.1)';
+    bookElement.style.zIndex = '1000';
+    bookElement.style.filter = 'drop-shadow(0 20px 60px rgba(0,0,0,0.8))';
+    
+    // Create a subtle shake effect
+    setTimeout(() => {
+      bookElement.style.transform = 'perspective(1200px) translateZ(85px) translateY(-42px) rotateX(-15deg) rotateY(15deg) scale(1.1)';
+    }, 100);
+    
+    setTimeout(() => {
+      bookElement.style.transform = 'perspective(1200px) translateZ(80px) translateY(-40px) rotateX(-15deg) rotateY(15deg) scale(1.1)';
+    }, 200);
+    
+    // Call the actual book selection after animation
+    setTimeout(() => {
+      onSelectBook(book);
+    }, 400);
   };
 
   return (
@@ -223,7 +246,7 @@ export const LibraryShelfView: React.FC<LibraryShelfViewProps> = ({
               <div className="absolute left-1/3 top-1/2 transform -translate-y-1/2 w-4 h-14 bg-gradient-to-b from-amber-300 via-yellow-600 to-amber-900 rounded-full shadow-2xl border-2 border-amber-200" style={{ transform: 'translateY(-50%) rotateX(-12deg) translateZ(15px)' }}></div>
               <div className="absolute right-1/3 top-1/2 transform -translate-y-1/2 w-4 h-14 bg-gradient-to-b from-amber-300 via-yellow-600 to-amber-900 rounded-full shadow-2xl border-2 border-amber-200" style={{ transform: 'translateY(-50%) rotateX(-12deg) translateZ(15px)' }}></div>
 
-              {/* Realistic Books with corrected orientation */}
+              {/* Enhanced Books with realistic pickup interaction */}
               <div className="absolute top-8 left-1/2 transform -translate-x-1/2 flex justify-center items-end space-x-3 rtl:space-x-reverse h-52">
                 {shelf.map((book, bookIndex) => {
                   const height = 160 + (bookIndex % 5) * 15;
@@ -235,8 +258,8 @@ export const LibraryShelfView: React.FC<LibraryShelfViewProps> = ({
                   return (
                     <div
                       key={book.id}
-                      className="group/book cursor-pointer transition-all duration-700 hover:scale-110 hover:-translate-y-6 hover:rotate-2 relative"
-                      onClick={() => onSelectBook(book)}
+                      className="group/book cursor-pointer transition-all duration-300 hover:scale-105 hover:-translate-y-2 hover:rotate-1 relative"
+                      onClick={(e) => handleBookSelect(book, e)}
                       style={{
                         width: `${width}px`,
                         height: `${height}px`,
@@ -244,9 +267,9 @@ export const LibraryShelfView: React.FC<LibraryShelfViewProps> = ({
                         transformStyle: 'preserve-3d'
                       }}
                     >
-                      {/* Main Book Spine with corrected text orientation */}
+                      {/* Main Book Spine with enhanced pickup effect */}
                       <div
-                        className="relative w-full h-full"
+                        className="relative w-full h-full book-spine"
                         style={{
                           background: bookStyle.spine,
                           borderRadius: '5px 5px 0 0',
@@ -260,10 +283,11 @@ export const LibraryShelfView: React.FC<LibraryShelfViewProps> = ({
                             inset 0 3px 6px rgba(255,255,255,0.25),
                             inset 0 -3px 6px rgba(0,0,0,0.4)
                           `,
-                          border: '1px solid rgba(255,255,255,0.15)'
+                          border: '1px solid rgba(255,255,255,0.15)',
+                          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
                         }}
                       >
-                        {/* Book Content with CORRECTED text orientation */}
+                        {/* Book Content */}
                         <div className="absolute inset-0 p-3 flex flex-col justify-between text-white">
                           {/* Top Decorative Element */}
                           <div 
@@ -274,7 +298,7 @@ export const LibraryShelfView: React.FC<LibraryShelfViewProps> = ({
                             }}
                           />
                           
-                          {/* Title - FIXED orientation: removed rotation to show text correctly */}
+                          {/* Title - Properly oriented */}
                           <div 
                             className="text-center font-bold leading-tight overflow-hidden flex-1 flex items-center justify-center"
                             style={{ 
@@ -283,8 +307,7 @@ export const LibraryShelfView: React.FC<LibraryShelfViewProps> = ({
                               color: '#ffffff',
                               letterSpacing: '0.5px',
                               writingMode: 'vertical-rl',
-                              textOrientation: 'mixed',
-                              transform: 'rotate(0deg)' // Removed the 180deg rotation
+                              textOrientation: 'mixed'
                             }}
                           >
                             {book.title.slice(0, 40)}
@@ -297,7 +320,7 @@ export const LibraryShelfView: React.FC<LibraryShelfViewProps> = ({
                             <div className="w-3/5 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent"></div>
                           </div>
                           
-                          {/* Author - FIXED orientation */}
+                          {/* Author */}
                           <div 
                             className="text-center opacity-90"
                             style={{ 
@@ -305,8 +328,7 @@ export const LibraryShelfView: React.FC<LibraryShelfViewProps> = ({
                               textShadow: '1px 1px 3px rgba(0,0,0,0.9)',
                               letterSpacing: '0.3px',
                               writingMode: 'vertical-rl',
-                              textOrientation: 'mixed',
-                              transform: 'rotate(0deg)' // Removed the 180deg rotation
+                              textOrientation: 'mixed'
                             }}
                           >
                             {book.author.slice(0, 35)}
@@ -386,17 +408,45 @@ export const LibraryShelfView: React.FC<LibraryShelfViewProps> = ({
                             جدید
                           </span>
                         )}
+
+                        {/* Enhanced Pickup Glow Effect */}
+                        <div className="absolute inset-0 opacity-0 group-hover/book:opacity-100 transition-opacity duration-300 pointer-events-none">
+                          <div 
+                            className="absolute inset-0 rounded-lg"
+                            style={{
+                              background: `radial-gradient(ellipse at center, ${bookStyle.accent}20 0%, transparent 70%)`,
+                              boxShadow: `0 0 20px ${bookStyle.accent}40, inset 0 0 20px ${bookStyle.accent}20`
+                            }}
+                          />
+                        </div>
                       </div>
 
-                      {/* Enhanced Tooltip with better positioning */}
-                      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-6 px-5 py-4 bg-gradient-to-r from-gray-900/98 via-black/98 to-gray-900/98 text-white text-sm rounded-2xl opacity-0 group-hover/book:opacity-100 transition-all duration-700 whitespace-nowrap z-40 backdrop-blur-lg border-2 border-gray-600/60 shadow-3xl">
+                      {/* Enhanced Interactive Tooltip */}
+                      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-8 px-6 py-5 bg-gradient-to-br from-gray-900/98 via-black/98 to-gray-800/98 text-white text-sm rounded-3xl opacity-0 group-hover/book:opacity-100 transition-all duration-500 whitespace-nowrap z-50 backdrop-blur-xl border-2 border-gray-600/60 shadow-3xl">
                         <div className="font-bold text-blue-300 mb-2 text-lg">{book.title}</div>
                         <div className="text-gray-300 text-base mb-2">{book.author}</div>
                         <div className="text-gray-400 text-sm mb-3">{book.category}</div>
                         <div className="text-yellow-400 flex items-center text-base">
                           ⭐ {book.rating} | {book.pages} صفحه | {book.publishYear}
                         </div>
-                        <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-10 border-transparent border-t-gray-900"></div>
+                        <div className="text-xs text-center mt-3 text-blue-300 animate-pulse">کلیک کنید تا برداشته شود</div>
+                        <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-12 border-transparent border-t-gray-900"></div>
+                      </div>
+
+                      {/* Floating Particles Effect on Hover */}
+                      <div className="absolute inset-0 opacity-0 group-hover/book:opacity-100 transition-opacity duration-700 pointer-events-none">
+                        {[...Array(6)].map((_, i) => (
+                          <div
+                            key={i}
+                            className="absolute w-1 h-1 bg-yellow-300 rounded-full animate-pulse"
+                            style={{
+                              top: `${20 + i * 15}%`,
+                              left: `${10 + (i % 3) * 30}%`,
+                              animationDelay: `${i * 200}ms`,
+                              animationDuration: '2s'
+                            }}
+                          />
+                        ))}
                       </div>
                     </div>
                   );

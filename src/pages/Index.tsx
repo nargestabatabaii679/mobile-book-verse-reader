@@ -10,6 +10,13 @@ import { useBooks } from '@/hooks/useBooks';
 const Index = () => {
   const { data: books = [], isLoading } = useBooks();
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
+  const [filteredBooks, setFilteredBooks] = useState<Book[]>([]);
+
+  const handleFilter = (filtered: Book[]) => {
+    setFilteredBooks(filtered);
+  };
+
+  const displayBooks = filteredBooks.length > 0 ? filteredBooks : books;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
@@ -18,12 +25,12 @@ const Index = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           <aside className="lg:col-span-1">
-            <FilterSidebar books={books} />
+            <FilterSidebar books={books} onFilter={handleFilter} />
           </aside>
           
           <main className="lg:col-span-3">
             <BookList 
-              books={books}
+              books={displayBooks}
               isLoading={isLoading}
               onSelectBook={setSelectedBook}
             />

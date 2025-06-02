@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import { Book } from '@/types';
 import BookCard from './BookCard';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -12,8 +11,6 @@ interface BookListProps {
 }
 
 const BookList: React.FC<BookListProps> = ({ books, isLoading, onSelectBook }) => {
-  const { t } = useTranslation();
-
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
@@ -33,7 +30,7 @@ const BookList: React.FC<BookListProps> = ({ books, isLoading, onSelectBook }) =
       <div className="text-center py-12">
         <div className="text-6xl mb-4">📚</div>
         <h3 className="text-xl font-semibold text-white mb-2">
-          {t('no_books_found')}
+          هیچ کتابی یافت نشد
         </h3>
         <p className="text-gray-300">
           Try adjusting your search or filter criteria
@@ -48,7 +45,7 @@ const BookList: React.FC<BookListProps> = ({ books, isLoading, onSelectBook }) =
         <BookCard
           key={book.id}
           book={book}
-          onSelect={() => onSelectBook(book)}
+          onSelect={onSelectBook}
         />
       ))}
     </div>

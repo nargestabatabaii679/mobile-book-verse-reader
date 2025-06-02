@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -26,6 +25,7 @@ export const AddBookForm: React.FC<AddBookFormProps> = ({ onAddBook }) => {
     defaultValues: {
       title: '',
       author: '',
+      translator: '',
       category: '',
       pages: 0,
       coverUrl: '',
@@ -91,6 +91,7 @@ export const AddBookForm: React.FC<AddBookFormProps> = ({ onAddBook }) => {
       id: Date.now().toString(),
       title: data.title || '',
       author: data.author || '',
+      translator: data.translator || undefined,
       category: data.category || '',
       pages: data.pages || 0,
       coverUrl: coverImage || data.coverUrl || 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=600&fit=crop',
@@ -237,6 +238,20 @@ export const AddBookForm: React.FC<AddBookFormProps> = ({ onAddBook }) => {
                   <FormLabel>نام نویسنده</FormLabel>
                   <FormControl>
                     <Input {...field} placeholder="نام نویسنده را وارد کنید" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="translator"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>نام مترجم (اختیاری)</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="نام مترجم را وارد کنید" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

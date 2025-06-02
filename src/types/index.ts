@@ -3,6 +3,7 @@ export interface Book {
   id: string;
   title: string;
   author: string;
+  translator?: string;
   category: string;
   pages: number;
   coverUrl: string;

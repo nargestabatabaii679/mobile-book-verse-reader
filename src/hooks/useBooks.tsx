@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Book } from '@/types';
@@ -25,6 +24,8 @@ const transformDatabaseBookToBook = (dbBook: DatabaseBook): Book => ({
   id: dbBook.id,
   title: dbBook.title,
   author: dbBook.author,
+  translator: dbBook.description?.includes('مترجم:') ? 
+    dbBook.description.split('مترجم:')[1]?.split('\n')[0]?.trim() : undefined,
   category: dbBook.category,
   pages: dbBook.pages,
   coverUrl: dbBook.cover_url || 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=600&fit=crop',
@@ -36,19 +37,26 @@ const transformDatabaseBookToBook = (dbBook: DatabaseBook): Book => ({
   downloadUrl: dbBook.download_url
 });
 
-const transformBookToDatabaseBook = (book: Partial<Book>) => ({
-  title: book.title,
-  author: book.author,
-  category: book.category,
-  pages: book.pages,
-  cover_url: book.coverUrl,
-  description: book.description,
-  publish_year: book.publishYear,
-  rating: book.rating,
-  isbn: book.isbn,
-  age_range: book.ageRange,
-  download_url: book.downloadUrl
-});
+const transformBookToDatabaseBook = (book: Partial<Book>) => {
+  let description = book.description || '';
+  if (book.translator) {
+    description = `مترجم: ${book.translator}\n${description}`;
+  }
+  
+  return {
+    title: book.title,
+    author: book.author,
+    category: book.category,
+    pages: book.pages,
+    cover_url: book.coverUrl,
+    description: description,
+    publish_year: book.publishYear,
+    rating: book.rating,
+    isbn: book.isbn,
+    age_range: book.ageRange,
+    download_url: book.downloadUrl
+  };
+};
 
 export const useBooks = () => {
   return useQuery({

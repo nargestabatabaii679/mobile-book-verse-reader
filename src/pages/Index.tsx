@@ -1,10 +1,10 @@
 
 import { useState } from 'react';
 import { Book } from '@/types';
-import { Header } from '@/components/layout/Header';
-import { FilterSidebar } from '@/components/FilterSidebar';
-import { BookList } from '@/components/books/BookList';
-import { BookDetailModal } from '@/components/book-detail/BookDetailModal';
+import Header from '@/components/layout/Header';
+import FilterSidebar from '@/components/FilterSidebar';
+import BookList from '@/components/books/BookList';
+import BookDetailModal from '@/components/book-detail/BookDetailModal';
 import { useBooks } from '@/hooks/useBooks';
 
 const Index = () => {

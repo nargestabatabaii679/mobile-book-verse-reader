@@ -48,7 +48,7 @@ const BookList: React.FC<BookListProps> = ({ books, isLoading, onSelectBook }) =
         <BookCard
           key={book.id}
           book={book}
-          onClick={() => onSelectBook(book)}
+          onSelect={() => onSelectBook(book)}
         />
       ))}
     </div>

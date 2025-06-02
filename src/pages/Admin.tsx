@@ -29,7 +29,7 @@ const Admin = () => {
   const bulkAddBooksMutation = useBulkAddBooks();
 
   const handleLogin = () => {
-    if (password === 'admin123') {
+    if (password === '123') {
       setIsAuthenticated(true);
       toast.success('ورود موفق به پنل مدیریت');
     } else {

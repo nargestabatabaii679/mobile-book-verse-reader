@@ -1,96 +1,56 @@
 
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Lock, BookOpen } from 'lucide-react';
-import { Book } from '@/types';
+import AddBookForm from '@/components/admin/AddBookForm';
+import BookManagementTable from '@/components/admin/BookManagementTable';
+import BulkUploadSection from '@/components/admin/BulkUploadSection';
+import DashboardStats from '@/components/admin/DashboardStats';
+import AnalyticsCharts from '@/components/admin/AnalyticsCharts';
+import ReadingReports from '@/components/admin/ReadingReports';
+import BookshelfView from '@/components/admin/BookshelfView';
+import SoundSettings from '@/components/admin/SoundSettings';
 import { books } from '@/data/books';
-import { DashboardStats } from '@/components/admin/DashboardStats';
-import { AddBookForm } from '@/components/admin/AddBookForm';
-import { BulkUploadSection } from '@/components/admin/BulkUploadSection';
-import { BookManagementTable } from '@/components/admin/BookManagementTable';
-import { AnalyticsCharts } from '@/components/admin/AnalyticsCharts';
-import { BookshelfView } from '@/components/admin/BookshelfView';
-import { ReadingReports } from '@/components/admin/ReadingReports';
-
-const ADMIN_PASSWORD = '123';
+import { toast } from 'sonner';
 
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
-  const [localBooks, setLocalBooks] = useState<Book[]>(books);
-  const navigate = useNavigate();
 
   const handleLogin = () => {
-    if (password === ADMIN_PASSWORD) {
+    if (password === 'admin123') {
       setIsAuthenticated(true);
+      toast.success('ورود موفق به پنل مدیریت');
     } else {
-      console.log('رمز عبور اشتباه است');
+      toast.error('رمز عبور اشتباه است');
     }
   };
 
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    setPassword('');
-    navigate('/');
-  };
-
-  const handleAddBook = (book: Partial<Book>) => {
-    setLocalBooks(prev => [...prev, book as Book]);
-  };
-
-  const handleBulkAddBooks = (newBooks: Book[]) => {
-    setLocalBooks(prev => [...prev, ...newBooks]);
-  };
-
-  const handleEditBook = (book: Book) => {
-    console.log('Edit book:', book);
-    // Handle edit functionality here
-  };
-
-  const handleDeleteBook = (bookId: string) => {
-    setLocalBooks(prev => prev.filter(book => book.id !== bookId));
-  };
-
-  const handleViewBook = (book: Book) => {
-    console.log('View book:', book);
-    // Handle view functionality here
-  };
-
-  // آمار محاسبه شده
-  const categories = [...new Set(localBooks.map(book => book.category))];
-
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
         <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <CardTitle className="flex items-center justify-center gap-2 text-2xl">
-              <Lock className="w-6 h-6" />
-              پنل مدیریت
-            </CardTitle>
+          <CardHeader>
+            <CardTitle>ورود به پنل مدیریت</CardTitle>
+            <CardDescription>لطفاً رمز عبور را وارد کنید</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div>
+            <div className="space-y-2">
               <Label htmlFor="password">رمز عبور</Label>
               <Input
                 id="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="رمز عبور را وارد کنید"
                 onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
+                placeholder="رمز عبور را وارد کنید"
               />
             </div>
             <Button onClick={handleLogin} className="w-full">
               ورود
-            </Button>
-            <Button onClick={() => navigate('/')} variant="outline" className="w-full">
-              بازگشت به صفحه اصلی
             </Button>
           </CardContent>
         </Card>
@@ -99,78 +59,57 @@ const Admin = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-6">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-white flex items-center gap-2">
-            <BookOpen className="w-8 h-8" />
-            پنل مدیریت کتابخانه دیجیتال فارسی
-          </h1>
-          <Button onClick={handleLogout} variant="outline">
-            خروج
-          </Button>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      <div className="container mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-white mb-2">پنل مدیریت کتابخانه</h1>
+          <p className="text-gray-300">مدیریت کتاب‌ها و تنظیمات سیستم</p>
         </div>
 
         <Tabs defaultValue="dashboard" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-7">
-            <TabsTrigger value="dashboard">داشبورد</TabsTrigger>
-            <TabsTrigger value="add-book">افزودن کتاب</TabsTrigger>
-            <TabsTrigger value="bulk-upload">بارگذاری گروهی</TabsTrigger>
-            <TabsTrigger value="manage-books">مدیریت کتاب‌ها</TabsTrigger>
-            <TabsTrigger value="bookshelf">قفسه کتاب</TabsTrigger>
-            <TabsTrigger value="reports">گزارش مطالعه</TabsTrigger>
-            <TabsTrigger value="analytics">آمار و گزارش</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-8 bg-white/10 backdrop-blur-sm">
+            <TabsTrigger value="dashboard" className="text-white data-[state=active]:bg-white/20">داشبورد</TabsTrigger>
+            <TabsTrigger value="add-book" className="text-white data-[state=active]:bg-white/20">افزودن کتاب</TabsTrigger>
+            <TabsTrigger value="manage-books" className="text-white data-[state=active]:bg-white/20">مدیریت کتاب‌ها</TabsTrigger>
+            <TabsTrigger value="bulk-upload" className="text-white data-[state=active]:bg-white/20">بارگذاری گروهی</TabsTrigger>
+            <TabsTrigger value="analytics" className="text-white data-[state=active]:bg-white/20">آنالیتیکس</TabsTrigger>
+            <TabsTrigger value="reports" className="text-white data-[state=active]:bg-white/20">گزارشات</TabsTrigger>
+            <TabsTrigger value="bookshelf" className="text-white data-[state=active]:bg-white/20">نمای قفسه</TabsTrigger>
+            <TabsTrigger value="settings" className="text-white data-[state=active]:bg-white/20">تنظیمات</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="dashboard">
-            <DashboardStats books={localBooks} />
-
-            <Card>
-              <CardHeader>
-                <CardTitle>خلاصه فعالیت‌ها</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
-                    <span>کتاب‌های اضافه شده امروز</span>
-                    <span className="font-bold text-blue-600">0</span>
-                  </div>
-                  <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg">
-                    <span>محبوب‌ترین دسته‌بندی</span>
-                    <span className="font-bold text-green-600">{categories[0] || 'نامشخص'}</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+          <TabsContent value="dashboard" className="space-y-6">
+            <DashboardStats />
           </TabsContent>
 
           <TabsContent value="add-book">
-            <AddBookForm onAddBook={handleAddBook} />
-          </TabsContent>
-
-          <TabsContent value="bulk-upload">
-            <BulkUploadSection onBulkAddBooks={handleBulkAddBooks} />
+            <AddBookForm />
           </TabsContent>
 
           <TabsContent value="manage-books">
-            <BookManagementTable 
-              books={localBooks}
-              onEditBook={handleEditBook}
-              onDeleteBook={handleDeleteBook}
-              onViewBook={handleViewBook}
-            />
+            <BookManagementTable books={books} />
           </TabsContent>
 
-          <TabsContent value="bookshelf">
-            <BookshelfView books={localBooks} />
-          </TabsContent>
-
-          <TabsContent value="reports">
-            <ReadingReports books={localBooks} />
+          <TabsContent value="bulk-upload">
+            <BulkUploadSection />
           </TabsContent>
 
           <TabsContent value="analytics">
-            <AnalyticsCharts books={localBooks} />
+            <AnalyticsCharts />
+          </TabsContent>
+
+          <TabsContent value="reports">
+            <ReadingReports />
+          </TabsContent>
+
+          <TabsContent value="bookshelf">
+            <BookshelfView books={books} />
+          </TabsContent>
+
+          <TabsContent value="settings">
+            <div className="grid gap-6">
+              <SoundSettings />
+            </div>
           </TabsContent>
         </Tabs>
       </div>

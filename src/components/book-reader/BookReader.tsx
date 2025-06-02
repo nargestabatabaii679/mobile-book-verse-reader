@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Book } from '@/types';
 import {
@@ -8,8 +7,9 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, Download, QrCode, X, Maximize2, Minimize2, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Download, QrCode, X, Maximize2, Minimize2, Plus, Minus, RotateCcw } from 'lucide-react';
 import { QRCodeGenerator } from './QRCodeGenerator';
+import { audioManager } from '@/utils/audioUtils';
 import './BookReader.css';
 
 interface BookReaderProps {
@@ -41,6 +41,9 @@ const BookReader: React.FC<BookReaderProps> = ({ book, isOpen, onClose }) => {
       setIsBookClosed(true);
       setIsBookOpening(true);
       
+      // Play book opening sound
+      audioManager.playBookOpenSound();
+      
       // Book opening sequence
       setTimeout(() => {
         setIsBookClosed(false);
@@ -56,6 +59,10 @@ const BookReader: React.FC<BookReaderProps> = ({ book, isOpen, onClose }) => {
     if (currentPage < totalPages && !isPageTurning) {
       setIsPageTurning(true);
       setPageFlipDirection('left');
+      
+      // Play page flip sound
+      audioManager.playPageFlipSound();
+      
       setTimeout(() => {
         setCurrentPage(currentPage + 1);
         setIsPageTurning(false);
@@ -68,6 +75,10 @@ const BookReader: React.FC<BookReaderProps> = ({ book, isOpen, onClose }) => {
     if (currentPage > 1 && !isPageTurning) {
       setIsPageTurning(true);
       setPageFlipDirection('right');
+      
+      // Play page flip sound
+      audioManager.playPageFlipSound();
+      
       setTimeout(() => {
         setCurrentPage(currentPage - 1);
         setIsPageTurning(false);
@@ -77,7 +88,7 @@ const BookReader: React.FC<BookReaderProps> = ({ book, isOpen, onClose }) => {
   };
 
   const handleZoomIn = () => {
-    setZoom(prev => Math.min(prev + 0.2, 2));
+    setZoom(prev => Math.min(prev + 0.2, 3));
   };
 
   const handleZoomOut = () => {
@@ -289,7 +300,7 @@ ${Array.from({ length: totalPages }, (_, i) =>
                 onClick={handleZoomIn}
                 className="text-blue-300 hover:bg-blue-800/50 hover:text-white transition-all duration-300"
               >
-                <ZoomIn className="w-4 h-4" />
+                <Plus className="w-4 h-4" />
               </Button>
               <Button
                 variant="ghost"
@@ -297,7 +308,7 @@ ${Array.from({ length: totalPages }, (_, i) =>
                 onClick={handleZoomOut}
                 className="text-blue-300 hover:bg-blue-800/50 hover:text-white transition-all duration-300"
               >
-                <ZoomOut className="w-4 h-4" />
+                <Minus className="w-4 h-4" />
               </Button>
               <Button
                 variant="ghost"

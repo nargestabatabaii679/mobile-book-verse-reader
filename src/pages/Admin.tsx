@@ -15,10 +15,12 @@ import { BookshelfView } from '@/components/admin/BookshelfView';
 import SoundSettings from '@/components/admin/SoundSettings';
 import { books } from '@/data/books';
 import { toast } from 'sonner';
+import { Book } from '@/types';
 
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
+  const [booksList, setBooksList] = useState<Book[]>(books);
 
   const handleLogin = () => {
     if (password === 'admin123') {
@@ -27,6 +29,43 @@ const Admin = () => {
     } else {
       toast.error('رمز عبور اشتباه است');
     }
+  };
+
+  const handleAddBook = (book: Partial<Book>) => {
+    const newBook: Book = {
+      id: Date.now().toString(),
+      title: book.title || '',
+      author: book.author || '',
+      category: book.category || '',
+      pages: book.pages || 0,
+      coverUrl: book.coverUrl || 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=600&fit=crop',
+      description: book.description || '',
+      publishYear: book.publishYear || new Date().getFullYear(),
+      rating: book.rating || 0,
+      isbn: book.isbn || ''
+    };
+    setBooksList(prev => [...prev, newBook]);
+    toast.success('کتاب با موفقیت اضافه شد');
+  };
+
+  const handleBulkAddBooks = (newBooks: Book[]) => {
+    setBooksList(prev => [...prev, ...newBooks]);
+    toast.success(`${newBooks.length} کتاب با موفقیت اضافه شد`);
+  };
+
+  const handleEditBook = (book: Book) => {
+    // نمایش فرم ویرایش کتاب
+    toast.info('ویرایش کتاب: ' + book.title);
+  };
+
+  const handleDeleteBook = (id: string) => {
+    setBooksList(prev => prev.filter(book => book.id !== id));
+    toast.success('کتاب با موفقیت حذف شد');
+  };
+
+  const handleViewBook = (book: Book) => {
+    // نمایش جزئیات کتاب
+    toast.info('نمایش کتاب: ' + book.title);
   };
 
   if (!isAuthenticated) {
@@ -79,31 +118,36 @@ const Admin = () => {
           </TabsList>
 
           <TabsContent value="dashboard" className="space-y-6">
-            <DashboardStats />
+            <DashboardStats books={booksList} />
           </TabsContent>
 
           <TabsContent value="add-book">
-            <AddBookForm />
+            <AddBookForm onAddBook={handleAddBook} />
           </TabsContent>
 
           <TabsContent value="manage-books">
-            <BookManagementTable books={books} />
+            <BookManagementTable 
+              books={booksList} 
+              onEditBook={handleEditBook}
+              onDeleteBook={handleDeleteBook}
+              onViewBook={handleViewBook}
+            />
           </TabsContent>
 
           <TabsContent value="bulk-upload">
-            <BulkUploadSection />
+            <BulkUploadSection onBulkAddBooks={handleBulkAddBooks} />
           </TabsContent>
 
           <TabsContent value="analytics">
-            <AnalyticsCharts />
+            <AnalyticsCharts books={booksList} />
           </TabsContent>
 
           <TabsContent value="reports">
-            <ReadingReports />
+            <ReadingReports books={booksList} />
           </TabsContent>
 
           <TabsContent value="bookshelf">
-            <BookshelfView books={books} />
+            <BookshelfView books={booksList} />
           </TabsContent>
 
           <TabsContent value="settings">

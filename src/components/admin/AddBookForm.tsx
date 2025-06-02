@@ -276,22 +276,16 @@ export const AddBookForm: React.FC<AddBookFormProps> = ({ onAddBook }) => {
               name="pages"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>تعداد صفحات</FormLabel>
-                  <Select onValueChange={(value) => field.onChange(parseInt(value))} defaultValue={field.value?.toString()}>
-                    <FormControl>
-                      <SelectTrigger className="bg-white">
-                        <SelectValue placeholder="تعداد صفحات را انتخاب کنید" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent className="bg-white border border-gray-200 shadow-lg">
-                      <SelectItem value="50">کمتر از 50 صفحه</SelectItem>
-                      <SelectItem value="100">50-100 صفحه</SelectItem>
-                      <SelectItem value="200">100-200 صفحه</SelectItem>
-                      <SelectItem value="300">200-300 صفحه</SelectItem>
-                      <SelectItem value="500">300-500 صفحه</SelectItem>
-                      <SelectItem value="1000">بیش از 500 صفحه</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <FormLabel>تعداد صفحات ({form.watch('category') || 'دسته‌بندی'})</FormLabel>
+                  <FormControl>
+                    <Input 
+                      {...field} 
+                      type="number" 
+                      placeholder="تعداد صفحات را وارد کنید"
+                      onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                      value={field.value || ''}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -344,11 +338,11 @@ export const AddBookForm: React.FC<AddBookFormProps> = ({ onAddBook }) => {
               name="rating"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>امتیاز</FormLabel>
+                  <FormLabel>امتیاز (نظر خوانندگان)</FormLabel>
                   <Select onValueChange={(value) => field.onChange(parseFloat(value))} defaultValue={field.value?.toString()}>
                     <FormControl>
                       <SelectTrigger className="bg-white">
-                        <SelectValue placeholder="امتیاز را انتخاب کنید" />
+                        <SelectValue placeholder="امتیاز خوانندگان را انتخاب کنید" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="bg-white border border-gray-200 shadow-lg">
@@ -384,9 +378,9 @@ export const AddBookForm: React.FC<AddBookFormProps> = ({ onAddBook }) => {
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>توضیحات</FormLabel>
+                    <FormLabel>توضیحات کتاب</FormLabel>
                     <FormControl>
-                      <Textarea {...field} placeholder="توضیحات کتاب" />
+                      <Textarea {...field} placeholder="توضیحات و خلاصه کتاب" rows={4} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

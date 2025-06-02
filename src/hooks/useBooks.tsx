@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Book } from '@/types';
 import { toast } from 'sonner';
+import { useLogBookOperation } from './useBookLogs';
 
 interface DatabaseBook {
   id: string;
@@ -81,6 +82,7 @@ export const useBooks = () => {
 
 export const useAddBook = () => {
   const queryClient = useQueryClient();
+  const logBookOperation = useLogBookOperation();
 
   return useMutation({
     mutationFn: async (book: Partial<Book>) => {
@@ -95,6 +97,18 @@ export const useAddBook = () => {
         console.error('Error adding book:', error);
         throw error;
       }
+
+      // Log the operation
+      await logBookOperation.mutateAsync({
+        operation_type: 'single',
+        books_count: 1,
+        book_ids: [data.id],
+        operation_details: {
+          title: book.title,
+          author: book.author,
+          category: book.category
+        }
+      });
 
       console.log('Book added successfully:', data);
       return transformDatabaseBookToBook(data);
@@ -174,6 +188,7 @@ export const useDeleteBook = () => {
 
 export const useBulkAddBooks = () => {
   const queryClient = useQueryClient();
+  const logBookOperation = useLogBookOperation();
 
   return useMutation({
     mutationFn: async (books: Book[]) => {
@@ -187,6 +202,17 @@ export const useBulkAddBooks = () => {
         console.error('Error bulk adding books:', error);
         throw error;
       }
+
+      // Log the bulk operation
+      await logBookOperation.mutateAsync({
+        operation_type: 'bulk',
+        books_count: books.length,
+        book_ids: data.map(book => book.id),
+        operation_details: {
+          categories: [...new Set(books.map(book => book.category))],
+          total_pages: books.reduce((sum, book) => sum + book.pages, 0)
+        }
+      });
 
       console.log('Books bulk added successfully:', data?.length);
       return data.map(transformDatabaseBookToBook);

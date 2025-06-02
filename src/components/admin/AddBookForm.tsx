@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,8 +7,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import { Plus, Upload, X, FileText, Link } from 'lucide-react';
+import { Plus, Upload, X } from 'lucide-react';
 import { Book } from '@/types';
+import { PdfUpload } from './PdfUpload';
 
 interface AddBookFormProps {
   onAddBook: (book: Partial<Book>) => void;
@@ -17,7 +17,7 @@ interface AddBookFormProps {
 
 export const AddBookForm: React.FC<AddBookFormProps> = ({ onAddBook }) => {
   const [coverImage, setCoverImage] = useState<string>('');
-  const [pdfUrlInput, setPdfUrlInput] = useState<string>('');
+  const [pdfUrl, setPdfUrl] = useState<string>('');
   const coverFileInputRef = useRef<HTMLInputElement>(null);
   
   const form = useForm<Partial<Book>>({
@@ -49,9 +49,14 @@ export const AddBookForm: React.FC<AddBookFormProps> = ({ onAddBook }) => {
     }
   };
 
-  const handlePdfUrlChange = (url: string) => {
-    setPdfUrlInput(url);
+  const handlePdfUploadSuccess = (url: string) => {
+    setPdfUrl(url);
     form.setValue('downloadUrl', url);
+  };
+
+  const handleClearPdfUrl = () => {
+    setPdfUrl('');
+    form.setValue('downloadUrl', '');
   };
 
   const removeCoverImage = () => {
@@ -60,11 +65,6 @@ export const AddBookForm: React.FC<AddBookFormProps> = ({ onAddBook }) => {
     if (coverFileInputRef.current) {
       coverFileInputRef.current.value = '';
     }
-  };
-
-  const clearPdfUrl = () => {
-    setPdfUrlInput('');
-    form.setValue('downloadUrl', '');
   };
 
   const handleAddSingleBook = (data: Partial<Book>) => {
@@ -80,14 +80,14 @@ export const AddBookForm: React.FC<AddBookFormProps> = ({ onAddBook }) => {
       publishYear: data.publishYear || new Date().getFullYear(),
       rating: data.rating || 0,
       isbn: data.isbn || '',
-      downloadUrl: pdfUrlInput || data.downloadUrl || ''
+      downloadUrl: pdfUrl || data.downloadUrl || ''
     };
 
     onAddBook(newBook);
     toast.success('کتاب با موفقیت اضافه شد');
     form.reset();
     setCoverImage('');
-    setPdfUrlInput('');
+    setPdfUrl('');
   };
 
   return (
@@ -149,43 +149,13 @@ export const AddBookForm: React.FC<AddBookFormProps> = ({ onAddBook }) => {
               </div>
             </div>
 
-            {/* لینک فایل PDF */}
+            {/* آپلود فایل PDF */}
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                لینک فایل PDF کتاب
-              </label>
-              <div className="flex items-start gap-2">
-                <div className="flex-1">
-                  <Input
-                    type="url"
-                    placeholder="https://example.com/book.pdf"
-                    value={pdfUrlInput}
-                    onChange={(e) => handlePdfUrlChange(e.target.value)}
-                    className="w-full"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    لینک مستقیم به فایل PDF کتاب را وارد کنید
-                  </p>
-                </div>
-                
-                {pdfUrlInput && (
-                  <div className="relative">
-                    <div className="w-20 h-12 bg-green-100 rounded border flex flex-col items-center justify-center">
-                      <Link className="w-6 h-6 text-green-600 mb-1" />
-                      <span className="text-xs text-green-600">PDF</span>
-                    </div>
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="sm"
-                      onClick={clearPdfUrl}
-                      className="absolute -top-2 -right-2 w-6 h-6 rounded-full p-0"
-                    >
-                      <X className="w-3 h-3" />
-                    </Button>
-                  </div>
-                )}
-              </div>
+              <PdfUpload
+                onUploadSuccess={handlePdfUploadSuccess}
+                currentUrl={pdfUrl}
+                onClearUrl={handleClearPdfUrl}
+              />
             </div>
 
             <FormField

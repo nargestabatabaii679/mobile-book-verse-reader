@@ -16,10 +16,13 @@ import SoundSettings from '@/components/admin/SoundSettings';
 import { useBooks, useAddBook, useUpdateBook, useDeleteBook, useBulkAddBooks } from '@/hooks/useBooks';
 import { toast } from 'sonner';
 import { Book } from '@/types';
+import { LogOut, Home } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
   // Use Supabase hooks
   const { data: books = [], isLoading } = useBooks();
@@ -35,6 +38,16 @@ const Admin = () => {
     } else {
       toast.error('رمز عبور اشتباه است');
     }
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setPassword('');
+    toast.success('خروج موفق از پنل مدیریت');
+  };
+
+  const handleGoToHome = () => {
+    navigate('/');
   };
 
   const handleAddBook = (book: Partial<Book>) => {
@@ -82,6 +95,10 @@ const Admin = () => {
             <Button onClick={handleLogin} className="w-full">
               ورود
             </Button>
+            <Button onClick={handleGoToHome} variant="outline" className="w-full">
+              <Home className="w-4 h-4 mr-2" />
+              بازگشت به صفحه اصلی
+            </Button>
           </CardContent>
         </Card>
       </div>
@@ -99,9 +116,21 @@ const Admin = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">پنل مدیریت کتابخانه</h1>
-          <p className="text-gray-300">مدیریت کتاب‌ها و تنظیمات سیستم</p>
+        <div className="mb-8 flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-white mb-2">پنل مدیریت کتابخانه</h1>
+            <p className="text-gray-300">مدیریت کتاب‌ها و تنظیمات سیستم</p>
+          </div>
+          <div className="flex gap-2">
+            <Button onClick={handleGoToHome} variant="outline" className="text-white border-white hover:bg-white/10">
+              <Home className="w-4 h-4 mr-2" />
+              صفحه اصلی
+            </Button>
+            <Button onClick={handleLogout} variant="destructive">
+              <LogOut className="w-4 h-4 mr-2" />
+              خروج
+            </Button>
+          </div>
         </div>
 
         <Tabs defaultValue="dashboard" className="space-y-6">

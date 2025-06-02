@@ -13,14 +13,20 @@ import { AnalyticsCharts } from '@/components/admin/AnalyticsCharts';
 import { ReadingReports } from '@/components/admin/ReadingReports';
 import { BookshelfView } from '@/components/admin/BookshelfView';
 import SoundSettings from '@/components/admin/SoundSettings';
-import { books } from '@/data/books';
+import { useBooks, useAddBook, useUpdateBook, useDeleteBook, useBulkAddBooks } from '@/hooks/useBooks';
 import { toast } from 'sonner';
 import { Book } from '@/types';
 
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
-  const [booksList, setBooksList] = useState<Book[]>(books);
+
+  // Use Supabase hooks
+  const { data: books = [], isLoading } = useBooks();
+  const addBookMutation = useAddBook();
+  const updateBookMutation = useUpdateBook();
+  const deleteBookMutation = useDeleteBook();
+  const bulkAddBooksMutation = useBulkAddBooks();
 
   const handleLogin = () => {
     if (password === 'admin123') {
@@ -32,25 +38,11 @@ const Admin = () => {
   };
 
   const handleAddBook = (book: Partial<Book>) => {
-    const newBook: Book = {
-      id: Date.now().toString(),
-      title: book.title || '',
-      author: book.author || '',
-      category: book.category || '',
-      pages: book.pages || 0,
-      coverUrl: book.coverUrl || 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=600&fit=crop',
-      description: book.description || '',
-      publishYear: book.publishYear || new Date().getFullYear(),
-      rating: book.rating || 0,
-      isbn: book.isbn || ''
-    };
-    setBooksList(prev => [...prev, newBook]);
-    toast.success('کتاب با موفقیت اضافه شد');
+    addBookMutation.mutate(book);
   };
 
   const handleBulkAddBooks = (newBooks: Book[]) => {
-    setBooksList(prev => [...prev, ...newBooks]);
-    toast.success(`${newBooks.length} کتاب با موفقیت اضافه شد`);
+    bulkAddBooksMutation.mutate(newBooks);
   };
 
   const handleEditBook = (book: Book) => {
@@ -59,8 +51,7 @@ const Admin = () => {
   };
 
   const handleDeleteBook = (id: string) => {
-    setBooksList(prev => prev.filter(book => book.id !== id));
-    toast.success('کتاب با موفقیت حذف شد');
+    deleteBookMutation.mutate(id);
   };
 
   const handleViewBook = (book: Book) => {
@@ -97,6 +88,14 @@ const Admin = () => {
     );
   }
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+        <div className="text-white text-lg">در حال بارگذاری...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       <div className="container mx-auto px-4 py-8">
@@ -118,7 +117,7 @@ const Admin = () => {
           </TabsList>
 
           <TabsContent value="dashboard" className="space-y-6">
-            <DashboardStats books={booksList} />
+            <DashboardStats books={books} />
           </TabsContent>
 
           <TabsContent value="add-book">
@@ -127,7 +126,7 @@ const Admin = () => {
 
           <TabsContent value="manage-books">
             <BookManagementTable 
-              books={booksList} 
+              books={books} 
               onEditBook={handleEditBook}
               onDeleteBook={handleDeleteBook}
               onViewBook={handleViewBook}
@@ -139,15 +138,15 @@ const Admin = () => {
           </TabsContent>
 
           <TabsContent value="analytics">
-            <AnalyticsCharts books={booksList} />
+            <AnalyticsCharts books={books} />
           </TabsContent>
 
           <TabsContent value="reports">
-            <ReadingReports books={booksList} />
+            <ReadingReports books={books} />
           </TabsContent>
 
           <TabsContent value="bookshelf">
-            <BookshelfView books={booksList} />
+            <BookshelfView books={books} />
           </TabsContent>
 
           <TabsContent value="settings">

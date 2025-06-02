@@ -9,7 +9,89 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      book_pages: {
+        Row: {
+          book_id: string
+          content: string | null
+          created_at: string
+          id: string
+          page_number: number
+        }
+        Insert: {
+          book_id: string
+          content?: string | null
+          created_at?: string
+          id?: string
+          page_number: number
+        }
+        Update: {
+          book_id?: string
+          content?: string | null
+          created_at?: string
+          id?: string
+          page_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "book_pages_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      books: {
+        Row: {
+          age_range: string | null
+          author: string
+          category: string
+          cover_url: string | null
+          created_at: string
+          description: string | null
+          download_url: string | null
+          id: string
+          isbn: string | null
+          pages: number
+          publish_year: number | null
+          rating: number | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          age_range?: string | null
+          author: string
+          category: string
+          cover_url?: string | null
+          created_at?: string
+          description?: string | null
+          download_url?: string | null
+          id?: string
+          isbn?: string | null
+          pages?: number
+          publish_year?: number | null
+          rating?: number | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          age_range?: string | null
+          author?: string
+          category?: string
+          cover_url?: string | null
+          created_at?: string
+          description?: string | null
+          download_url?: string | null
+          id?: string
+          isbn?: string | null
+          pages?: number
+          publish_year?: number | null
+          rating?: number | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

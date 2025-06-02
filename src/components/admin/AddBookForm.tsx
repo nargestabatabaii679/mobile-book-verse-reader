@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,7 +8,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import { Plus, Upload, X, FileText } from 'lucide-react';
+import { Plus, Upload, X, FileText, Link } from 'lucide-react';
 import { Book } from '@/types';
 
 interface AddBookFormProps {
@@ -16,10 +17,8 @@ interface AddBookFormProps {
 
 export const AddBookForm: React.FC<AddBookFormProps> = ({ onAddBook }) => {
   const [coverImage, setCoverImage] = useState<string>('');
-  const [pdfFile, setPdfFile] = useState<File | null>(null);
-  const [pdfUrl, setPdfUrl] = useState<string>('');
+  const [pdfUrlInput, setPdfUrlInput] = useState<string>('');
   const coverFileInputRef = useRef<HTMLInputElement>(null);
-  const pdfFileInputRef = useRef<HTMLInputElement>(null);
   
   const form = useForm<Partial<Book>>({
     defaultValues: {
@@ -50,23 +49,9 @@ export const AddBookForm: React.FC<AddBookFormProps> = ({ onAddBook }) => {
     }
   };
 
-  const handlePdfUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      if (file.type === 'application/pdf') {
-        setPdfFile(file);
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const pdfDataUrl = e.target?.result as string;
-          setPdfUrl(pdfDataUrl);
-          form.setValue('downloadUrl', pdfDataUrl);
-        };
-        reader.readAsDataURL(file);
-        toast.success('فایل PDF با موفقیت انتخاب شد');
-      } else {
-        toast.error('لطفاً فقط فایل PDF انتخاب کنید');
-      }
-    }
+  const handlePdfUrlChange = (url: string) => {
+    setPdfUrlInput(url);
+    form.setValue('downloadUrl', url);
   };
 
   const removeCoverImage = () => {
@@ -77,13 +62,9 @@ export const AddBookForm: React.FC<AddBookFormProps> = ({ onAddBook }) => {
     }
   };
 
-  const removePdfFile = () => {
-    setPdfFile(null);
-    setPdfUrl('');
+  const clearPdfUrl = () => {
+    setPdfUrlInput('');
     form.setValue('downloadUrl', '');
-    if (pdfFileInputRef.current) {
-      pdfFileInputRef.current.value = '';
-    }
   };
 
   const handleAddSingleBook = (data: Partial<Book>) => {
@@ -99,15 +80,14 @@ export const AddBookForm: React.FC<AddBookFormProps> = ({ onAddBook }) => {
       publishYear: data.publishYear || new Date().getFullYear(),
       rating: data.rating || 0,
       isbn: data.isbn || '',
-      downloadUrl: pdfUrl || data.downloadUrl || ''
+      downloadUrl: pdfUrlInput || data.downloadUrl || ''
     };
 
     onAddBook(newBook);
     toast.success('کتاب با موفقیت اضافه شد');
     form.reset();
     setCoverImage('');
-    setPdfFile(null);
-    setPdfUrl('');
+    setPdfUrlInput('');
   };
 
   return (
@@ -169,44 +149,36 @@ export const AddBookForm: React.FC<AddBookFormProps> = ({ onAddBook }) => {
               </div>
             </div>
 
-            {/* آپلود فایل PDF */}
+            {/* لینک فایل PDF */}
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                فایل PDF کتاب
+                لینک فایل PDF کتاب
               </label>
-              <div className="flex items-start gap-4">
+              <div className="flex items-start gap-2">
                 <div className="flex-1">
-                  <input
-                    ref={pdfFileInputRef}
-                    type="file"
-                    accept="application/pdf"
-                    onChange={handlePdfUpload}
-                    className="hidden"
+                  <Input
+                    type="url"
+                    placeholder="https://example.com/book.pdf"
+                    value={pdfUrlInput}
+                    onChange={(e) => handlePdfUrlChange(e.target.value)}
+                    className="w-full"
                   />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => pdfFileInputRef.current?.click()}
-                    className="w-full h-24 border-2 border-dashed border-gray-300 hover:border-blue-400 transition-colors"
-                  >
-                    <div className="flex flex-col items-center">
-                      <FileText className="w-6 h-6 mb-2 text-gray-400" />
-                      <span className="text-sm text-gray-500">انتخاب فایل PDF</span>
-                    </div>
-                  </Button>
+                  <p className="text-xs text-gray-500 mt-1">
+                    لینک مستقیم به فایل PDF کتاب را وارد کنید
+                  </p>
                 </div>
                 
-                {pdfFile && (
+                {pdfUrlInput && (
                   <div className="relative">
-                    <div className="w-20 h-24 bg-red-100 rounded border flex flex-col items-center justify-center">
-                      <FileText className="w-8 h-8 text-red-600 mb-1" />
-                      <span className="text-xs text-red-600 text-center px-1">{pdfFile.name.slice(0, 10)}...</span>
+                    <div className="w-20 h-12 bg-green-100 rounded border flex flex-col items-center justify-center">
+                      <Link className="w-6 h-6 text-green-600 mb-1" />
+                      <span className="text-xs text-green-600">PDF</span>
                     </div>
                     <Button
                       type="button"
                       variant="destructive"
                       size="sm"
-                      onClick={removePdfFile}
+                      onClick={clearPdfUrl}
                       className="absolute -top-2 -right-2 w-6 h-6 rounded-full p-0"
                     >
                       <X className="w-3 h-3" />

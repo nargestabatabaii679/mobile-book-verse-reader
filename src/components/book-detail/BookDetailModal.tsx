@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Book } from '@/types';
@@ -37,6 +38,21 @@ const BookDetailModal: React.FC<BookDetailModalProps> = ({ book, isOpen, onClose
   };
 
   const bookUrl = `${window.location.origin}/book/${book.id}/read`;
+
+  // Function to get PDF viewer URL
+  const getPdfViewerUrl = (pdfUrl: string) => {
+    // Try different PDF viewing approaches
+    if (pdfUrl.includes('drive.google.com')) {
+      // For Google Drive links, convert to viewer format
+      const fileId = pdfUrl.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
+      if (fileId) {
+        return `https://drive.google.com/file/d/${fileId}/preview`;
+      }
+    }
+    
+    // For other URLs, try to embed directly or use PDF.js viewer
+    return `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(pdfUrl)}`;
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -98,12 +114,34 @@ const BookDetailModal: React.FC<BookDetailModalProps> = ({ book, isOpen, onClose
               {/* PDF viewer container */}
               <div className="flex-1 flex justify-center items-center px-4 py-2">
                 {book.downloadUrl ? (
-                  <iframe
-                    src={book.downloadUrl}
-                    className="w-full h-full rounded-lg border border-slate-600 shadow-2xl"
-                    title={`مطالعه ${book.title}`}
-                    allow="fullscreen"
-                  />
+                  <div className="w-full h-full flex flex-col">
+                    <div className="text-center mb-2">
+                      <p className="text-white/70 text-sm">
+                        در حال بارگذاری PDF... اگر فایل نمایش داده نشد، روی دکمه دانلود کلیک کنید
+                      </p>
+                    </div>
+                    <iframe
+                      src={getPdfViewerUrl(book.downloadUrl)}
+                      className="w-full h-full rounded-lg border border-slate-600 shadow-2xl bg-white"
+                      title={`مطالعه ${book.title}`}
+                      allow="fullscreen"
+                      onError={() => {
+                        console.log('PDF iframe failed to load:', book.downloadUrl);
+                      }}
+                      onLoad={() => {
+                        console.log('PDF iframe loaded successfully');
+                      }}
+                    />
+                    <div className="text-center mt-2">
+                      <Button
+                        onClick={handleDownload}
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm"
+                      >
+                        <Download className="w-4 h-4 mr-2" />
+                        دانلود PDF
+                      </Button>
+                    </div>
+                  </div>
                 ) : (
                   // Show FlipBook as fallback when no PDF is available
                   book.pagesContent && book.pagesContent.length > 0 ? (

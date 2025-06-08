@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Book } from '@/types';
@@ -96,38 +95,50 @@ const BookDetailModal: React.FC<BookDetailModalProps> = ({ book, isOpen, onClose
           {/* Reading Tab */}
           {activeTab === 'read' && (
             <div className="flex flex-col h-full">
-              {/* Book container with more space */}
+              {/* PDF viewer container */}
               <div className="flex-1 flex justify-center items-center px-4 py-2">
-                {book.pagesContent && book.pagesContent.length > 0 ? (
-                  <FlipBook 
-                    pages={book.pagesContent}
-                    width={Math.min(600, window.innerWidth * 0.45)}
-                    height={Math.min(800, window.innerHeight * 0.7)}
+                {book.downloadUrl ? (
+                  <iframe
+                    src={book.downloadUrl}
+                    className="w-full h-full rounded-lg border border-slate-600 shadow-2xl"
+                    title={`مطالعه ${book.title}`}
+                    allow="fullscreen"
                   />
                 ) : (
-                  <div className="text-center text-white py-12">
-                    <BookOpen className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-                    <p className="text-xl">محتوای کتاب در دسترس نیست</p>
-                    <p className="text-gray-400 mt-2">برای مطالعه کامل فایل PDF را دانلود کنید</p>
-                  </div>
+                  // Show FlipBook as fallback when no PDF is available
+                  book.pagesContent && book.pagesContent.length > 0 ? (
+                    <FlipBook 
+                      pages={book.pagesContent}
+                      width={Math.min(600, window.innerWidth * 0.45)}
+                      height={Math.min(800, window.innerHeight * 0.7)}
+                    />
+                  ) : (
+                    <div className="text-center text-white py-12">
+                      <BookOpen className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+                      <p className="text-xl">محتوای کتاب در دسترس نیست</p>
+                      <p className="text-gray-400 mt-2">برای مطالعه فایل PDF را آپلود کنید</p>
+                    </div>
+                  )
                 )}
               </div>
               
-              {/* Smaller navigation controls at the bottom */}
-              <div className="bg-gradient-to-r from-slate-800/90 to-blue-800/90 backdrop-blur-sm border-t border-slate-700 px-4 py-2">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-white/70">صفحه قبل</span>
-                  <div className="flex items-center space-x-4 rtl:space-x-reverse">
-                    <span className="text-sm font-medium text-white">
-                      صفحه 1 از 3
-                    </span>
-                    <span className="text-xs text-blue-300">
-                      33% مطالعه شده
-                    </span>
+              {/* Navigation controls at the bottom - only show if PDF is not available */}
+              {!book.downloadUrl && (
+                <div className="bg-gradient-to-r from-slate-800/90 to-blue-800/90 backdrop-blur-sm border-t border-slate-700 px-4 py-2">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-white/70">صفحه قبل</span>
+                    <div className="flex items-center space-x-4 rtl:space-x-reverse">
+                      <span className="text-sm font-medium text-white">
+                        صفحه 1 از 3
+                      </span>
+                      <span className="text-xs text-blue-300">
+                        33% مطالعه شده
+                      </span>
+                    </div>
+                    <span className="text-white/70">صفحه بعد</span>
                   </div>
-                  <span className="text-white/70">صفحه بعد</span>
                 </div>
-              </div>
+              )}
             </div>
           )}
 

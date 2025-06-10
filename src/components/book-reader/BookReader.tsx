@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Book } from '@/types';
 import {
@@ -8,7 +9,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, Download, QrCode, X, Maximize2, Minimize2, Plus, Minus, RotateCcw } from 'lucide-react';
-import { QRCodeGenerator } from './QRCodeGenerator';
+import QRCodeGenerator from './QRCodeGenerator';
 import { audioManager } from '@/utils/audioUtils';
 import './BookReader.css';
 

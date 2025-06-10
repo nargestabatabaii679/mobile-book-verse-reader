@@ -7,6 +7,7 @@ export interface Book {
   category: string;
   pages: number;
   coverUrl: string;
+  cover?: string; // Add cover field for backward compatibility
   description: string;
   publishYear: number;
   rating: number;

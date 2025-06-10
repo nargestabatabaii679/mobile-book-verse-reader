@@ -20,13 +20,13 @@ const BookDownloader: React.FC<BookDownloaderProps> = ({ book }) => {
       zip.file(`${book.title}.json`, bookContent);
       
       // Add book cover/icon if available
-      if (book.cover) {
+      if (book.coverUrl) {
         try {
           // Fetch the image
-          const response = await fetch(book.cover);
+          const response = await fetch(book.coverUrl);
           if (response.ok) {
             const imageBlob = await response.blob();
-            const extension = book.cover.split('.').pop() || 'png';
+            const extension = book.coverUrl.split('.').pop() || 'png';
             zip.file(`${book.title}_icon.${extension}`, imageBlob);
           }
         } catch (error) {

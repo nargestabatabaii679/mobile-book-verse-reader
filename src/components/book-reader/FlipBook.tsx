@@ -9,12 +9,20 @@ interface FlipBookProps {
   height?: number;
 }
 
-const FlipBook: React.FC<FlipBookProps> = ({ pages, width = 800, height = 900 }) => {
+const FlipBook: React.FC<FlipBookProps> = ({ pages, width = 400, height = 550 }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [isFlipping, setIsFlipping] = useState(false);
   const [flipDirection, setFlipDirection] = useState<'left' | 'right' | null>(null);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [isBookOpen, setIsBookOpen] = useState(false);
+
+  // Calculate realistic book dimensions (A5 format - 148 x 210 mm scaled up)
+  const bookWidth = Math.min(width, window.innerWidth * 0.8);
+  const bookHeight = Math.min(height, window.innerHeight * 0.7);
+  const realBookRatio = 1.414; // A5 ratio (height/width)
+  
+  const finalWidth = Math.min(bookWidth, bookHeight / realBookRatio);
+  const finalHeight = finalWidth * realBookRatio;
 
   useEffect(() => {
     // Book opening animation and sound
@@ -68,28 +76,29 @@ const FlipBook: React.FC<FlipBookProps> = ({ pages, width = 800, height = 900 })
   };
 
   return (
-    <div className="flex flex-col items-center p-8">
-      {/* Book Container */}
+    <div className="flex flex-col items-center p-4">
+      {/* Realistic Book Container */}
       <div 
         className={`relative transition-all duration-1000 ${isBookOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}
         style={{ 
-          width: `${width}px`, 
-          height: `${height}px`,
+          width: `${finalWidth * 2}px`, // Double width for open book
+          height: `${finalHeight}px`,
           perspective: '2000px',
           transformStyle: 'preserve-3d'
         }}
       >
-        {/* Book Base/Spine */}
+        {/* Realistic Book Base/Spine */}
         <div 
-          className="absolute left-1/2 top-0 bottom-0 w-8 z-20 transform -translate-x-1/2"
+          className="absolute left-1/2 top-0 bottom-0 z-20 transform -translate-x-1/2"
           style={{
-            background: 'linear-gradient(90deg, #8B4513 0%, #A0522D 20%, #654321 50%, #A0522D 80%, #8B4513 100%)',
-            boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5), 0 0 30px rgba(0,0,0,0.3)',
-            borderRadius: '6px'
+            width: '8px',
+            background: 'linear-gradient(90deg, #654321 0%, #8B4513 20%, #A0522D 50%, #8B4513 80%, #654321 100%)',
+            boxShadow: 'inset 0 0 8px rgba(0,0,0,0.7), 0 0 15px rgba(0,0,0,0.4)',
+            borderRadius: '3px'
           }}
         >
-          <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-transparent to-black/30 rounded"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-1 h-16 bg-gold/60 rounded-full"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-white/20 via-transparent to-black/40 rounded"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-0.5 h-8 bg-amber-400/70 rounded-full"></div>
         </div>
 
         {/* Left Page */}
@@ -105,20 +114,21 @@ const FlipBook: React.FC<FlipBookProps> = ({ pages, width = 800, height = 900 })
           onClick={prevPage}
         >
           <div 
-            className="w-full h-full bg-gradient-to-r from-gray-50 to-white rounded-l-3xl shadow-2xl relative overflow-hidden group-hover:shadow-3xl transition-shadow duration-300"
+            className="w-full h-full bg-gradient-to-r from-white to-gray-50 shadow-2xl relative overflow-hidden group-hover:shadow-3xl transition-shadow duration-300"
             style={{
+              borderRadius: '8px 0 0 8px',
               boxShadow: `
-                -8px 0 20px rgba(0,0,0,0.15),
-                inset 8px 0 15px rgba(0,0,0,0.08),
-                0 0 40px rgba(0,0,0,0.12)
+                -4px 0 12px rgba(0,0,0,0.2),
+                inset 4px 0 8px rgba(0,0,0,0.1),
+                0 0 20px rgba(0,0,0,0.15)
               `
             }}
           >
             {/* Page content */}
-            <div className="p-10 h-full overflow-y-auto relative z-10">
+            <div className="p-6 h-full overflow-y-auto relative z-10" style={{ fontSize: '13px', lineHeight: '1.6' }}>
               <div className="text-gray-800 leading-relaxed text-justify font-serif">
                 {currentPage > 0 && getPageContent(currentPage - 1).split('\n').map((paragraph, index) => (
-                  <p key={index} className="mb-6 text-lg leading-8">
+                  <p key={index} className="mb-4 text-sm leading-6 indent-4">
                     {paragraph}
                   </p>
                 ))}
@@ -127,51 +137,54 @@ const FlipBook: React.FC<FlipBookProps> = ({ pages, width = 800, height = 900 })
             
             {/* Page number */}
             {currentPage > 0 && (
-              <div className="absolute bottom-8 left-8 text-sm text-gray-500 font-medium">
+              <div className="absolute bottom-4 left-4 text-xs text-gray-500 font-medium">
                 {currentPage}
               </div>
             )}
 
-            {/* Enhanced paper texture */}
+            {/* Paper texture */}
             <div 
-              className="absolute inset-0 opacity-5 pointer-events-none"
+              className="absolute inset-0 opacity-3 pointer-events-none"
               style={{
                 backgroundImage: `
-                  radial-gradient(circle at 20% 80%, rgba(139, 69, 19, 0.4) 0%, transparent 50%),
-                  radial-gradient(circle at 80% 20%, rgba(160, 82, 45, 0.3) 0%, transparent 50%),
-                  radial-gradient(circle at 40% 40%, rgba(210, 180, 140, 0.3) 0%, transparent 50%),
+                  repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 24px,
+                    rgba(139, 69, 19, 0.03) 25px
+                  ),
                   repeating-linear-gradient(
                     90deg,
                     transparent,
-                    transparent 50px,
-                    rgba(139, 69, 19, 0.02) 51px,
-                    rgba(139, 69, 19, 0.02) 52px
+                    transparent 49px,
+                    rgba(139, 69, 19, 0.02) 50px
                   )
                 `
               }}
             />
 
-            {/* Page margin line */}
-            <div className="absolute top-0 bottom-0 left-16 w-px bg-pink-200 opacity-30"></div>
+            {/* Left margin line */}
+            <div className="absolute top-0 bottom-0 left-8 w-px bg-red-200 opacity-40"></div>
 
             {/* Page back (visible during flip) */}
             <div 
-              className="absolute inset-0 bg-gradient-to-l from-gray-100 to-gray-50 rounded-l-3xl"
+              className="absolute inset-0 bg-gradient-to-l from-gray-100 to-gray-50"
               style={{
                 backfaceVisibility: 'visible',
                 transform: 'rotateY(180deg)',
-                zIndex: -1
+                zIndex: -1,
+                borderRadius: '8px 0 0 8px'
               }}
             >
-              <div className="p-10 h-full flex items-center justify-center text-gray-400">
-                <div className="text-center opacity-50">
-                  <div className="text-lg">صفحه پشت</div>
+              <div className="p-6 h-full flex items-center justify-center text-gray-400">
+                <div className="text-center opacity-30">
+                  <div className="text-sm">صفحه پشت</div>
                 </div>
               </div>
             </div>
 
-            {/* Page glow effect on hover */}
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-l-3xl"></div>
+            {/* Subtle hover glow */}
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/3 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" style={{ borderRadius: '8px 0 0 8px' }}></div>
           </div>
         </div>
 
@@ -188,20 +201,21 @@ const FlipBook: React.FC<FlipBookProps> = ({ pages, width = 800, height = 900 })
           onClick={nextPage}
         >
           <div 
-            className="w-full h-full bg-gradient-to-l from-gray-50 to-white rounded-r-3xl shadow-2xl relative overflow-hidden group-hover:shadow-3xl transition-shadow duration-300"
+            className="w-full h-full bg-gradient-to-l from-white to-gray-50 shadow-2xl relative overflow-hidden group-hover:shadow-3xl transition-shadow duration-300"
             style={{
+              borderRadius: '0 8px 8px 0',
               boxShadow: `
-                8px 0 20px rgba(0,0,0,0.15),
-                inset -8px 0 15px rgba(0,0,0,0.08),
-                0 0 40px rgba(0,0,0,0.12)
+                4px 0 12px rgba(0,0,0,0.2),
+                inset -4px 0 8px rgba(0,0,0,0.1),
+                0 0 20px rgba(0,0,0,0.15)
               `
             }}
           >
             {/* Page content */}
-            <div className="p-10 h-full overflow-y-auto relative z-10">
+            <div className="p-6 h-full overflow-y-auto relative z-10" style={{ fontSize: '13px', lineHeight: '1.6' }}>
               <div className="text-gray-800 leading-relaxed text-justify font-serif">
                 {getPageContent(currentPage).split('\n').map((paragraph, index) => (
-                  <p key={index} className="mb-6 text-lg leading-8">
+                  <p key={index} className="mb-4 text-sm leading-6 indent-4">
                     {paragraph}
                   </p>
                 ))}
@@ -209,87 +223,99 @@ const FlipBook: React.FC<FlipBookProps> = ({ pages, width = 800, height = 900 })
             </div>
             
             {/* Page number */}
-            <div className="absolute bottom-8 right-8 text-sm text-gray-500 font-medium">
+            <div className="absolute bottom-4 right-4 text-xs text-gray-500 font-medium">
               {currentPage + 1}
             </div>
 
-            {/* Enhanced paper texture */}
+            {/* Paper texture */}
             <div 
-              className="absolute inset-0 opacity-5 pointer-events-none"
+              className="absolute inset-0 opacity-3 pointer-events-none"
               style={{
                 backgroundImage: `
-                  radial-gradient(circle at 80% 20%, rgba(139, 69, 19, 0.4) 0%, transparent 50%),
-                  radial-gradient(circle at 20% 80%, rgba(160, 82, 45, 0.3) 0%, transparent 50%),
-                  radial-gradient(circle at 60% 60%, rgba(210, 180, 140, 0.3) 0%, transparent 50%),
+                  repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 24px,
+                    rgba(139, 69, 19, 0.03) 25px
+                  ),
                   repeating-linear-gradient(
                     90deg,
                     transparent,
-                    transparent 50px,
-                    rgba(139, 69, 19, 0.02) 51px,
-                    rgba(139, 69, 19, 0.02) 52px
+                    transparent 49px,
+                    rgba(139, 69, 19, 0.02) 50px
                   )
                 `
               }}
             />
 
-            {/* Page margin line */}
-            <div className="absolute top-0 bottom-0 right-16 w-px bg-pink-200 opacity-30"></div>
+            {/* Right margin line */}
+            <div className="absolute top-0 bottom-0 right-8 w-px bg-red-200 opacity-40"></div>
 
             {/* Page back (visible during flip) */}
             <div 
-              className="absolute inset-0 bg-gradient-to-r from-gray-100 to-gray-50 rounded-r-3xl"
+              className="absolute inset-0 bg-gradient-to-r from-gray-100 to-gray-50"
               style={{
                 backfaceVisibility: 'visible',
                 transform: 'rotateY(180deg)',
-                zIndex: -1
+                zIndex: -1,
+                borderRadius: '0 8px 8px 0'
               }}
             >
-              <div className="p-10 h-full flex items-center justify-center text-gray-400">
-                <div className="text-center opacity-50">
-                  <div className="text-lg">صفحه پشت</div>
+              <div className="p-6 h-full flex items-center justify-center text-gray-400">
+                <div className="text-center opacity-30">
+                  <div className="text-sm">صفحه پشت</div>
                 </div>
               </div>
             </div>
 
-            {/* Page glow effect on hover */}
-            <div className="absolute inset-0 bg-gradient-to-l from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-r-3xl"></div>
+            {/* Subtle hover glow */}
+            <div className="absolute inset-0 bg-gradient-to-l from-purple-500/3 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" style={{ borderRadius: '0 8px 8px 0' }}></div>
           </div>
         </div>
 
-        {/* Enhanced Book Binding Shadow */}
+        {/* Book Binding Shadow */}
         <div className="absolute inset-0 pointer-events-none">
           <div 
-            className="absolute top-0 bottom-0 left-1/2 w-12 transform -translate-x-1/2"
+            className="absolute top-0 bottom-0 left-1/2 w-6 transform -translate-x-1/2"
             style={{
-              background: 'linear-gradient(90deg, transparent, rgba(0,0,0,0.15), rgba(0,0,0,0.25), rgba(0,0,0,0.15), transparent)',
+              background: 'linear-gradient(90deg, transparent, rgba(0,0,0,0.1), rgba(0,0,0,0.2), rgba(0,0,0,0.1), transparent)',
               zIndex: 15
             }}
           />
         </div>
 
-        {/* Next Page Preview (more realistic) */}
+        {/* Next Page Preview */}
         {currentPage < pages.length - 2 && (
           <div 
-            className="absolute top-3 right-3 w-1/2 h-full bg-gradient-to-l from-gray-200 to-gray-100 rounded-r-3xl shadow-xl opacity-40 transform translate-x-2 -translate-y-2"
-            style={{ zIndex: 5 }}
+            className="absolute top-1 right-1 w-1/2 h-full bg-gradient-to-l from-gray-300 to-gray-200 shadow-lg opacity-30 transform translate-x-1 -translate-y-1"
+            style={{ 
+              zIndex: 5,
+              borderRadius: '0 8px 8px 0'
+            }}
           />
         )}
 
         {/* Book lighting effects */}
         <div className="absolute inset-0 pointer-events-none">
           <div 
-            className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-white/20 to-transparent rounded-t-3xl"
-            style={{ zIndex: 25 }}
+            className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-white/15 to-transparent"
+            style={{ 
+              zIndex: 25,
+              borderRadius: '8px 8px 0 0'
+            }}
           />
           <div 
-            className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black/10 to-transparent rounded-b-3xl"
-            style={{ zIndex: 25 }}
+            className="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-black/8 to-transparent"
+            style={{ 
+              zIndex: 25,
+              borderRadius: '0 0 8px 8px'
+            }}
           />
         </div>
       </div>
 
       {/* Compact Controls */}
-      <div className="flex items-center justify-between w-full max-w-5xl mt-6">
+      <div className="flex items-center justify-between w-full max-w-4xl mt-6">
         <button
           onClick={prevPage}
           disabled={currentPage === 0 || isFlipping}
@@ -300,7 +326,7 @@ const FlipBook: React.FC<FlipBookProps> = ({ pages, width = 800, height = 900 })
         </button>
 
         <div className="flex items-center gap-4">
-          {/* Compact Sound Toggle */}
+          {/* Sound Toggle */}
           <button
             onClick={() => setSoundEnabled(!soundEnabled)}
             className={`p-2 rounded-full transition-all duration-300 shadow-md ${
@@ -313,12 +339,12 @@ const FlipBook: React.FC<FlipBookProps> = ({ pages, width = 800, height = 900 })
             {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
           </button>
 
-          {/* Compact Page Indicator */}
+          {/* Page Indicator */}
           <div className="text-center">
             <div className="text-lg font-bold text-white mb-2">
               صفحه {currentPage + 1} از {pages.length}
             </div>
-            <div className="w-48 bg-gray-700 rounded-full h-2 overflow-hidden shadow-inner">
+            <div className="w-40 bg-gray-700 rounded-full h-2 overflow-hidden shadow-inner">
               <div 
                 className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 h-2 rounded-full transition-all duration-700 shadow-sm relative"
                 style={{ width: `${((currentPage + 1) / pages.length) * 100}%` }}
@@ -342,11 +368,11 @@ const FlipBook: React.FC<FlipBookProps> = ({ pages, width = 800, height = 900 })
         </button>
       </div>
 
-      {/* Enhanced Flip Animation Status */}
+      {/* Flip Animation Status */}
       {isFlipping && (
-        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-black/90 via-gray-900/90 to-black/90 text-white px-8 py-4 rounded-2xl z-50 flex items-center gap-4 backdrop-blur-sm border border-white/20 shadow-2xl">
-          <div className="w-6 h-6 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
-          <span className="text-lg font-medium">در حال ورق زدن صفحه...</span>
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-black/90 via-gray-900/90 to-black/90 text-white px-6 py-3 rounded-2xl z-50 flex items-center gap-3 backdrop-blur-sm border border-white/20 shadow-2xl">
+          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+          <span className="text-base font-medium">در حال ورق زدن صفحه...</span>
         </div>
       )}
 
@@ -354,46 +380,46 @@ const FlipBook: React.FC<FlipBookProps> = ({ pages, width = 800, height = 900 })
         @keyframes flip-right {
           0% {
             transform: rotateY(0deg);
-            box-shadow: 8px 0 20px rgba(0,0,0,0.15);
+            box-shadow: 4px 0 12px rgba(0,0,0,0.2);
           }
           25% {
             transform: rotateY(-45deg);
-            box-shadow: 15px 0 30px rgba(0,0,0,0.25);
+            box-shadow: 8px 0 20px rgba(0,0,0,0.3);
           }
           50% {
             transform: rotateY(-90deg);
-            box-shadow: 20px 0 40px rgba(0,0,0,0.35);
+            box-shadow: 12px 0 25px rgba(0,0,0,0.4);
           }
           75% {
             transform: rotateY(-135deg);
-            box-shadow: 15px 0 30px rgba(0,0,0,0.25);
+            box-shadow: 8px 0 20px rgba(0,0,0,0.3);
           }
           100% {
             transform: rotateY(-180deg);
-            box-shadow: 8px 0 20px rgba(0,0,0,0.15);
+            box-shadow: 4px 0 12px rgba(0,0,0,0.2);
           }
         }
 
         @keyframes flip-left {
           0% {
             transform: rotateY(-180deg);
-            box-shadow: -8px 0 20px rgba(0,0,0,0.15);
+            box-shadow: -4px 0 12px rgba(0,0,0,0.2);
           }
           25% {
             transform: rotateY(-135deg);
-            box-shadow: -15px 0 30px rgba(0,0,0,0.25);
+            box-shadow: -8px 0 20px rgba(0,0,0,0.3);
           }
           50% {
             transform: rotateY(-90deg);
-            box-shadow: -20px 0 40px rgba(0,0,0,0.35);
+            box-shadow: -12px 0 25px rgba(0,0,0,0.4);
           }
           75% {
             transform: rotateY(-45deg);
-            box-shadow: -15px 0 30px rgba(0,0,0,0.25);
+            box-shadow: -8px 0 20px rgba(0,0,0,0.3);
           }
           100% {
             transform: rotateY(0deg);
-            box-shadow: -8px 0 20px rgba(0,0,0,0.15);
+            box-shadow: -4px 0 12px rgba(0,0,0,0.2);
           }
         }
 

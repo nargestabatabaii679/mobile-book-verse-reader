@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Star, BookOpen, Calendar, Hash, QrCode, Book as BookIcon } from 'lucide-react';
+import { Star, BookOpen, Calendar, Hash, QrCode, Book as BookIcon, Download } from 'lucide-react';
 import FlipBook from '@/components/book-reader/FlipBook';
 import QRCode from '@/components/ui/qr-code';
 
@@ -28,6 +28,85 @@ const BookDetailModal: React.FC<BookDetailModalProps> = ({ book, isOpen, onClose
 
   const bookUrl = `${window.location.origin}/book/${book.id}/read`;
 
+  // Generate sample content for the book pages
+  const generateBookContent = () => {
+    const pages = [];
+    const totalPages = Math.min(book.pages, 50); // Limit to 50 pages for demo
+    
+    // First page - Title page
+    pages.push(`
+      ${book.title}
+      
+      نوشته: ${book.author}
+      
+      ${book.description}
+      
+      انتشارات: دانشگاه علوم
+      سال انتشار: ${book.publishYear}
+      
+      ---
+      
+      این کتاب حاوی ${book.pages} صفحه از محتوای علمی و آموزشی است.
+    `);
+
+    // Generate content pages
+    for (let i = 2; i <= totalPages; i++) {
+      const chapterTitle = `فصل ${Math.ceil(i / 5)}`;
+      const content = `
+        ${chapterTitle}
+        
+        این متن نمونه‌ای از محتوای صفحه ${i} کتاب "${book.title}" است.
+        
+        ${book.description}
+        
+        در این بخش به موضوعات مختلفی پرداخته می‌شود که شامل:
+        
+        • نکات مهم و کاربردی
+        • مثال‌های عملی
+        • تمرین‌های متنوع
+        • راهکارهای مؤثر
+        
+        محتوای این کتاب با دقت و مطالعه گسترده تهیه شده است تا خوانندگان بتوانند بهترین یادگیری را داشته باشند.
+        
+        نویسنده ${book.author} با تجربه چندین ساله در این زمینه، سعی کرده است تا مطالب را به شکلی ساده و قابل فهم ارائه دهد.
+        
+        ---
+        
+        ادامه محتوا در صفحه بعد...
+      `;
+      pages.push(content);
+    }
+    
+    return pages;
+  };
+
+  const handleDownload = () => {
+    const content = `
+عنوان: ${book.title}
+نویسنده: ${book.author}
+دسته‌بندی: ${book.category}
+تعداد صفحات: ${book.pages}
+سال انتشار: ${book.publishYear}
+امتیاز: ${book.rating}/5
+
+توضیحات:
+${book.description}
+
+محتوای کامل کتاب:
+${generateBookContent().join('\n\n---\n\n')}
+    `;
+    
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${book.title}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className={`${
@@ -44,7 +123,7 @@ const BookDetailModal: React.FC<BookDetailModalProps> = ({ book, isOpen, onClose
           </div>
         </DialogHeader>
         
-        {/* Smaller and more compact Tab Navigation */}
+        {/* Tab Navigation */}
         <div className="flex justify-center gap-1 mt-0 mb-1 px-2">
           <button
             onClick={() => setActiveTab('read')}
@@ -85,21 +164,12 @@ const BookDetailModal: React.FC<BookDetailModalProps> = ({ book, isOpen, onClose
           {/* Reading Tab */}
           {activeTab === 'read' && (
             <div className="flex flex-col h-full">
-              {/* FlipBook component */}
               <div className="flex-1 flex justify-center items-center px-4 py-2">
-                {book.pagesContent && book.pagesContent.length > 0 ? (
-                  <FlipBook 
-                    pages={book.pagesContent}
-                    width={Math.min(600, window.innerWidth * 0.45)}
-                    height={Math.min(800, window.innerHeight * 0.7)}
-                  />
-                ) : (
-                  <div className="text-center text-white py-12">
-                    <BookOpen className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-                    <p className="text-xl">محتوای کتاب در دسترس نیست</p>
-                    <p className="text-gray-400 mt-2">محتوای کتاب هنوز بارگذاری نشده است</p>
-                  </div>
-                )}
+                <FlipBook 
+                  pages={generateBookContent()}
+                  width={Math.min(600, window.innerWidth * 0.45)}
+                  height={Math.min(800, window.innerHeight * 0.7)}
+                />
               </div>
             </div>
           )}
@@ -115,6 +185,15 @@ const BookDetailModal: React.FC<BookDetailModalProps> = ({ book, isOpen, onClose
                     alt={book.title}
                     className="w-full h-96 object-cover rounded-lg shadow-2xl transform hover:scale-105 transition-transform duration-300"
                   />
+                  
+                  {/* Download Button */}
+                  <Button
+                    onClick={handleDownload}
+                    className="w-full mt-4 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white"
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    دانلود کتاب
+                  </Button>
                 </div>
               </div>
               

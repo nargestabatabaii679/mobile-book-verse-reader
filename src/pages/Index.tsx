@@ -21,6 +21,7 @@ const Index = () => {
     search: '',
     authorSearch: '',
     categories: [],
+    sortBy: '',
     minPages: 0,
     maxPages: 1000,
     ageRange: '',

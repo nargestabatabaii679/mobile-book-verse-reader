@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ChevronDown, Search, Filter, X } from 'lucide-react';
+import { ChevronDown, Search, X } from 'lucide-react';
 import { FilterOptions } from '@/types';
 
 interface FilterTabsProps {
@@ -29,6 +28,18 @@ const FilterTabs: React.FC<FilterTabsProps> = ({
   maxPages,
 }) => {
   const [showMobileFilters, setShowMobileFilters] = useState(false);
+
+  // Custom filter icon component matching the mobile design
+  const FilterIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="h-4 w-4">
+      <line x1="2" y1="4" x2="14" y2="4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+      <circle cx="5" cy="4" r="1.5" fill="currentColor"/>
+      <line x1="2" y1="8" x2="14" y2="8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+      <circle cx="9" cy="8" r="1.5" fill="currentColor"/>
+      <line x1="2" y1="12" x2="14" y2="12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+      <circle cx="6" cy="12" r="1.5" fill="currentColor"/>
+    </svg>
+  );
 
   const pageRanges = [
     { value: 'all', label: 'همه تعداد صفحات' },
@@ -138,7 +149,7 @@ const FilterTabs: React.FC<FilterTabsProps> = ({
           className="w-full bg-white/20 border-white/30 text-white hover:bg-white/30 hover:text-white transition-all duration-200 justify-between"
         >
           <div className="flex items-center gap-2">
-            <Filter className="h-4 w-4" />
+            <FilterIcon />
             <span>فیلترها</span>
             {activeFiltersCount > 0 && (
               <div className="text-xs bg-blue-500/50 px-2 py-1 rounded-full">

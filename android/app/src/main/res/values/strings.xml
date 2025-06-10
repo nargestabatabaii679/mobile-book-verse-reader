@@ -1,0 +1,7 @@
+
+<resources>
+    <string name="app_name">دیجی‌کتاب</string>
+    <string name="title_activity_main">دیجی‌کتاب</string>
+    <string name="package_name">com.digiketab.app</string>
+    <string name="custom_url_scheme">com.digiketab.app</string>
+</resources>

@@ -1,9 +1,8 @@
 
 import React, { useState } from 'react';
 import { Book } from '@/types';
-import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { BookOpen, Grid3X3, FileText } from 'lucide-react';
+import { BookOpen } from 'lucide-react';
 
 interface LibraryShelfViewProps {
   books: Book[];
@@ -16,19 +15,8 @@ export const LibraryShelfView: React.FC<LibraryShelfViewProps> = ({
   isLoading,
   onSelectBook,
 }) => {
-  const [selectedBook, setSelectedBook] = useState<Book | null>(null);
-  const [viewMode, setViewMode] = useState<'grid' | 'pdf'>('grid');
-
   const handleBookClick = (book: Book) => {
-    setSelectedBook(book);
     onSelectBook(book);
-  };
-
-  const handleViewModeChange = (mode: 'grid' | 'pdf') => {
-    setViewMode(mode);
-    if (selectedBook) {
-      onSelectBook(selectedBook);
-    }
   };
 
   if (isLoading) {
@@ -51,28 +39,6 @@ export const LibraryShelfView: React.FC<LibraryShelfViewProps> = ({
 
   return (
     <div className="space-y-8">
-      {/* View Mode Selection */}
-      {selectedBook && (
-        <div className="flex justify-center gap-2 mb-6">
-          <Button
-            onClick={() => handleViewModeChange('grid')}
-            variant={viewMode === 'grid' ? 'default' : 'outline'}
-            className="flex items-center gap-2"
-          >
-            <Grid3X3 className="w-4 h-4" />
-            نمای شبکه‌ای
-          </Button>
-          <Button
-            onClick={() => handleViewModeChange('pdf')}
-            variant={viewMode === 'pdf' ? 'default' : 'outline'}
-            className="flex items-center gap-2"
-          >
-            <FileText className="w-4 h-4" />
-            نمای PDF
-          </Button>
-        </div>
-      )}
-
       {shelves.map((shelf, shelfIndex) => (
         <div key={shelfIndex} className="relative">
           {/* Wooden shelf background */}

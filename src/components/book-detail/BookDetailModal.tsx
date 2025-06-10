@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Book } from '@/types';
@@ -252,10 +251,9 @@ ${generateBookContent().join('\n\n---\n\n')}
             </div>
           )}
 
-          {/* Access Tab */}
+          {/* Access Tab - Only QR Code */}
           {activeTab === 'access' && (
-            <div className="flex flex-col lg:flex-row items-center justify-center gap-12 p-6">
-              {/* QR Code Section */}
+            <div className="flex items-center justify-center p-6">
               <div className="text-center">
                 <h3 className="text-2xl font-bold text-white mb-6">کد QR دسترسی سریع</h3>
                 <div className="bg-white/10 rounded-2xl p-8 backdrop-blur-sm">
@@ -267,22 +265,6 @@ ${generateBookContent().join('\n\n---\n\n')}
                   <p className="text-gray-300 text-sm max-w-[200px]">
                     با اسکن این کد از گوشی خود، مستقیماً به صفحه مطالعه آنلاین دسترسی پیدا کنید
                   </p>
-                </div>
-              </div>
-
-              {/* Book Reading Info */}
-              <div className="text-center">
-                <h3 className="text-2xl font-bold text-white mb-6">مطالعه آنلاین</h3>
-                <div className="bg-white/10 rounded-2xl p-8 backdrop-blur-sm">
-                  <BookOpen className="w-20 h-20 mx-auto mb-6 text-blue-400" />
-                  <p className="text-gray-300 text-sm max-w-[250px]">
-                    از تب "مطالعه کتاب" استفاده کنید تا کتاب را به صورت ورق‌زن مطالعه کنید
-                  </p>
-                  <div className="mt-4 text-xs text-gray-400">
-                    • امکان ورق زدن صفحات<br/>
-                    • تجربه مطالعه واقعی<br/>
-                    • کنترل صدا و موزیک
-                  </div>
                 </div>
               </div>
             </div>

@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Book } from '@/types';
 import Header from '@/components/layout/Header';
 import FilterSidebar from '@/components/FilterSidebar';
-import BookList from '@/components/books/BookList';
+import { LibraryShelfView } from '@/components/library/LibraryShelfView';
 import BookDetailModal from '@/components/book-detail/BookDetailModal';
 import { useBooks } from '@/hooks/useBooks';
 
@@ -29,7 +29,7 @@ const Index = () => {
           </aside>
           
           <main className="lg:col-span-3">
-            <BookList 
+            <LibraryShelfView 
               books={displayBooks}
               isLoading={isLoading}
               onSelectBook={setSelectedBook}

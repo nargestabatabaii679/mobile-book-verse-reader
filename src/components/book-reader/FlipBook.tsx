@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Volume2, VolumeX } from 'lucide-react';
 import { audioManager } from '@/utils/audioUtils';
@@ -127,19 +126,60 @@ const FlipBook: React.FC<FlipBookProps> = ({ pages, width = 400, height = 550 })
               `
             }}
           >
-            {/* Page Corner Curl Effect */}
+            {/* Realistic Page Corner Curl Effect */}
             {isHovering === 'left' && !isFlipping && currentPage > 0 && (
-              <div 
-                className="absolute top-4 left-4 w-8 h-8 pointer-events-none"
-                style={{
-                  background: 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(240,240,240,0.8) 100%)',
-                  borderRadius: '0 0 8px 0',
-                  transform: 'perspective(100px) rotateX(-10deg) rotateY(5deg)',
-                  boxShadow: '2px 2px 6px rgba(0,0,0,0.2)',
-                  zIndex: 25,
-                  animation: 'gentle-curl 0.3s ease-out forwards'
-                }}
-              />
+              <>
+                {/* Main curl triangle */}
+                <div 
+                  className="absolute top-4 left-4 pointer-events-none"
+                  style={{
+                    width: '32px',
+                    height: '32px',
+                    zIndex: 35,
+                    clipPath: 'polygon(0% 0%, 100% 0%, 0% 100%)',
+                    background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(245,245,245,0.9) 30%, rgba(230,230,230,0.8) 100%)',
+                    transform: 'perspective(200px) rotateX(-15deg) rotateY(10deg) rotateZ(-5deg)',
+                    transformOrigin: 'top left',
+                    boxShadow: '3px 3px 8px rgba(0,0,0,0.15), inset -1px -1px 2px rgba(0,0,0,0.1)',
+                    animation: 'realistic-curl 0.4s ease-out forwards'
+                  }}
+                />
+                
+                {/* Shadow underneath the curl */}
+                <div 
+                  className="absolute top-6 left-6 pointer-events-none"
+                  style={{
+                    width: '24px',
+                    height: '24px',
+                    background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.08) 40%, transparent 70%)',
+                    borderRadius: '50%',
+                    zIndex: 30,
+                    animation: 'curl-shadow 0.4s ease-out forwards'
+                  }}
+                />
+
+                {/* Paper fiber effect on curl edge */}
+                <div 
+                  className="absolute top-4 left-4 pointer-events-none"
+                  style={{
+                    width: '32px',
+                    height: '32px',
+                    clipPath: 'polygon(0% 0%, 100% 0%, 0% 100%)',
+                    background: `
+                      repeating-linear-gradient(
+                        45deg,
+                        rgba(200,200,200,0.3) 0px,
+                        rgba(200,200,200,0.3) 1px,
+                        transparent 1px,
+                        transparent 3px
+                      )
+                    `,
+                    zIndex: 36,
+                    transform: 'perspective(200px) rotateX(-15deg) rotateY(10deg) rotateZ(-5deg)',
+                    transformOrigin: 'top left',
+                  }}
+                />
+              </>
             )}
 
             {/* Page content */}
@@ -231,19 +271,60 @@ const FlipBook: React.FC<FlipBookProps> = ({ pages, width = 400, height = 550 })
               `
             }}
           >
-            {/* Page Corner Curl Effect */}
+            {/* Realistic Page Corner Curl Effect - Right Side */}
             {isHovering === 'right' && !isFlipping && currentPage < pages.length - 1 && (
-              <div 
-                className="absolute top-4 right-4 w-8 h-8 pointer-events-none"
-                style={{
-                  background: 'linear-gradient(225deg, rgba(255,255,255,0.9) 0%, rgba(240,240,240,0.8) 100%)',
-                  borderRadius: '0 0 0 8px',
-                  transform: 'perspective(100px) rotateX(-10deg) rotateY(-5deg)',
-                  boxShadow: '-2px 2px 6px rgba(0,0,0,0.2)',
-                  zIndex: 25,
-                  animation: 'gentle-curl-right 0.3s ease-out forwards'
-                }}
-              />
+              <>
+                {/* Main curl triangle */}
+                <div 
+                  className="absolute top-4 right-4 pointer-events-none"
+                  style={{
+                    width: '32px',
+                    height: '32px',
+                    zIndex: 35,
+                    clipPath: 'polygon(100% 0%, 100% 100%, 0% 0%)',
+                    background: 'linear-gradient(225deg, rgba(255,255,255,0.95) 0%, rgba(245,245,245,0.9) 30%, rgba(230,230,230,0.8) 100%)',
+                    transform: 'perspective(200px) rotateX(-15deg) rotateY(-10deg) rotateZ(5deg)',
+                    transformOrigin: 'top right',
+                    boxShadow: '-3px 3px 8px rgba(0,0,0,0.15), inset 1px -1px 2px rgba(0,0,0,0.1)',
+                    animation: 'realistic-curl-right 0.4s ease-out forwards'
+                  }}
+                />
+                
+                {/* Shadow underneath the curl */}
+                <div 
+                  className="absolute top-6 right-6 pointer-events-none"
+                  style={{
+                    width: '24px',
+                    height: '24px',
+                    background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.08) 40%, transparent 70%)',
+                    borderRadius: '50%',
+                    zIndex: 30,
+                    animation: 'curl-shadow-right 0.4s ease-out forwards'
+                  }}
+                />
+
+                {/* Paper fiber effect on curl edge */}
+                <div 
+                  className="absolute top-4 right-4 pointer-events-none"
+                  style={{
+                    width: '32px',
+                    height: '32px',
+                    clipPath: 'polygon(100% 0%, 100% 100%, 0% 0%)',
+                    background: `
+                      repeating-linear-gradient(
+                        -45deg,
+                        rgba(200,200,200,0.3) 0px,
+                        rgba(200,200,200,0.3) 1px,
+                        transparent 1px,
+                        transparent 3px
+                      )
+                    `,
+                    zIndex: 36,
+                    transform: 'perspective(200px) rotateX(-15deg) rotateY(-10deg) rotateZ(5deg)',
+                    transformOrigin: 'top right',
+                  }}
+                />
+              </>
             )}
 
             {/* Page content */}
@@ -412,25 +493,87 @@ const FlipBook: React.FC<FlipBookProps> = ({ pages, width = 400, height = 550 })
       )}
 
       <style>{`
-        @keyframes gentle-curl {
+        @keyframes realistic-curl {
           0% {
-            transform: perspective(100px) rotateX(0deg) rotateY(0deg);
+            transform: perspective(200px) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
             opacity: 0;
+            width: 0px;
+            height: 0px;
+          }
+          30% {
+            transform: perspective(200px) rotateX(-5deg) rotateY(3deg) rotateZ(-2deg);
+            opacity: 0.3;
+            width: 16px;
+            height: 16px;
+          }
+          60% {
+            transform: perspective(200px) rotateX(-10deg) rotateY(6deg) rotateZ(-3deg);
+            opacity: 0.7;
+            width: 24px;
+            height: 24px;
           }
           100% {
-            transform: perspective(100px) rotateX(-10deg) rotateY(5deg);
+            transform: perspective(200px) rotateX(-15deg) rotateY(10deg) rotateZ(-5deg);
             opacity: 1;
+            width: 32px;
+            height: 32px;
           }
         }
 
-        @keyframes gentle-curl-right {
+        @keyframes realistic-curl-right {
           0% {
-            transform: perspective(100px) rotateX(0deg) rotateY(0deg);
+            transform: perspective(200px) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
             opacity: 0;
+            width: 0px;
+            height: 0px;
+          }
+          30% {
+            transform: perspective(200px) rotateX(-5deg) rotateY(-3deg) rotateZ(2deg);
+            opacity: 0.3;
+            width: 16px;
+            height: 16px;
+          }
+          60% {
+            transform: perspective(200px) rotateX(-10deg) rotateY(-6deg) rotateZ(3deg);
+            opacity: 0.7;
+            width: 24px;
+            height: 24px;
           }
           100% {
-            transform: perspective(100px) rotateX(-10deg) rotateY(-5deg);
+            transform: perspective(200px) rotateX(-15deg) rotateY(-10deg) rotateZ(5deg);
             opacity: 1;
+            width: 32px;
+            height: 32px;
+          }
+        }
+
+        @keyframes curl-shadow {
+          0% {
+            opacity: 0;
+            transform: scale(0);
+          }
+          50% {
+            opacity: 0.8;
+            transform: scale(0.8);
+          }
+          100% {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+
+        @keyframes curl-shadow-right {
+          0% {
+            opacity: 0;
+            transform: scale(0);
+          }
+          50% {
+            opacity: 0.8;
+            transform: scale(0.8);
+          }
+          100% {
+            opacity: 1;
+            transform: scale(1);
           }
         }
 

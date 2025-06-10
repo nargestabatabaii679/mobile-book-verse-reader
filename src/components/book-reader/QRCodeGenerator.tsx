@@ -1,12 +1,14 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import { Book } from '@/types';
+import { Button } from '@/components/ui/button';
+import { Share2 } from 'lucide-react';
+import BookDownloader from './BookDownloader';
 
 interface QRCodeGeneratorProps {
   book: Book;
 }
 
-export const QRCodeGenerator: React.FC<QRCodeGeneratorProps> = ({ book }) => {
+const QRCodeGenerator: React.FC<QRCodeGeneratorProps> = ({ book }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -125,89 +127,52 @@ export const QRCodeGenerator: React.FC<QRCodeGeneratorProps> = ({ book }) => {
 
   const bookUrl = `${window.location.origin}/?book=${book.id}`;
 
+  const shareBook = async () => {
+    const bookUrl = `${window.location.origin}?book=${encodeURIComponent(book.title)}`;
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: book.title,
+          text: `کتاب "${book.title}" نوشته ${book.author}`,
+          url: bookUrl,
+        });
+      } catch (error) {
+        console.log('Error sharing:', error);
+        copyToClipboard(bookUrl);
+      }
+    } else {
+      copyToClipboard(bookUrl);
+    }
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      alert('لینک کپی شد!');
+    });
+  };
+
   return (
-    <div className="relative">
-      {/* Modern cylindrical display inspired container */}
-      <div className="bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 p-8 rounded-3xl shadow-2xl text-center border border-slate-700 relative overflow-hidden">
-        {/* Background pattern like the cylindrical library */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 animate-pulse"></div>
-          <div className="grid grid-cols-8 gap-1 h-full opacity-30">
-            {[...Array(64)].map((_, i) => (
-              <div key={i} className="bg-gradient-to-b from-blue-400/20 to-amber-400/20 rounded-sm"></div>
-            ))}
-          </div>
-        </div>
-
-        <div className="relative z-10">
-          <h3 className="text-2xl font-bold text-white mb-6 flex items-center justify-center space-x-3 rtl:space-x-reverse">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-amber-400 rounded-lg flex items-center justify-center">
-              <span className="text-white text-lg">📱</span>
-            </div>
-            <span className="bg-gradient-to-r from-blue-400 to-amber-400 bg-clip-text text-transparent">
-              QR کد کتاب
-            </span>
-          </h3>
-          
-          <div className="relative mb-6">
-            {isLoading && (
-              <div className="absolute inset-0 flex items-center justify-center bg-white/90 rounded-2xl">
-                <div className="flex space-x-2 rtl:space-x-reverse">
-                  <div className="w-3 h-3 bg-blue-500 rounded-full animate-bounce"></div>
-                  <div className="w-3 h-3 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                  <div className="w-3 h-3 bg-amber-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                </div>
-              </div>
-            )}
-            
-            {/* Modern QR container with cylindrical inspiration */}
-            <div className="relative p-4 bg-white rounded-2xl shadow-xl border-4 border-gradient-to-r from-blue-400 to-amber-400">
-              <canvas 
-                ref={canvasRef}
-                className="mx-auto rounded-xl shadow-inner transition-all duration-500 hover:scale-105"
-              />
-              
-              {/* Corner decorations */}
-              <div className="absolute -top-2 -left-2 w-6 h-6 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full shadow-lg animate-pulse"></div>
-              <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-br from-purple-500 to-amber-500 rounded-full shadow-lg animate-pulse" style={{ animationDelay: '0.5s' }}></div>
-              <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-gradient-to-br from-amber-500 to-blue-500 rounded-full shadow-lg animate-pulse" style={{ animationDelay: '1s' }}></div>
-              <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-gradient-to-br from-blue-500 to-amber-500 rounded-full shadow-lg animate-pulse" style={{ animationDelay: '1.5s' }}></div>
-            </div>
-          </div>
-          
-          <div className="space-y-4">
-            <p className="text-sm text-blue-200 max-w-xs mx-auto leading-relaxed">
-              این QR کد را اسکن کنید تا مستقیماً به صفحه کتاب بروید
-            </p>
-            
-            <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-600 backdrop-blur-sm">
-              <p className="text-xs text-slate-300 break-all font-mono leading-relaxed">
-                {bookUrl}
-              </p>
-            </div>
-            
-            {/* Book info */}
-            <div className="mt-6 pt-4 border-t border-slate-700">
-              <div className="text-white space-y-2">
-                <h4 className="font-bold text-lg text-blue-300">{book.title}</h4>
-                <p className="text-amber-300">{book.author}</p>
-                <div className="flex justify-center space-x-4 rtl:space-x-reverse text-sm">
-                  <span className="bg-blue-500/20 px-3 py-1 rounded-full text-blue-300">
-                    {book.category}
-                  </span>
-                  <span className="bg-amber-500/20 px-3 py-1 rounded-full text-amber-300">
-                    {book.pages} صفحه
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Floating elements for modern touch */}
-        <div className="absolute top-4 right-4 w-12 h-12 bg-gradient-to-br from-blue-400/20 to-transparent rounded-full animate-pulse"></div>
-        <div className="absolute bottom-4 left-4 w-8 h-8 bg-gradient-to-br from-amber-400/20 to-transparent rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
+    <div className="flex flex-col gap-3 p-4 bg-gray-50 rounded-lg">
+      <h3 className="text-lg font-semibold text-gray-800 mb-2">اشتراک‌گذاری و دانلود</h3>
+      
+      <div className="flex gap-2 flex-wrap">
+        <Button 
+          onClick={shareBook}
+          className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2"
+        >
+          <Share2 className="h-4 w-4" />
+          اشتراک‌گذاری
+        </Button>
+        
+        <BookDownloader book={book} />
       </div>
+      
+      <p className="text-sm text-gray-600 mt-2">
+        با دانلود، فایل کتاب همراه با آیکون آن ذخیره می‌شود
+      </p>
     </div>
   );
 };
+
+export default QRCodeGenerator;

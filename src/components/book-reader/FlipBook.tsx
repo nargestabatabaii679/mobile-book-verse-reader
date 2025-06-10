@@ -15,6 +15,7 @@ const FlipBook: React.FC<FlipBookProps> = ({ pages, width = 400, height = 550 })
   const [flipDirection, setFlipDirection] = useState<'left' | 'right' | null>(null);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [isBookOpen, setIsBookOpen] = useState(false);
+  const [isHovering, setIsHovering] = useState<'left' | 'right' | null>(null);
 
   // Calculate realistic book dimensions (A5 format - 148 x 210 mm scaled up)
   const bookWidth = Math.min(width, window.innerWidth * 0.8);
@@ -44,12 +45,12 @@ const FlipBook: React.FC<FlipBookProps> = ({ pages, width = 400, height = 550 })
       
       setTimeout(() => {
         setCurrentPage(currentPage + 1);
-      }, 400);
+      }, 600);
 
       setTimeout(() => {
         setIsFlipping(false);
         setFlipDirection(null);
-      }, 800);
+      }, 1200);
     }
   };
 
@@ -61,12 +62,12 @@ const FlipBook: React.FC<FlipBookProps> = ({ pages, width = 400, height = 550 })
       
       setTimeout(() => {
         setCurrentPage(currentPage - 1);
-      }, 400);
+      }, 600);
 
       setTimeout(() => {
         setIsFlipping(false);
         setFlipDirection(null);
-      }, 800);
+      }, 1200);
     }
   };
 
@@ -103,8 +104,8 @@ const FlipBook: React.FC<FlipBookProps> = ({ pages, width = 400, height = 550 })
 
         {/* Left Page */}
         <div 
-          className={`absolute top-0 left-0 w-1/2 h-full transition-all duration-800 cursor-pointer group ${
-            isFlipping && flipDirection === 'left' ? 'animate-flip-left' : ''
+          className={`absolute top-0 left-0 w-1/2 h-full transition-all duration-1200 cursor-pointer group ${
+            isFlipping && flipDirection === 'left' ? 'animate-gentle-flip-left' : ''
           }`}
           style={{
             transformOrigin: 'right center',
@@ -112,9 +113,11 @@ const FlipBook: React.FC<FlipBookProps> = ({ pages, width = 400, height = 550 })
             zIndex: isFlipping && flipDirection === 'left' ? 30 : 10
           }}
           onClick={prevPage}
+          onMouseEnter={() => setIsHovering('left')}
+          onMouseLeave={() => setIsHovering(null)}
         >
           <div 
-            className="w-full h-full bg-gradient-to-r from-white to-gray-50 shadow-2xl relative overflow-hidden group-hover:shadow-3xl transition-shadow duration-300"
+            className="w-full h-full bg-gradient-to-r from-white to-gray-50 shadow-2xl relative overflow-hidden group-hover:shadow-3xl transition-shadow duration-500"
             style={{
               borderRadius: '8px 0 0 8px',
               boxShadow: `
@@ -124,6 +127,21 @@ const FlipBook: React.FC<FlipBookProps> = ({ pages, width = 400, height = 550 })
               `
             }}
           >
+            {/* Page Corner Curl Effect */}
+            {isHovering === 'left' && !isFlipping && currentPage > 0 && (
+              <div 
+                className="absolute top-4 left-4 w-8 h-8 pointer-events-none"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(240,240,240,0.8) 100%)',
+                  borderRadius: '0 0 8px 0',
+                  transform: 'perspective(100px) rotateX(-10deg) rotateY(5deg)',
+                  boxShadow: '2px 2px 6px rgba(0,0,0,0.2)',
+                  zIndex: 25,
+                  animation: 'gentle-curl 0.3s ease-out forwards'
+                }}
+              />
+            )}
+
             {/* Page content */}
             <div className="p-6 h-full overflow-y-auto relative z-10" style={{ fontSize: '13px', lineHeight: '1.6' }}>
               <div className="text-gray-800 leading-relaxed text-justify font-serif">
@@ -184,14 +202,14 @@ const FlipBook: React.FC<FlipBookProps> = ({ pages, width = 400, height = 550 })
             </div>
 
             {/* Subtle hover glow */}
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/3 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" style={{ borderRadius: '8px 0 0 8px' }}></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/3 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" style={{ borderRadius: '8px 0 0 8px' }}></div>
           </div>
         </div>
 
         {/* Right Page */}
         <div 
-          className={`absolute top-0 right-0 w-1/2 h-full transition-all duration-800 cursor-pointer group ${
-            isFlipping && flipDirection === 'right' ? 'animate-flip-right' : ''
+          className={`absolute top-0 right-0 w-1/2 h-full transition-all duration-1200 cursor-pointer group ${
+            isFlipping && flipDirection === 'right' ? 'animate-gentle-flip-right' : ''
           }`}
           style={{
             transformOrigin: 'left center',
@@ -199,9 +217,11 @@ const FlipBook: React.FC<FlipBookProps> = ({ pages, width = 400, height = 550 })
             zIndex: isFlipping && flipDirection === 'right' ? 30 : 10
           }}
           onClick={nextPage}
+          onMouseEnter={() => setIsHovering('right')}
+          onMouseLeave={() => setIsHovering(null)}
         >
           <div 
-            className="w-full h-full bg-gradient-to-l from-white to-gray-50 shadow-2xl relative overflow-hidden group-hover:shadow-3xl transition-shadow duration-300"
+            className="w-full h-full bg-gradient-to-l from-white to-gray-50 shadow-2xl relative overflow-hidden group-hover:shadow-3xl transition-shadow duration-500"
             style={{
               borderRadius: '0 8px 8px 0',
               boxShadow: `
@@ -211,6 +231,21 @@ const FlipBook: React.FC<FlipBookProps> = ({ pages, width = 400, height = 550 })
               `
             }}
           >
+            {/* Page Corner Curl Effect */}
+            {isHovering === 'right' && !isFlipping && currentPage < pages.length - 1 && (
+              <div 
+                className="absolute top-4 right-4 w-8 h-8 pointer-events-none"
+                style={{
+                  background: 'linear-gradient(225deg, rgba(255,255,255,0.9) 0%, rgba(240,240,240,0.8) 100%)',
+                  borderRadius: '0 0 0 8px',
+                  transform: 'perspective(100px) rotateX(-10deg) rotateY(-5deg)',
+                  boxShadow: '-2px 2px 6px rgba(0,0,0,0.2)',
+                  zIndex: 25,
+                  animation: 'gentle-curl-right 0.3s ease-out forwards'
+                }}
+              />
+            )}
+
             {/* Page content */}
             <div className="p-6 h-full overflow-y-auto relative z-10" style={{ fontSize: '13px', lineHeight: '1.6' }}>
               <div className="text-gray-800 leading-relaxed text-justify font-serif">
@@ -269,7 +304,7 @@ const FlipBook: React.FC<FlipBookProps> = ({ pages, width = 400, height = 550 })
             </div>
 
             {/* Subtle hover glow */}
-            <div className="absolute inset-0 bg-gradient-to-l from-purple-500/3 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" style={{ borderRadius: '0 8px 8px 0' }}></div>
+            <div className="absolute inset-0 bg-gradient-to-l from-purple-500/3 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" style={{ borderRadius: '0 8px 8px 0' }}></div>
           </div>
         </div>
 
@@ -377,58 +412,96 @@ const FlipBook: React.FC<FlipBookProps> = ({ pages, width = 400, height = 550 })
       )}
 
       <style>{`
-        @keyframes flip-right {
+        @keyframes gentle-curl {
           0% {
-            transform: rotateY(0deg);
-            box-shadow: 4px 0 12px rgba(0,0,0,0.2);
-          }
-          25% {
-            transform: rotateY(-45deg);
-            box-shadow: 8px 0 20px rgba(0,0,0,0.3);
-          }
-          50% {
-            transform: rotateY(-90deg);
-            box-shadow: 12px 0 25px rgba(0,0,0,0.4);
-          }
-          75% {
-            transform: rotateY(-135deg);
-            box-shadow: 8px 0 20px rgba(0,0,0,0.3);
+            transform: perspective(100px) rotateX(0deg) rotateY(0deg);
+            opacity: 0;
           }
           100% {
-            transform: rotateY(-180deg);
+            transform: perspective(100px) rotateX(-10deg) rotateY(5deg);
+            opacity: 1;
+          }
+        }
+
+        @keyframes gentle-curl-right {
+          0% {
+            transform: perspective(100px) rotateX(0deg) rotateY(0deg);
+            opacity: 0;
+          }
+          100% {
+            transform: perspective(100px) rotateX(-10deg) rotateY(-5deg);
+            opacity: 1;
+          }
+        }
+
+        @keyframes gentle-flip-right {
+          0% {
+            transform: rotateY(0deg) scale(1);
+            box-shadow: 4px 0 12px rgba(0,0,0,0.2);
+          }
+          15% {
+            transform: rotateY(-15deg) scale(1.02);
+            box-shadow: 8px 0 20px rgba(0,0,0,0.25);
+          }
+          30% {
+            transform: rotateY(-30deg) scale(1.03);
+            box-shadow: 12px 0 25px rgba(0,0,0,0.3);
+          }
+          50% {
+            transform: rotateY(-90deg) scale(1.04);
+            box-shadow: 16px 0 30px rgba(0,0,0,0.35);
+          }
+          70% {
+            transform: rotateY(-150deg) scale(1.03);
+            box-shadow: 12px 0 25px rgba(0,0,0,0.3);
+          }
+          85% {
+            transform: rotateY(-165deg) scale(1.02);
+            box-shadow: 8px 0 20px rgba(0,0,0,0.25);
+          }
+          100% {
+            transform: rotateY(-180deg) scale(1);
             box-shadow: 4px 0 12px rgba(0,0,0,0.2);
           }
         }
 
-        @keyframes flip-left {
+        @keyframes gentle-flip-left {
           0% {
-            transform: rotateY(-180deg);
+            transform: rotateY(-180deg) scale(1);
             box-shadow: -4px 0 12px rgba(0,0,0,0.2);
           }
-          25% {
-            transform: rotateY(-135deg);
-            box-shadow: -8px 0 20px rgba(0,0,0,0.3);
+          15% {
+            transform: rotateY(-165deg) scale(1.02);
+            box-shadow: -8px 0 20px rgba(0,0,0,0.25);
+          }
+          30% {
+            transform: rotateY(-150deg) scale(1.03);
+            box-shadow: -12px 0 25px rgba(0,0,0,0.3);
           }
           50% {
-            transform: rotateY(-90deg);
-            box-shadow: -12px 0 25px rgba(0,0,0,0.4);
+            transform: rotateY(-90deg) scale(1.04);
+            box-shadow: -16px 0 30px rgba(0,0,0,0.35);
           }
-          75% {
-            transform: rotateY(-45deg);
-            box-shadow: -8px 0 20px rgba(0,0,0,0.3);
+          70% {
+            transform: rotateY(-30deg) scale(1.03);
+            box-shadow: -12px 0 25px rgba(0,0,0,0.3);
+          }
+          85% {
+            transform: rotateY(-15deg) scale(1.02);
+            box-shadow: -8px 0 20px rgba(0,0,0,0.25);
           }
           100% {
-            transform: rotateY(0deg);
+            transform: rotateY(0deg) scale(1);
             box-shadow: -4px 0 12px rgba(0,0,0,0.2);
           }
         }
 
-        .animate-flip-right {
-          animation: flip-right 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        .animate-gentle-flip-right {
+          animation: gentle-flip-right 1.2s cubic-bezier(0.165, 0.84, 0.44, 1);
         }
 
-        .animate-flip-left {
-          animation: flip-left 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        .animate-gentle-flip-left {
+          animation: gentle-flip-left 1.2s cubic-bezier(0.165, 0.84, 0.44, 1);
         }
       `}</style>
     </div>

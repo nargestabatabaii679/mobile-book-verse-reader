@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Star, BookOpen, Calendar, Hash, Download, QrCode, Book as BookIcon } from 'lucide-react';
+import { Star, BookOpen, Calendar, Hash, QrCode, Book as BookIcon } from 'lucide-react';
 import FlipBook from '@/components/book-reader/FlipBook';
 import QRCode from '@/components/ui/qr-code';
 
@@ -26,33 +26,7 @@ const BookDetailModal: React.FC<BookDetailModalProps> = ({ book, isOpen, onClose
 
   if (!book) return null;
 
-  const handleDownload = () => {
-    if (book.downloadUrl) {
-      const link = document.createElement('a');
-      link.href = book.downloadUrl;
-      link.download = `${book.title}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-  };
-
   const bookUrl = `${window.location.origin}/book/${book.id}/read`;
-
-  // Function to get PDF viewer URL
-  const getPdfViewerUrl = (pdfUrl: string) => {
-    // Try different PDF viewing approaches
-    if (pdfUrl.includes('drive.google.com')) {
-      // For Google Drive links, convert to viewer format
-      const fileId = pdfUrl.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
-      if (fileId) {
-        return `https://drive.google.com/file/d/${fileId}/preview`;
-      }
-    }
-    
-    // For other URLs, try to embed directly or use PDF.js viewer
-    return `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(pdfUrl)}`;
-  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -111,72 +85,22 @@ const BookDetailModal: React.FC<BookDetailModalProps> = ({ book, isOpen, onClose
           {/* Reading Tab */}
           {activeTab === 'read' && (
             <div className="flex flex-col h-full">
-              {/* PDF viewer container */}
+              {/* FlipBook component */}
               <div className="flex-1 flex justify-center items-center px-4 py-2">
-                {book.downloadUrl ? (
-                  <div className="w-full h-full flex flex-col">
-                    <div className="text-center mb-2">
-                      <p className="text-white/70 text-sm">
-                        در حال بارگذاری PDF... اگر فایل نمایش داده نشد، روی دکمه دانلود کلیک کنید
-                      </p>
-                    </div>
-                    <iframe
-                      src={getPdfViewerUrl(book.downloadUrl)}
-                      className="w-full h-full rounded-lg border border-slate-600 shadow-2xl bg-white"
-                      title={`مطالعه ${book.title}`}
-                      allow="fullscreen"
-                      onError={() => {
-                        console.log('PDF iframe failed to load:', book.downloadUrl);
-                      }}
-                      onLoad={() => {
-                        console.log('PDF iframe loaded successfully');
-                      }}
-                    />
-                    <div className="text-center mt-2">
-                      <Button
-                        onClick={handleDownload}
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm"
-                      >
-                        <Download className="w-4 h-4 mr-2" />
-                        دانلود PDF
-                      </Button>
-                    </div>
-                  </div>
+                {book.pagesContent && book.pagesContent.length > 0 ? (
+                  <FlipBook 
+                    pages={book.pagesContent}
+                    width={Math.min(600, window.innerWidth * 0.45)}
+                    height={Math.min(800, window.innerHeight * 0.7)}
+                  />
                 ) : (
-                  // Show FlipBook as fallback when no PDF is available
-                  book.pagesContent && book.pagesContent.length > 0 ? (
-                    <FlipBook 
-                      pages={book.pagesContent}
-                      width={Math.min(600, window.innerWidth * 0.45)}
-                      height={Math.min(800, window.innerHeight * 0.7)}
-                    />
-                  ) : (
-                    <div className="text-center text-white py-12">
-                      <BookOpen className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-                      <p className="text-xl">محتوای کتاب در دسترس نیست</p>
-                      <p className="text-gray-400 mt-2">برای مطالعه فایل PDF را آپلود کنید</p>
-                    </div>
-                  )
+                  <div className="text-center text-white py-12">
+                    <BookOpen className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+                    <p className="text-xl">محتوای کتاب در دسترس نیست</p>
+                    <p className="text-gray-400 mt-2">محتوای کتاب هنوز بارگذاری نشده است</p>
+                  </div>
                 )}
               </div>
-              
-              {/* Navigation controls at the bottom - only show if PDF is not available */}
-              {!book.downloadUrl && (
-                <div className="bg-gradient-to-r from-slate-800/90 to-blue-800/90 backdrop-blur-sm border-t border-slate-700 px-4 py-2">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-white/70">صفحه قبل</span>
-                    <div className="flex items-center space-x-4 rtl:space-x-reverse">
-                      <span className="text-sm font-medium text-white">
-                        صفحه 1 از 3
-                      </span>
-                      <span className="text-xs text-blue-300">
-                        33% مطالعه شده
-                      </span>
-                    </div>
-                    <span className="text-white/70">صفحه بعد</span>
-                  </div>
-                </div>
-              )}
             </div>
           )}
 
@@ -267,27 +191,19 @@ const BookDetailModal: React.FC<BookDetailModalProps> = ({ book, isOpen, onClose
                 </div>
               </div>
 
-              {/* Download Section */}
+              {/* Book Reading Info */}
               <div className="text-center">
-                <h3 className="text-2xl font-bold text-white mb-6">دانلود فایل کتاب</h3>
+                <h3 className="text-2xl font-bold text-white mb-6">مطالعه آنلاین</h3>
                 <div className="bg-white/10 rounded-2xl p-8 backdrop-blur-sm">
-                  <Download className="w-20 h-20 mx-auto mb-6 text-green-400" />
-                  <Button
-                    onClick={handleDownload}
-                    className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 text-lg font-medium rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg"
-                    disabled={!book.downloadUrl}
-                  >
-                    <Download className="w-5 h-5 mr-2" />
-                    دانلود PDF
-                  </Button>
-                  {!book.downloadUrl && (
-                    <p className="text-gray-400 text-sm mt-4">
-                      فایل دانلود در دسترس نیست
-                    </p>
-                  )}
-                  <p className="text-gray-300 text-sm mt-4 max-w-[250px]">
-                    نسخه کامل کتاب را به صورت فایل PDF دانلود کنید تا بتوانید در هر زمان و مکانی مطالعه کنید
+                  <BookOpen className="w-20 h-20 mx-auto mb-6 text-blue-400" />
+                  <p className="text-gray-300 text-sm max-w-[250px]">
+                    از تب "مطالعه کتاب" استفاده کنید تا کتاب را به صورت ورق‌زن مطالعه کنید
                   </p>
+                  <div className="mt-4 text-xs text-gray-400">
+                    • امکان ورق زدن صفحات<br/>
+                    • تجربه مطالعه واقعی<br/>
+                    • کنترل صدا و موزیک
+                  </div>
                 </div>
               </div>
             </div>

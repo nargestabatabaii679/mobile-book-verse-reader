@@ -1,117 +1,83 @@
+
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { Book } from '@/types';
 import { toast } from 'sonner';
-import { useLogBookOperation } from './useBookLogs';
+import { books as initialBooks } from '@/data/books';
 
-interface DatabaseBook {
-  id: string;
-  title: string;
-  author: string;
-  category: string;
-  pages: number;
-  cover_url: string | null;
-  description: string | null;
-  publish_year: number | null;
-  rating: number;
-  isbn: string | null;
-  age_range: string | null;
-  download_url: string | null;
-  created_at: string;
-  updated_at: string;
-}
+// Local storage key
+const BOOKS_STORAGE_KEY = 'bookverse_books';
 
-const transformDatabaseBookToBook = (dbBook: DatabaseBook): Book => ({
-  id: dbBook.id,
-  title: dbBook.title,
-  author: dbBook.author,
-  translator: dbBook.description?.includes('مترجم:') ? 
-    dbBook.description.split('مترجم:')[1]?.split('\n')[0]?.trim() : undefined,
-  category: dbBook.category,
-  pages: dbBook.pages,
-  coverUrl: dbBook.cover_url || 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=600&fit=crop',
-  description: dbBook.description || '',
-  publishYear: dbBook.publish_year || new Date().getFullYear(),
-  rating: Number(dbBook.rating),
-  isbn: dbBook.isbn || '',
-  ageRange: dbBook.age_range,
-  downloadUrl: dbBook.download_url
-});
-
-const transformBookToDatabaseBook = (book: Partial<Book>) => {
-  let description = book.description || '';
-  if (book.translator) {
-    description = `مترجم: ${book.translator}\n${description}`;
+// Helper function to get books from localStorage
+const getBooksFromStorage = (): Book[] => {
+  try {
+    const stored = localStorage.getItem(BOOKS_STORAGE_KEY);
+    if (stored) {
+      return JSON.parse(stored);
+    }
+    // If no books in storage, use initial books and store them
+    localStorage.setItem(BOOKS_STORAGE_KEY, JSON.stringify(initialBooks));
+    return initialBooks;
+  } catch (error) {
+    console.error('Error reading books from localStorage:', error);
+    return initialBooks;
   }
-  
-  return {
-    title: book.title,
-    author: book.author,
-    category: book.category,
-    pages: book.pages,
-    cover_url: book.coverUrl,
-    description: description,
-    publish_year: book.publishYear,
-    rating: book.rating,
-    isbn: book.isbn,
-    age_range: book.ageRange,
-    download_url: book.downloadUrl
-  };
+};
+
+// Helper function to save books to localStorage
+const saveBooksToStorage = (books: Book[]): void => {
+  try {
+    localStorage.setItem(BOOKS_STORAGE_KEY, JSON.stringify(books));
+  } catch (error) {
+    console.error('Error saving books to localStorage:', error);
+  }
+};
+
+// Generate a simple ID
+const generateId = (): string => {
+  return Date.now().toString() + Math.random().toString(36).substr(2, 9);
 };
 
 export const useBooks = () => {
   return useQuery({
     queryKey: ['books'],
     queryFn: async () => {
-      console.log('Fetching books from Supabase...');
-      const { data, error } = await supabase
-        .from('books')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Error fetching books:', error);
-        throw error;
-      }
-
-      console.log('Books fetched successfully:', data?.length);
-      return data.map(transformDatabaseBookToBook);
+      console.log('Fetching books from localStorage...');
+      const books = getBooksFromStorage();
+      console.log('Books fetched successfully:', books.length);
+      return books;
     }
   });
 };
 
 export const useAddBook = () => {
   const queryClient = useQueryClient();
-  const logBookOperation = useLogBookOperation();
 
   return useMutation({
     mutationFn: async (book: Partial<Book>) => {
-      console.log('Adding book to Supabase:', book);
-      const { data, error } = await supabase
-        .from('books')
-        .insert([transformBookToDatabaseBook(book)])
-        .select()
-        .single();
+      console.log('Adding book to localStorage:', book);
+      const currentBooks = getBooksFromStorage();
+      
+      const newBook: Book = {
+        id: generateId(),
+        title: book.title || '',
+        author: book.author || '',
+        translator: book.translator,
+        category: book.category || '',
+        pages: book.pages || 0,
+        coverUrl: book.coverUrl || 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=600&fit=crop',
+        description: book.description || '',
+        publishYear: book.publishYear || new Date().getFullYear(),
+        rating: book.rating || 0,
+        isbn: book.isbn || '',
+        ageRange: book.ageRange,
+        downloadUrl: book.downloadUrl
+      };
 
-      if (error) {
-        console.error('Error adding book:', error);
-        throw error;
-      }
+      const updatedBooks = [newBook, ...currentBooks];
+      saveBooksToStorage(updatedBooks);
 
-      // Log the operation
-      await logBookOperation.mutateAsync({
-        operation_type: 'single',
-        books_count: 1,
-        book_ids: [data.id],
-        operation_details: {
-          title: book.title,
-          author: book.author,
-          category: book.category
-        }
-      });
-
-      console.log('Book added successfully:', data);
-      return transformDatabaseBookToBook(data);
+      console.log('Book added successfully:', newBook);
+      return newBook;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['books'] });
@@ -129,21 +95,21 @@ export const useUpdateBook = () => {
 
   return useMutation({
     mutationFn: async ({ id, ...book }: Partial<Book> & { id: string }) => {
-      console.log('Updating book in Supabase:', id, book);
-      const { data, error } = await supabase
-        .from('books')
-        .update(transformBookToDatabaseBook(book))
-        .eq('id', id)
-        .select()
-        .single();
-
-      if (error) {
-        console.error('Error updating book:', error);
-        throw error;
+      console.log('Updating book in localStorage:', id, book);
+      const currentBooks = getBooksFromStorage();
+      
+      const bookIndex = currentBooks.findIndex(b => b.id === id);
+      if (bookIndex === -1) {
+        throw new Error('Book not found');
       }
 
-      console.log('Book updated successfully:', data);
-      return transformDatabaseBookToBook(data);
+      const updatedBook = { ...currentBooks[bookIndex], ...book };
+      currentBooks[bookIndex] = updatedBook;
+      
+      saveBooksToStorage(currentBooks);
+
+      console.log('Book updated successfully:', updatedBook);
+      return updatedBook;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['books'] });
@@ -161,16 +127,11 @@ export const useDeleteBook = () => {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      console.log('Deleting book from Supabase:', id);
-      const { error } = await supabase
-        .from('books')
-        .delete()
-        .eq('id', id);
-
-      if (error) {
-        console.error('Error deleting book:', error);
-        throw error;
-      }
+      console.log('Deleting book from localStorage:', id);
+      const currentBooks = getBooksFromStorage();
+      
+      const filteredBooks = currentBooks.filter(book => book.id !== id);
+      saveBooksToStorage(filteredBooks);
 
       console.log('Book deleted successfully');
       return id;
@@ -188,34 +149,23 @@ export const useDeleteBook = () => {
 
 export const useBulkAddBooks = () => {
   const queryClient = useQueryClient();
-  const logBookOperation = useLogBookOperation();
 
   return useMutation({
     mutationFn: async (books: Book[]) => {
-      console.log('Bulk adding books to Supabase:', books.length);
-      const { data, error } = await supabase
-        .from('books')
-        .insert(books.map(transformBookToDatabaseBook))
-        .select();
+      console.log('Bulk adding books to localStorage:', books.length);
+      const currentBooks = getBooksFromStorage();
+      
+      const newBooks = books.map(book => ({
+        ...book,
+        id: generateId(),
+        coverUrl: book.coverUrl || 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=600&fit=crop'
+      }));
 
-      if (error) {
-        console.error('Error bulk adding books:', error);
-        throw error;
-      }
+      const updatedBooks = [...newBooks, ...currentBooks];
+      saveBooksToStorage(updatedBooks);
 
-      // Log the bulk operation
-      await logBookOperation.mutateAsync({
-        operation_type: 'bulk',
-        books_count: books.length,
-        book_ids: data.map(book => book.id),
-        operation_details: {
-          categories: [...new Set(books.map(book => book.category))],
-          total_pages: books.reduce((sum, book) => sum + book.pages, 0)
-        }
-      });
-
-      console.log('Books bulk added successfully:', data?.length);
-      return data.map(transformDatabaseBookToBook);
+      console.log('Books bulk added successfully:', newBooks.length);
+      return newBooks;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['books'] });
@@ -224,6 +174,17 @@ export const useBulkAddBooks = () => {
     onError: (error) => {
       console.error('Failed to bulk add books:', error);
       toast.error('خطا در افزودن کتاب‌ها');
+    }
+  });
+};
+
+// Hook for logging operations (simplified local version)
+export const useLogBookOperation = () => {
+  return useMutation({
+    mutationFn: async (operation: any) => {
+      console.log('Book operation logged:', operation);
+      // In local mode, just log to console
+      return operation;
     }
   });
 };

@@ -1,0 +1,319 @@
+
+# Persian translation for DigiKetab
+# Copyright (C) 2024 DigiKetab Team
+# This file is distributed under the same license as the DigiKetab plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: DigiKetab 1.0.0\n"
+"POT-Creation-Date: 2024-01-01 12:00+0000\n"
+"PO-Revision-Date: 2024-01-01 12:00+0000\n"
+"Last-Translator: DigiKetab Team\n"
+"Language-Team: Persian\n"
+"Language: fa_IR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+# Main Plugin
+msgid "Digital Library"
+msgstr "کتابخانه دیجیتال"
+
+msgid "Books"
+msgstr "کتاب‌ها"
+
+msgid "Book"
+msgstr "کتاب"
+
+msgid "Add New Book"
+msgstr "افزودن کتاب جدید"
+
+msgid "Edit Book"
+msgstr "ویرایش کتاب"
+
+msgid "View Book"
+msgstr "مشاهده کتاب"
+
+msgid "Search Books"
+msgstr "جستجوی کتاب"
+
+msgid "No books found"
+msgstr "کتابی یافت نشد"
+
+msgid "No books found in trash"
+msgstr "کتابی در زباله‌دان یافت نشد"
+
+# Categories and Authors
+msgid "Categories"
+msgstr "دسته‌بندی‌ها"
+
+msgid "Category"
+msgstr "دسته‌بندی"
+
+msgid "Authors"
+msgstr "نویسندگان"
+
+msgid "Author"
+msgstr "نویسنده"
+
+# Book Details
+msgid "Book Details"
+msgstr "جزئیات کتاب"
+
+msgid "Author:"
+msgstr "نویسنده:"
+
+msgid "Pages:"
+msgstr "تعداد صفحات:"
+
+msgid "Publication Year:"
+msgstr "سال انتشار:"
+
+msgid "PDF File:"
+msgstr "فایل PDF:"
+
+msgid "ISBN:"
+msgstr "شابک (ISBN):"
+
+msgid "Language:"
+msgstr "زبان:"
+
+# Frontend
+msgid "Digital Book Library"
+msgstr "کتابخانه دیجیتال کتاب"
+
+msgid "Search books, authors or topics..."
+msgstr "جستجوی کتاب، نویسنده یا موضوع..."
+
+msgid "Search"
+msgstr "جستجو"
+
+msgid "Category:"
+msgstr "دسته‌بندی:"
+
+msgid "All Categories"
+msgstr "همه دسته‌ها"
+
+msgid "Author:"
+msgstr "نویسنده:"
+
+msgid "All Authors"
+msgstr "همه نویسندگان"
+
+msgid "Read"
+msgstr "مطالعه"
+
+msgid "Download"
+msgstr "دانلود"
+
+msgid "Load More Books"
+msgstr "مشاهده کتاب‌های بیشتر"
+
+msgid "Loading..."
+msgstr "در حال بارگیری..."
+
+# Reader
+msgid "Read Book"
+msgstr "مطالعه کتاب"
+
+msgid "Previous Page"
+msgstr "صفحه قبل"
+
+msgid "Next Page"
+msgstr "صفحه بعد"
+
+msgid "Page"
+msgstr "صفحه"
+
+msgid "of"
+msgstr "از"
+
+msgid "Zoom In"
+msgstr "بزرگ‌نمایی"
+
+msgid "Zoom Out"
+msgstr "کوچک‌نمایی"
+
+msgid "Font Size:"
+msgstr "اندازه فونت:"
+
+msgid "Theme:"
+msgstr "پوسته:"
+
+msgid "Light"
+msgstr "روشن"
+
+msgid "Dark"
+msgstr "تیره"
+
+msgid "Sepia"
+msgstr "کاغذی"
+
+msgid "Fullscreen"
+msgstr "تمام صفحه"
+
+msgid "Share"
+msgstr "اشتراک‌گذاری"
+
+msgid "Close"
+msgstr "بستن"
+
+# Admin
+msgid "Dashboard"
+msgstr "داشبورد"
+
+msgid "All Books"
+msgstr "همه کتاب‌ها"
+
+msgid "Add Book"
+msgstr "افزودن کتاب"
+
+msgid "Settings"
+msgstr "تنظیمات"
+
+msgid "Total Books"
+msgstr "کل کتاب‌ها"
+
+msgid "Total Categories"
+msgstr "کل دسته‌بندی‌ها"
+
+msgid "Total Authors"
+msgstr "کل نویسندگان"
+
+msgid "Total Reads"
+msgstr "کل مطالعه‌ها"
+
+msgid "Quick Actions"
+msgstr "اقدامات سریع"
+
+msgid "Recent Books"
+msgstr "آخرین کتاب‌ها"
+
+msgid "Reading Analytics"
+msgstr "آمار مطالعه"
+
+msgid "System Information"
+msgstr "اطلاعات سیستم"
+
+# Settings
+msgid "Library Title"
+msgstr "عنوان کتابخانه"
+
+msgid "Library Description"
+msgstr "توضیحات کتابخانه"
+
+msgid "Books Per Page"
+msgstr "تعداد کتاب در هر صفحه"
+
+msgid "Default View"
+msgstr "نمای پیش‌فرض"
+
+msgid "Grid View"
+msgstr "نمای شبکه‌ای"
+
+msgid "Shelf View"
+msgstr "نمای قفسه‌ای"
+
+msgid "Default Language"
+msgstr "زبان پیش‌فرض"
+
+msgid "Enable Download"
+msgstr "فعال‌سازی دانلود"
+
+msgid "Enable Sharing"
+msgstr "فعال‌سازی اشتراک‌گذاری"
+
+msgid "Enable Comments"
+msgstr "فعال‌سازی نظرات"
+
+msgid "Enable Ratings"
+msgstr "فعال‌سازی امتیازدهی"
+
+msgid "Save Settings"
+msgstr "ذخیره تنظیمات"
+
+msgid "Settings saved successfully!"
+msgstr "تنظیمات با موفقیت ذخیره شد!"
+
+# Error Messages
+msgid "Error loading books"
+msgstr "خطا در بارگیری کتاب‌ها"
+
+msgid "Error in search"
+msgstr "خطا در جستجو"
+
+msgid "Connection error"
+msgstr "خطا در ارتباط با سرور"
+
+msgid "Book not found"
+msgstr "کتاب مورد نظر یافت نشد"
+
+msgid "No books available"
+msgstr "هیچ کتابی موجود نیست"
+
+# Success Messages
+msgid "Book added successfully"
+msgstr "کتاب با موفقیت اضافه شد"
+
+msgid "Book updated successfully"
+msgstr "کتاب با موفقیت به‌روزرسانی شد"
+
+msgid "Book deleted successfully"
+msgstr "کتاب با موفقیت حذف شد"
+
+# Languages
+msgid "Persian"
+msgstr "فارسی"
+
+msgid "English"
+msgstr "انگلیسی"
+
+msgid "Arabic"
+msgstr "عربی"
+
+# Sharing
+msgid "Share Book"
+msgstr "اشتراک‌گذاری کتاب"
+
+msgid "QR Code for quick access"
+msgstr "QR کد برای دسترسی سریع"
+
+msgid "Copy Link"
+msgstr "کپی لینک"
+
+msgid "Link copied!"
+msgstr "لینک کپی شد!"
+
+msgid "Telegram"
+msgstr "تلگرام"
+
+msgid "WhatsApp"
+msgstr "واتساپ"
+
+msgid "Email"
+msgstr "ایمیل"
+
+# Other
+msgid "pages"
+msgstr "صفحه"
+
+msgid "Reading Progress:"
+msgstr "پیشرفت مطالعه:"
+
+msgid "Published:"
+msgstr "منتشر شده:"
+
+msgid "Updated:"
+msgstr "به‌روزرسانی:"
+
+msgid "Size:"
+msgstr "اندازه:"
+
+msgid "Format:"
+msgstr "فرمت:"
+
+msgid "Downloads:"
+msgstr "دانلودها:"
+
+msgid "Views:"
+msgstr "بازدیدها:"

@@ -1,0 +1,73 @@
+
+{
+  "name": "دیجی‌کتاب - کتابخانه دیجیتال فارسی",
+  "short_name": "دیجی‌کتاب",
+  "description": "کتابخانه دیجیتال کامل با قابلیت مطالعه آفلاین کتاب‌های فارسی",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1e40af",
+  "theme_color": "#1e40af",
+  "orientation": "any",
+  "dir": "rtl",
+  "lang": "fa",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/lovable-uploads/045f5698-67df-4c57-ba47-ead9a49ac21d.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/lovable-uploads/045f5698-67df-4c57-ba47-ead9a49ac21d.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/lovable-uploads/045f5698-67df-4c57-ba47-ead9a49ac21d.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/lovable-uploads/045f5698-67df-4c57-ba47-ead9a49ac21d.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "categories": ["education", "books", "productivity"],
+  "shortcuts": [
+    {
+      "name": "جستجوی کتاب",
+      "short_name": "جستجو",
+      "description": "جستجوی سریع در کتاب‌ها",
+      "url": "/?search=true",
+      "icons": [{ "src": "/lovable-uploads/045f5698-67df-4c57-ba47-ead9a49ac21d.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "پنل مدیریت",
+      "short_name": "مدیریت",
+      "description": "مدیریت کتاب‌ها",
+      "url": "/admin",
+      "icons": [{ "src": "/lovable-uploads/045f5698-67df-4c57-ba47-ead9a49ac21d.png", "sizes": "192x192" }]
+    }
+  ],
+  "related_applications": [
+    {
+      "platform": "play",
+      "url": "https://play.google.com/store/apps/details?id=com.digiketab.app",
+      "id": "com.digiketab.app"
+    }
+  ],
+  "prefer_related_applications": false,
+  "protocol_handlers": [
+    {
+      "protocol": "web+digiketab",
+      "url": "/?book=%s"
+    }
+  ]
+}

@@ -5,6 +5,7 @@ import Header from '@/components/layout/Header';
 import FilterSidebar from '@/components/FilterSidebar';
 import FilterTabs from '@/components/FilterTabs';
 import { LibraryShelfView } from '@/components/library/LibraryShelfView';
+import InteractiveShelf from '@/components/library/InteractiveShelf';
 import BookList from '@/components/books/BookList';
 import BookDetailModal from '@/components/book-detail/BookDetailModal';
 import { useBooks } from '@/hooks/useBooks';
@@ -88,6 +89,9 @@ const Index = () => {
       <Header />
       
       <div className="container mx-auto px-4 py-8">
+        {/* Interactive Books Shelf */}
+        <InteractiveShelf books={books} />
+
         {/* Filter Tabs */}
         <FilterTabs
           categories={categories}

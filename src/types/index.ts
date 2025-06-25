@@ -15,6 +15,7 @@ export interface Book {
   ageRange?: string;
   pagesContent?: string[];
   downloadUrl?: string;
+  interactiveStoryId?: string; // New field for interactive stories
 }
 
 export interface FilterOptions {
@@ -25,4 +26,35 @@ export interface FilterOptions {
   minPages: number;
   maxPages: number;
   ageRange: string;
+}
+
+// Interactive Story Types
+export interface BranchOption {
+  id: string;
+  text: string;
+  nextBranchId: string | null; // null means ending
+}
+
+export interface Branch {
+  id: string;
+  title: string;
+  content: string;
+  options: BranchOption[];
+  isEnding?: boolean;
+  endingType?: 'happy' | 'sad' | 'neutral';
+}
+
+export interface Story {
+  id: string;
+  title: string;
+  description: string;
+  startBranchId: string;
+  branches: Branch[];
+}
+
+export interface StoryProgress {
+  storyId: string;
+  currentBranchId: string;
+  choicesMade: string[];
+  completedAt?: Date;
 }

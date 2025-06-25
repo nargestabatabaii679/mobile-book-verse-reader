@@ -234,5 +234,53 @@ export const books: Book[] = [
     isbn: '978-964-567-890-2',
     downloadUrl: '/downloads/chehel-sotoon.pdf',
     pagesContent: ['نمونه متن چهل ستون...', 'قسمت دوم...', 'خاتمه کتاب...']
+  },
+  {
+    id: '16',
+    title: 'ماجراجویی در جنگل جادویی',
+    author: 'نویسنده تعاملی',
+    category: 'داستان تعاملی',
+    pages: 25,
+    coverUrl: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=600&fit=crop',
+    description: 'داستان تعاملی هیجان‌انگیزی در جنگلی پر از راز و رمز. انتخاب‌های شما مسیر داستان را تعیین می‌کند.',
+    publishYear: 2024,
+    rating: 4.8,
+    isbn: '978-964-111-222-3',
+    ageRange: '8-15 سال',
+    interactiveStoryId: 'forest-adventure',
+    downloadUrl: '/downloads/interactive-forest.pdf',
+    pagesContent: ['داستان تعاملی - لطفاً از حالت داستان تعاملی استفاده کنید']
+  },
+  {
+    id: '17',
+    title: 'شاهزاده و اژدهای دوست‌داشتنی',
+    author: 'نویسنده تعاملی',
+    category: 'داستان تعاملی',
+    pages: 20,
+    coverUrl: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=600&fit=crop',
+    description: 'داستان زیبایی از دوستی میان شاهزاده و اژدهای مهربان. شما تعیین می‌کنید که چگونه این دوستی شکل بگیرد.',
+    publishYear: 2024,
+    rating: 4.7,
+    isbn: '978-964-111-333-4',
+    ageRange: '6-12 سال',
+    interactiveStoryId: 'princess-dragon',
+    downloadUrl: '/downloads/interactive-princess.pdf',
+    pagesContent: ['داستان تعاملی - لطفاً از حالت داستان تعاملی استفاده کنید']
+  },
+  {
+    id: '18',
+    title: 'گنج دزدان دریایی',
+    author: 'نویسنده تعاملی',
+    category: 'داستان تعاملی',
+    pages: 30,
+    coverUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=600&fit=crop',
+    description: 'ماجراجویی دریایی پر از هیجان در جستجوی گنج گمشده. تصمیمات شما سرنوشت کاپیتان و خدمه را رقم می‌زند.',
+    publishYear: 2024,
+    rating: 4.6,
+    isbn: '978-964-111-444-5',
+    ageRange: '10-16 سال',
+    interactiveStoryId: 'pirate-treasure',
+    downloadUrl: '/downloads/interactive-pirate.pdf',
+    pagesContent: ['داستان تعاملی - لطفاً از حالت داستان تعاملی استفاده کنید']
   }
 ];

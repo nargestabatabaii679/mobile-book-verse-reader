@@ -1,0 +1,392 @@
+
+import { Story } from '@/types';
+
+export const stories: Story[] = [
+  {
+    id: 'forest-adventure',
+    title: 'ماجراجویی در جنگل جادویی',
+    description: 'داستانی پر از ماجراجویی در جنگلی اسرارآمیز',
+    startBranchId: 'start',
+    branches: [
+      {
+        id: 'start',
+        title: 'آغاز ماجراجویی',
+        content: 'تو در لبه جنگل جادویی ایستاده‌ای. درختان بلند و انبوه جلوی تو قرار دارند و صدای عجیبی از عمق جنگل می‌آید. دو مسیر جلوی توست.',
+        options: [
+          {
+            id: 'opt1',
+            text: 'از مسیر راست که پر از نور است بروم',
+            nextBranchId: 'light-path'
+          },
+          {
+            id: 'opt2',
+            text: 'از مسیر چپ که تاریک و مرموز است بروم',
+            nextBranchId: 'dark-path'
+          }
+        ]
+      },
+      {
+        id: 'light-path',
+        title: 'مسیر نورانی',
+        content: 'مسیر نورانی تو را به چمنزار زیبایی می‌رساند. در وسط چمنزار، یک چشمه کریستالی می‌بینی و یک پری زیبا کنار آن نشسته است.',
+        options: [
+          {
+            id: 'opt3',
+            text: 'با پری صحبت کنم',
+            nextBranchId: 'talk-fairy'
+          },
+          {
+            id: 'opt4',
+            text: 'از چشمه آب بنوشم',
+            nextBranchId: 'drink-water'
+          }
+        ]
+      },
+      {
+        id: 'dark-path',
+        title: 'مسیر تاریک',
+        content: 'مسیر تاریک تو را به غاری عمیق می‌برد. در ورودی غار، صدای غرش اژدهایی می‌شنوی. اما چشمت به گنجینه‌ای در عمق غار می‌افتد.',
+        options: [
+          {
+            id: 'opt5',
+            text: 'با شجاعت وارد غار شوم',
+            nextBranchId: 'enter-cave'
+          },
+          {
+            id: 'opt6',
+            text: 'بازگردم و مسیر دیگر را انتخاب کنم',
+            nextBranchId: 'light-path'
+          }
+        ]
+      },
+      {
+        id: 'talk-fairy',
+        title: 'گفتگو با پری',
+        content: 'پری لبخند زیبایی می‌زند و می‌گوید: "جوان شجاع، من جادوی ویژه‌ای برای تو دارم. می‌توانی یکی از این دو هدیه را انتخاب کنی."',
+        options: [
+          {
+            id: 'opt7',
+            text: 'جادوی پرواز را انتخاب کنم',
+            nextBranchId: 'flying-ending'
+          },
+          {
+            id: 'opt8',
+            text: 'جادوی درک زبان حیوانات را انتخاب کنم',
+            nextBranchId: 'animal-talk-ending'
+          }
+        ]
+      },
+      {
+        id: 'drink-water',
+        title: 'نوشیدن آب جادویی',
+        content: 'آب چشمه طعم شیرینی دارد و ناگهان احساس می‌کنی که قدرت فوق‌العاده‌ای در تو جاری شده است.',
+        options: [
+          {
+            id: 'opt9',
+            text: 'قدرت جدیدم را امتحان کنم',
+            nextBranchId: 'power-ending'
+          }
+        ]
+      },
+      {
+        id: 'enter-cave',
+        title: 'ورود به غار',
+        content: 'با شجاعت وارد غار می‌شوی. اژدها که در واقع مهربان است، تو را می‌بیند و می‌گوید: "کسی که این همه شجاعت دارد، شایسته گنجینه من است."',
+        options: [
+          {
+            id: 'opt10',
+            text: 'گنجینه را بپذیرم',
+            nextBranchId: 'treasure-ending'
+          },
+          {
+            id: 'opt11',
+            text: 'به اژدها پیشنهاد دوستی بدهم',
+            nextBranchId: 'dragon-friend-ending'
+          }
+        ]
+      },
+      {
+        id: 'flying-ending',
+        title: 'پایان: قدرت پرواز',
+        content: 'تو قدرت پرواز را کسب کردی! حالا می‌توانی بر فراز جنگل‌ها و کوه‌ها پرواز کنی و ماجراجویی‌های بی‌پایانی داشته باشی. این آغاز زندگی جدید توست!',
+        options: [],
+        isEnding: true,
+        endingType: 'happy'
+      },
+      {
+        id: 'animal-talk-ending',
+        title: 'پایان: زبان حیوانات',
+        content: 'حالا می‌توانی با تمام حیوانات صحبت کنی! آن‌ها رازهای جنگل را با تو در میان می‌گذارند و تو به محافظ جنگل تبدیل می‌شوی.',
+        options: [],
+        isEnding: true,
+        endingType: 'happy'
+      },
+      {
+        id: 'power-ending',
+        title: 'پایان: قدرت جادویی',
+        content: 'آب جادویی به تو قدرت کنترل طبیعت داده است. می‌توانی گل‌ها را شکوفا کنی و طوفان‌ها را آرام کنی. دنیا محل بهتری شده است.',
+        options: [],
+        isEnding: true,
+        endingType: 'happy'
+      },
+      {
+        id: 'treasure-ending',
+        title: 'پایان: گنجینه‌یاب',
+        content: 'گنجینه‌ای عظیم به دست آوردی! اما مهم‌تر از آن، دوستی اژدها را کسب کردی. حالا تو و اژدها محافظان جنگل هستید.',
+        options: [],
+        isEnding: true,
+        endingType: 'happy'
+      },
+      {
+        id: 'dragon-friend-ending',
+        title: 'پایان: دوست اژدها',
+        content: 'اژدها بهترین دوست تو شد! شما با هم در جنگل زندگی می‌کنید و از تمام موجودات جنگل محافظت می‌کنید. دوستی واقعی بهترین گنجینه است.',
+        options: [],
+        isEnding: true,
+        endingType: 'happy'
+      }
+    ]
+  },
+  {
+    id: 'princess-dragon',
+    title: 'شاهزاده و اژدهای دوست‌داشتنی',
+    description: 'داستان شاهزاده‌ای که اژدهای مهربانی را ملاقات می‌کند',
+    startBranchId: 'castle-start',
+    branches: [
+      {
+        id: 'castle-start',
+        title: 'شروع در کاخ',
+        content: 'تو شاهزاده‌ای هستی که از زندگی کاخ خسته شده‌ای. از پنجره اتاقت اژدهای بزرگی را می‌بینی که روی کوه نشسته و غمگین به نظر می‌رسد.',
+        options: [
+          {
+            id: 'opt1',
+            text: 'به ملاقات اژدها بروم',
+            nextBranchId: 'meet-dragon'
+          },
+          {
+            id: 'opt2',
+            text: 'در کاخ بمانم و محافظان را خبر کنم',
+            nextBranchId: 'call-guards'
+          }
+        ]
+      },
+      {
+        id: 'meet-dragon',
+        title: 'ملاقات با اژدها',
+        content: 'وقتی به کوه می‌رسی، می‌بینی که اژدها در حال گریه کردن است. او می‌گوید: "همه از من می‌ترسند، اما من فقط می‌خواهم دوست داشته باشم."',
+        options: [
+          {
+            id: 'opt3',
+            text: 'به اژدها کمک کنم تا دوست پیدا کند',
+            nextBranchId: 'help-dragon'
+          },
+          {
+            id: 'opt4',
+            text: 'او را به کاخ دعوت کنم',
+            nextBranchId: 'invite-castle'
+          }
+        ]
+      },
+      {
+        id: 'call-guards',
+        title: 'احضار محافظان',
+        content: 'محافظان می‌آیند اما وقتی اژدها را می‌بینند، متوجه می‌شوند که او مهربان است. آن‌ها پیشنهاد می‌کنند که با او دوست شوند.',
+        options: [
+          {
+            id: 'opt5',
+            text: 'موافقت کنم و همه با هم دوست شویم',
+            nextBranchId: 'everyone-friends'
+          }
+        ]
+      },
+      {
+        id: 'help-dragon',
+        title: 'کمک به اژدها',
+        content: 'تو به اژدها می‌آموزی که چگونه با مردم دوست شود. او یاد می‌گیرد که لبخند بزند و مهربان باشد.',
+        options: [
+          {
+            id: 'opt6',
+            text: 'او را به روستا ببرم تا مردم را ملاقات کند',
+            nextBranchId: 'village-visit'
+          }
+        ]
+      },
+      {
+        id: 'invite-castle',
+        title: 'دعوت به کاخ',
+        content: 'اژدها خیلی خوشحال می‌شود و قبول می‌کند. در کاخ، همه ابتدا می‌ترسند اما بعد متوجه می‌شوند که او مهربان است.',
+        options: [
+          {
+            id: 'opt7',
+            text: 'جشن دوستی برگزار کنم',
+            nextBranchId: 'friendship-party'
+          }
+        ]
+      },
+      {
+        id: 'everyone-friends',
+        title: 'پایان: دوستی همگانی',
+        content: 'همه با اژدها دوست شدند و حالا او محافظ کاخ است. دنیا محل بهتری شده که در آن همه موجودات با هم دوست هستند.',
+        options: [],
+        isEnding: true,
+        endingType: 'happy'
+      },
+      {
+        id: 'village-visit',
+        title: 'پایان: اژدهای محبوب روستا',
+        content: 'مردم روستا ابتدا می‌ترسند اما وقتی لطف اژدها را می‌بینند، او را دوست دارند. حالا اژدها کمک‌کار روستا است.',
+        options: [],
+        isEnding: true,
+        endingType: 'happy'
+      },
+      {
+        id: 'friendship-party',
+        title: 'پایان: جشن دوستی',
+        content: 'جشن بزرگی برگزار می‌شود و همه موجودات جادویی جنگل هم دعوت می‌شوند. این آغاز دوران جدیدی از صلح و دوستی است.',
+        options: [],
+        isEnding: true,
+        endingType: 'happy'
+      }
+    ]
+  },
+  {
+    id: 'pirate-treasure',
+    title: 'گنج دزدان دریایی',
+    description: 'در جستجوی گنج گمشده دزدان دریایی',
+    startBranchId: 'ship-start',
+    branches: [
+      {
+        id: 'ship-start',
+        title: 'روی کشتی دزدان دریایی',
+        content: 'تو کاپیتان کشتی دزدان دریایی هستی و نقشه گنج کهنی پیدا کرده‌ای. نقشه نشان می‌دهد که گنج در جزیره‌ای مرموز مخفی شده است.',
+        options: [
+          {
+            id: 'opt1',
+            text: 'مستقیم به جزیره بروم',
+            nextBranchId: 'sail-island'
+          },
+          {
+            id: 'opt2',
+            text: 'ابتدا خدمه بیشتری جمع کنم',
+            nextBranchId: 'gather-crew'
+          }
+        ]
+      },
+      {
+        id: 'sail-island',
+        title: 'سفر به جزیره',
+        content: 'بعد از چند روز سفر، به جزیره‌ای زیبا با ساحل طلایی می‌رسی. در وسط جزیره، کوه بلندی دیده می‌شود و غاری در دامنه آن قرار دارد.',
+        options: [
+          {
+            id: 'opt3',
+            text: 'وارد غار شوم',
+            nextBranchId: 'enter-cave'
+          },
+          {
+            id: 'opt4',
+            text: 'ابتدا اطراف جزیره را کاوش کنم',
+            nextBranchId: 'explore-island'
+          }
+        ]
+      },
+      {
+        id: 'gather-crew',
+        title: 'جمع‌آوری خدمه',
+        content: 'خدمه‌ای شجاع و باتجربه جمع می‌کنی. آن‌ها به تو کمک می‌کنند تا سریع‌تر به جزیره برسی و در برابر خطرات محافظت شوی.',
+        options: [
+          {
+            id: 'opt5',
+            text: 'با خدمه کامل به جزیره بروم',
+            nextBranchId: 'crew-island'
+          }
+        ]
+      },
+      {
+        id: 'enter-cave',
+        title: 'ورود به غار',
+        content: 'غار تاریک و پر از تله است. اما با احتیاط جلو می‌روی و در نهایت به اتاقی پر از طلا و جواهر می‌رسی!',
+        options: [
+          {
+            id: 'opt6',
+            text: 'گنج را برداشته و سریع فرار کنم',
+            nextBranchId: 'quick-escape'
+          },
+          {
+            id: 'opt7',
+            text: 'ابتدا ببینم آیا نگهبانی دارد یا نه',
+            nextBranchId: 'check-guardian'
+          }
+        ]
+      },
+      {
+        id: 'explore-island',
+        title: 'کاوش جزیره',
+        content: 'در کاوش جزیره، قبیله‌ای دوستانه پیدا می‌کنی که می‌گویند گنج متعلق به اجدادشان بوده اما حاضرند آن را با تو تقسیم کنند.',
+        options: [
+          {
+            id: 'opt8',
+            text: 'پیشنهادشان را بپذیرم',
+            nextBranchId: 'share-treasure'
+          },
+          {
+            id: 'opt9',
+            text: 'به تنهایی دنبال گنج بگردم',
+            nextBranchId: 'solo-search'
+          }
+        ]
+      },
+      {
+        id: 'crew-island',
+        title: 'ورود با خدمه',
+        content: 'با کمک خدمه، سریع گنج را پیدا می‌کنی. آن‌ها در برابر تله‌ها از تو محافظت می‌کنند و همه با هم موفق می‌شوید.',
+        options: [
+          {
+            id: 'opt10',
+            text: 'گنج را عادلانه تقسیم کنم',
+            nextBranchId: 'fair-share-ending'
+          }
+        ]
+      },
+      {
+        id: 'quick-escape',
+        title: 'پایان: فرار سریع',
+        content: 'با گنج فرار می‌کنی اما در راه با مشکلاتی روبه‌رو می‌شوی. در نهایت موفق می‌شوی اما درس می‌گیری که عجله کار شیطان است.',
+        options: [],
+        isEnding: true,
+        endingType: 'neutral'
+      },
+      {
+        id: 'check-guardian',
+        title: 'پایان: نگهبان دوستانه',
+        content: 'متوجه می‌شوی که نگهبان غار، طوطی پیری است که تنها بوده. او خوشحال می‌شود که کسی او را ملاقات کرده و گنج را با تو تقسیم می‌کند.',
+        options: [],
+        isEnding: true,
+        endingType: 'happy'
+      },
+      {
+        id: 'share-treasure',
+        title: 'پایان: تقسیم دوستانه',
+        content: 'با تقسیم گنج، هم تو ثروتمند می‌شوی و هم مردم جزیره. آن‌ها تو را کاپیتان افتخاری خود می‌کنند و دوستی ماندگاری شکل می‌گیرد.',
+        options: [],
+        isEnding: true,
+        endingType: 'happy'
+      },
+      {
+        id: 'solo-search',
+        title: 'پایان: جستجوی انفرادی',
+        content: 'در جستجوی انفرادی، گنج کوچک‌تری پیدا می‌کنی اما درس مهمی درباره ارزش دوستی و همکاری یاد می‌گیری.',
+        options: [],
+        isEnding: true,
+        endingType: 'neutral'
+      },
+      {
+        id: 'fair-share-ending',
+        title: 'پایان: تقسیم عادلانه',
+        content: 'گنج را عادلانه با خدمه تقسیم می‌کنی. همه خوشحال هستند و تو به عنوان کاپیتان عادل و مهربان شناخته می‌شوی. این آغاز ماجراجویی‌های جدید است.',
+        options: [],
+        isEnding: true,
+        endingType: 'happy'
+      }
+    ]
+  }
+];

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { Book } from '@/types';
 import {
   Dialog,
@@ -9,7 +10,7 @@ import {
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Star, BookOpen, Calendar, Hash, QrCode, Book as BookIcon, Download } from 'lucide-react';
+import { Star, BookOpen, Calendar, Hash, QrCode, Book as BookIcon, Download, Play } from 'lucide-react';
 import FlipBook from '@/components/book-reader/FlipBook';
 import QRCode from '@/components/ui/qr-code';
 
@@ -21,11 +22,20 @@ interface BookDetailModalProps {
 
 const BookDetailModal: React.FC<BookDetailModalProps> = ({ book, isOpen, onClose }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'info' | 'read' | 'access'>('read');
 
   if (!book) return null;
 
   const bookUrl = `${window.location.origin}/book/${book.id}/read`;
+  const isInteractive = book.category === 'داستان تعاملی' && book.interactiveStoryId;
+
+  const handleStartInteractiveStory = () => {
+    if (book.interactiveStoryId) {
+      onClose();
+      navigate(`/interactive/${book.interactiveStoryId}`);
+    }
+  };
 
   // Generate sample content for the book pages
   const generateBookContent = () => {
@@ -124,17 +134,19 @@ ${generateBookContent().join('\n\n---\n\n')}
         
         {/* Tab Navigation */}
         <div className="flex justify-center gap-1 mt-0 mb-1 px-2">
-          <button
-            onClick={() => setActiveTab('read')}
-            className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-all ${
-              activeTab === 'read'
-                ? 'bg-blue-600 text-white shadow-lg'
-                : 'bg-white/10 text-white/70 hover:bg-white/20'
-            }`}
-          >
-            <BookIcon className="w-3 h-3" />
-            مطالعه کتاب
-          </button>
+          {!isInteractive && (
+            <button
+              onClick={() => setActiveTab('read')}
+              className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-all ${
+                activeTab === 'read'
+                  ? 'bg-blue-600 text-white shadow-lg'
+                  : 'bg-white/10 text-white/70 hover:bg-white/20'
+              }`}
+            >
+              <BookIcon className="w-3 h-3" />
+              مطالعه کتاب
+            </button>
+          )}
           <button
             onClick={() => setActiveTab('info')}
             className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-all ${
@@ -161,7 +173,7 @@ ${generateBookContent().join('\n\n---\n\n')}
 
         <div className="overflow-y-auto flex-1 relative">
           {/* Reading Tab */}
-          {activeTab === 'read' && (
+          {activeTab === 'read' && !isInteractive && (
             <div className="flex flex-col h-full">
               <div className="flex-1 flex justify-center items-center px-4 py-2">
                 <FlipBook 
@@ -185,21 +197,35 @@ ${generateBookContent().join('\n\n---\n\n')}
                     className="w-full h-96 object-cover rounded-lg shadow-2xl transform hover:scale-105 transition-transform duration-300"
                   />
                   
-                  {/* Download Button */}
-                  <Button
-                    onClick={handleDownload}
-                    className="w-full mt-4 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white"
-                  >
-                    <Download className="w-4 h-4 mr-2" />
-                    دانلود کتاب
-                  </Button>
+                  {/* Interactive Story Button or Download Button */}
+                  {isInteractive ? (
+                    <Button
+                      onClick={handleStartInteractiveStory}
+                      className="w-full mt-4 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white"
+                    >
+                      <Play className="w-4 h-4 mr-2" />
+                      شروع داستان تعاملی
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={handleDownload}
+                      className="w-full mt-4 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white"
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      دانلود کتاب
+                    </Button>
+                  )}
                 </div>
               </div>
               
               {/* Book Details */}
               <div className="lg:col-span-2 space-y-6">
                 <div>
-                  <Badge className="bg-blue-500/20 text-blue-300 mb-4 text-lg px-4 py-2">
+                  <Badge className={`mb-4 text-lg px-4 py-2 ${
+                    isInteractive 
+                      ? 'bg-purple-500/20 text-purple-300' 
+                      : 'bg-blue-500/20 text-blue-300'
+                  }`}>
                     {book.category}
                   </Badge>
                   

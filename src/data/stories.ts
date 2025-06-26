@@ -1,4 +1,3 @@
-
 import { Story } from '@/types';
 
 export const stories: Story[] = [
@@ -386,6 +385,421 @@ export const stories: Story[] = [
         options: [],
         isEnding: true,
         endingType: 'happy'
+      }
+    ]
+  },
+  {
+    id: "magical-forest",
+    title: "جنگل جادویی",
+    description: "ماجراجویی در جنگل پر از موجودات جادویی",
+    startBranchId: "forest-entrance",
+    branches: [
+      {
+        id: "forest-entrance",
+        title: "ورودی جنگل",
+        content: "تو وارد جنگلی جادویی شده‌ای. دو مسیر پیش رویت است: یکی به سمت درختان بلند و دیگری به سمت نهری کوچک.",
+        options: [
+          {
+            id: "path1",
+            text: "برو به سمت درختان بلند",
+            nextBranchId: "tall-trees"
+          },
+          {
+            id: "path2", 
+            text: "برو به سمت نهر کوچک",
+            nextBranchId: "small-river"
+          }
+        ]
+      },
+      {
+        id: "tall-trees",
+        title: "درختان بلند",
+        content: "در میان درختان بلند، یک پرنده سخنگو ملاقاتت می‌کند. او می‌گوید که گنجی مخفی در جنگل است.",
+        options: [
+          {
+            id: "follow-bird",
+            text: "پرنده را دنبال کن",
+            nextBranchId: "treasure-found"
+          },
+          {
+            id: "ignore-bird",
+            text: "پرنده را نادیده بگیر",
+            nextBranchId: "lost-in-forest"
+          }
+        ]
+      },
+      {
+        id: "small-river",
+        title: "نهر کوچک",
+        content: "کنار نهر، یک ماهی طلایی می‌بینی که سه آرزو به تو می‌دهد.",
+        options: [
+          {
+            id: "wish-wisdom",
+            text: "آرزوی خرد کن",
+            nextBranchId: "wisdom-ending"
+          },
+          {
+            id: "wish-treasure",
+            text: "آرزوی گنج کن", 
+            nextBranchId: "treasure-found"
+          }
+        ]
+      },
+      {
+        id: "treasure-found",
+        title: "کشف گنج",
+        content: "تبریک! گنج جادویی جنگل را پیدا کردی. این گنج قدرت درک زبان حیوانات را به تو می‌دهد.",
+        options: [],
+        isEnding: true,
+        endingType: "happy"
+      },
+      {
+        id: "wisdom-ending",
+        title: "پایان خردمندانه",
+        content: "با انتخاب خرد، تو حکیم جنگل شدی و همه موجودات از تو کمک می‌خواهند.",
+        options: [],
+        isEnding: true,
+        endingType: "happy"
+      },
+      {
+        id: "lost-in-forest",
+        title: "گم شدن در جنگل",
+        content: "متأسفانه در جنگل گم شدی، اما یاد گرفتی که همیشه به حیوانات گوش دهی.",
+        options: [],
+        isEnding: true,
+        endingType: "neutral"
+      }
+    ]
+  },
+  {
+    id: "ancient-cave",
+    title: "راز غار کهن",
+    description: "ماجراجویی باستان‌شناسی در غاری مرموز",
+    startBranchId: "cave-entrance",
+    branches: [
+      {
+        id: "cave-entrance",
+        title: "ورودی غار",
+        content: "تو یک باستان‌شناس هستی که وارد غاری باستانی شده‌ای. دو مسیر پیش رو داری: یکی به سمت صدایی مرموز و دیگری به سمت کتیبه‌ای قدیمی.",
+        options: [
+          {
+            id: "follow-sound",
+            text: "به سمت صدا",
+            nextBranchId: "mysterious-sound"
+          },
+          {
+            id: "examine-inscription", 
+            text: "بررسی کتیبه",
+            nextBranchId: "ancient-inscription"
+          }
+        ]
+      },
+      {
+        id: "mysterious-sound",
+        title: "صدای مرموز",
+        content: "صدای یک موجود زنده را می‌شنوی. آیا به او نزدیک می‌شوی یا مخفی می‌مانی؟",
+        options: [
+          {
+            id: "approach-creature",
+            text: "نزدیک شدن",
+            nextBranchId: "ancient-guardian"
+          },
+          {
+            id: "stay-hidden",
+            text: "مخفی ماندن",
+            nextBranchId: "safe-escape"
+          }
+        ]
+      },
+      {
+        id: "ancient-inscription",
+        title: "کتیبه باستانی",
+        content: "کتیبه حاوی نقشه‌ای به گنج است، اما تله‌ای فعال شده! آیا تله را خنثی می‌کنی یا فرار می‌کنی؟",
+        options: [
+          {
+            id: "disable-trap",
+            text: "خنثی کردن تله",
+            nextBranchId: "treasure-chamber"
+          },
+          {
+            id: "escape-trap",
+            text: "فرار",
+            nextBranchId: "safe-escape"
+          }
+        ]
+      },
+      {
+        id: "ancient-guardian",
+        title: "نگهبان باستانی",
+        content: "موجود یک نگهبان باستانی است که گنج را به تو می‌دهد! تو رازهای غار را کشف کردی.",
+        options: [],
+        isEnding: true,
+        endingType: "happy"
+      },
+      {
+        id: "treasure-chamber",
+        title: "اتاق گنج",
+        content: "تله را خنثی کردی و گنج باستانی را یافتی! این کشف تاریخی بزرگی است.",
+        options: [],
+        isEnding: true,
+        endingType: "happy"
+      },
+      {
+        id: "safe-escape",
+        title: "فرار امن",
+        content: "از غار خارج شدی، اما راز آن را کشف نکردی. شاید بعداً بتوانی دوباره سعی کنی.",
+        options: [],
+        isEnding: true,
+        endingType: "neutral"
+      }
+    ]
+  },
+  {
+    id: "space-journey",
+    title: "سفر به ستاره‌ها",
+    description: "ماجراجویی علمی‌تخیلی در فضا",
+    startBranchId: "space-signal",
+    branches: [
+      {
+        id: "space-signal",
+        title: "سیگنال فضایی",
+        content: "تو یک فضانورد در یک سفینه فضایی هستی. سیگنالی ناشناس دریافت می‌کنی. آیا به سمت سیگنال می‌روی یا به مسیر اصلی ادامه می‌دهی؟",
+        options: [
+          {
+            id: "follow-signal",
+            text: "به سمت سیگنال",
+            nextBranchId: "alien-encounter"
+          },
+          {
+            id: "continue-path",
+            text: "ادامه مسیر",
+            nextBranchId: "asteroid-belt"
+          }
+        ]
+      },
+      {
+        id: "alien-encounter",
+        title: "ملاقات با بیگانگان",
+        content: "یک سفینه بیگانه ظاهر می‌شود. آیا با آن‌ها ارتباط برقرار می‌کنی یا مخفی می‌مانی؟",
+        options: [
+          {
+            id: "communicate",
+            text: "ارتباط برقرار کردن",
+            nextBranchId: "peaceful-aliens"
+          },
+          {
+            id: "hide",
+            text: "مخفی ماندن",
+            nextBranchId: "return-to-base"
+          }
+        ]
+      },
+      {
+        id: "asteroid-belt",
+        title: "کمربند شهاب‌سنگ",
+        content: "سفینه‌ات به یک کمربند شهاب‌سنگ برخورد می‌کند. آیا سعی می‌کنی از آن عبور کنی یا مسیر را تغییر می‌دهی؟",
+        options: [
+          {
+            id: "navigate-through",
+            text: "عبور از شهاب‌سنگ‌ها",
+            nextBranchId: "successful-navigation"
+          },
+          {
+            id: "change-route",
+            text: "تغییر مسیر",
+            nextBranchId: "return-to-base"
+          }
+        ]
+      },
+      {
+        id: "peaceful-aliens",
+        title: "بیگانگان دوستانه",
+        content: "بیگانگان دوستانه هستند و فناوری پیشرفته‌ای به تو می‌دهند! ماموریت با موفقیت انجام شد.",
+        options: [],
+        isEnding: true,
+        endingType: "happy"
+      },
+      {
+        id: "successful-navigation",
+        title: "موفقیت در مسیریابی",
+        content: "با موفقیت از شهاب‌سنگ‌ها عبور کردی و به مقصد رسیدی! مهارت‌های خلبانی فوق‌العاده‌ای داری.",
+        options: [],
+        isEnding: true,
+        endingType: "happy"
+      },
+      {
+        id: "return-to-base",
+        title: "بازگشت به پایگاه",
+        content: "به پایگاه بازگشتی، اما ماموریت ناتمام ماند. حداقل با امنیت برگشتی.",
+        options: [],
+        isEnding: true,
+        endingType: "neutral"
+      }
+    ]
+  },
+  {
+    id: "caravanserai-mystery",
+    title: "معمای کاروانسرا",
+    description: "کارآگاهی تاریخی در دوره صفویه",
+    startBranchId: "theft-report",
+    branches: [
+      {
+        id: "theft-report",
+        title: "گزارش سرقت",
+        content: "تو یک کارآگاه در کاروانسرای دوره صفویه هستی. گنجی دزدیده شده. دو سرنخ داری: ردپا در حیاط یا نامه‌ای مشکوک.",
+        options: [
+          {
+            id: "follow-footprints",
+            text: "دنبال ردپا",
+            nextBranchId: "courtyard-clues"
+          },
+          {
+            id: "examine-letter",
+            text: "بررسی نامه",
+            nextBranchId: "suspicious-letter"
+          }
+        ]
+      },
+      {
+        id: "courtyard-clues",
+        title: "سرنخ‌های حیاط",
+        content: "ردپا به انبار منتهی می‌شود. آیا داخل انبار می‌روی یا نگهبان را بازجویی می‌کنی؟",
+        options: [
+          {
+            id: "enter-storage",
+            text: "ورود به انبار",
+            nextBranchId: "storage-discovery"
+          },
+          {
+            id: "question-guard",
+            text: "بازجویی نگهبان",
+            nextBranchId: "guard-testimony"
+          }
+        ]
+      },
+      {
+        id: "suspicious-letter",
+        title: "نامه مشکوک",
+        content: "نامه حاوی پیامی رمزنگاری‌شده است. آیا رمز را حل می‌کنی یا به دنبال نویسنده می‌گردی؟",
+        options: [
+          {
+            id: "decode-message",
+            text: "حل رمز",
+            nextBranchId: "decoded-location"
+          },
+          {
+            id: "find-writer",
+            text: "جست‌وجوی نویسنده",
+            nextBranchId: "guard-testimony"
+          }
+        ]
+      },
+      {
+        id: "storage-discovery",
+        title: "کشف در انبار",
+        content: "گنج را در انبار پیدا کردی! دزد دستگیر شد و راز کاروانسرا حل شد.",
+        options: [],
+        isEnding: true,
+        endingType: "happy"
+      },
+      {
+        id: "decoded-location",
+        title: "مکان رمزگشایی‌شده",
+        content: "رمز تو را به مخفیگاه دزد هدایت کرد! کارآگاهی عالی انجام دادی.",
+        options: [],
+        isEnding: true,
+        endingType: "happy"
+      },
+      {
+        id: "guard-testimony",
+        title: "شهادت نگهبان",
+        content: "نگهبان بی‌گناه بود و سرنخ جدیدی نداد. معما حل نشد، اما حداقل بی‌گناهی او ثابت شد.",
+        options: [],
+        isEnding: true,
+        endingType: "neutral"
+      }
+    ]
+  },
+  {
+    id: "haunted-house",
+    title: "خانه تسخیرشده",
+    description: "ماجراجویی ترسناک در خانه مرموز",
+    startBranchId: "house-entrance",
+    branches: [
+      {
+        id: "house-entrance",
+        title: "ورود به خانه",
+        content: "تو وارد یک خانه تسخیرشده شده‌ای. صدایی از طبقه بالا می‌شنوی و دری در زیرزمین باز است.",
+        options: [
+          {
+            id: "go-upstairs",
+            text: "طبقه بالا",
+            nextBranchId: "upstairs-mystery"
+          },
+          {
+            id: "go-basement",
+            text: "زیرزمین",
+            nextBranchId: "basement-secrets"
+          }
+        ]
+      },
+      {
+        id: "upstairs-mystery",
+        title: "راز طبقه بالا",
+        content: "یک کتاب جادویی پیدا می‌کنی. آیا آن را باز می‌کنی یا به دنبال صاحبش می‌گردی؟",
+        options: [
+          {
+            id: "open-book",
+            text: "باز کردن کتاب",
+            nextBranchId: "magical-revelation"
+          },
+          {
+            id: "find-owner",
+            text: "جست‌وجوی صاحب",
+            nextBranchId: "safe-exit"
+          }
+        ]
+      },
+      {
+        id: "basement-secrets",
+        title: "اسرار زیرزمین",
+        content: "یک صندوق قفل‌شده می‌بینی. آیا قفل را می‌شکنی یا به بالا بازمی‌گردی؟",
+        options: [
+          {
+            id: "break-lock",
+            text: "شکستن قفل",
+            nextBranchId: "chest-contents"
+          },
+          {
+            id: "return-upstairs",
+            text: "بازگشت به بالا",
+            nextBranchId: "safe-exit"
+          }
+        ]
+      },
+      {
+        id: "magical-revelation",
+        title: "آشکار شدن جادو",
+        content: "کتاب نفرین را آزاد کرد، اما راز خانه را کشف کردی! حالا می‌دانی چطور ارواح را آرام کنی.",
+        options: [],
+        isEnding: true,
+        endingType: "happy"
+      },
+      {
+        id: "chest-contents",
+        title: "محتویات صندوق",
+        content: "صندوق حاوی مدارک قدیمی بود که راز خانه را فاش کرد! تاریخ تراژیک خانواده را کشف کردی.",
+        options: [],
+        isEnding: true,
+        endingType: "happy"
+      },
+      {
+        id: "safe-exit",
+        title: "خروج امن",
+        content: "از خانه فرار کردی، اما راز آن را کشف نکردی. گاهی فرار بهترین انتخاب است.",
+        options: [],
+        isEnding: true,
+        endingType: "neutral"
       }
     ]
   }

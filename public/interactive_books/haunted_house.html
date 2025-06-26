@@ -1,0 +1,115 @@
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>خانه تسخیرشده</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Vazir', sans-serif;
+      touch-action: manipulation;
+    }
+    .choice-button {
+      transition: transform 0.2s;
+    }
+    .choice-button:active {
+      transform: scale(0.95);
+    }
+  </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+  <div class="bg-white p-6 rounded-lg shadow-lg max-w-2xl w-full">
+    <h1 id="story-title" class="text-2xl font-bold text-center mb-4">خانه تسخیرشده</h1>
+    <p id="story-text" class="text-lg mb-6 text-justify"></p>
+    <div id="choices" class="flex flex-col gap-4"></div>
+    <p id="score" class="text-center text-lg mt-4 font-semibold"></p>
+    <button id="restart" class="hidden mt-4 w-full bg-blue-500 text-white py-2 rounded-lg choice-button" onclick="startStory()">شروع دوباره</button>
+  </div>
+
+  <script>
+    let score = 0;
+    let currentNode;
+
+    const storyNodes = {
+      start: {
+        text: "تو وارد یک خانه تسخیرشده شده‌ای. صدایی از طبقه بالا می‌شنوی و دری در زیرزمین باز است. به کجا می‌روی؟",
+        choices: [
+          { text: "طبقه بالا", next: "upstairs", score: 10 },
+          { text: "زیرزمین", next: "basement", score: 5 }
+        ]
+      },
+      upstairs: {
+        text: "یک کتاب جادویی پیدا می‌کنی. آیا آن را باز می‌کنی یا به دنبال صاحبش می‌گردی؟",
+        choices: [
+          { text: "باز کردن کتاب", next: "book", score: 15 },
+          { text: "جست‌وجوی صاحب", next: "escape", score: 5 }
+        ]
+      },
+      basement: {
+        text: "یک صندوق قفل‌شده می‌بینی. آیا قفل را می‌شکنی یا به بالا بازمی‌گردی؟",
+        choices: [
+          { text: "شکستن قفل", next: "chest", score: 20 },
+          { text: "بازگشت به بالا", next: "escape", score: 10 }
+        ]
+      },
+      book: {
+        text: "کتاب نفرین را آزاد کرد، اما راز خانه را کشف کردی! برنده شدی!",
+        choices: [],
+        end: true
+      },
+      chest: {
+        text: "صندوق حاوی مدارک قدیمی بود که راز خانه را فاش کرد! برنده شدی!",
+        choices: [],
+        end: true
+      },
+      escape: {
+        text: "از خانه فرار کردی، اما راز آن را کشف نکردی. پایان داستان.",
+        choices: [],
+        end: true
+      }
+    };
+
+    function startStory() {
+      score = 0;
+      currentNode = storyNodes.start;
+      document.getElementById('restart').classList.add('hidden');
+      updateUI();
+    }
+
+    function updateUI() {
+      document.getElementById('story-text').innerText = currentNode.text;
+      document.getElementById('score').innerText = `امتیاز: ${score}`;
+      
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      
+      if (currentNode.choices.length === 0) {
+        document.getElementById('restart').classList.remove('hidden');
+        localStorage.setItem('hauntedHouseScore', score);
+        return;
+      }
+
+      currentNode.choices.forEach(choice => {
+        const button = document.createElement('button');
+        button.innerText = choice.text;
+        button.className = 'bg-green-500 text-white py-3 px-6 rounded-lg text-lg choice-button';
+        button.onclick = () => {
+          score += choice.score;
+          currentNode = storyNodes[choice.next];
+          updateUI();
+        };
+        choicesDiv.appendChild(button);
+      });
+    }
+
+    const link = document.createElement('link');
+    link.href = 'https://cdn.fontcdn.ir/Font/Persian/Vazir/Vazir.css';
+    link.rel = 'stylesheet';
+    document.head.appendChild(link);
+
+    startStory();
+  </script>
+</body>
+</html>

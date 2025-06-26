@@ -1,0 +1,115 @@
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>معمای کاروانسرا</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Vazir', sans-serif;
+      touch-action: manipulation;
+    }
+    .choice-button {
+      transition: transform 0.2s;
+    }
+    .choice-button:active {
+      transform: scale(0.95);
+    }
+  </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+  <div class="bg-white p-6 rounded-lg shadow-lg max-w-2xl w-full">
+    <h1 id="story-title" class="text-2xl font-bold text-center mb-4">معمای کاروانسرا</h1>
+    <p id="story-text" class="text-lg mb-6 text-justify"></p>
+    <div id="choices" class="flex flex-col gap-4"></div>
+    <p id="score" class="text-center text-lg mt-4 font-semibold"></p>
+    <button id="restart" class="hidden mt-4 w-full bg-blue-500 text-white py-2 rounded-lg choice-button" onclick="startStory()">شروع دوباره</button>
+  </div>
+
+  <script>
+    let score = 0;
+    let currentNode;
+
+    const storyNodes = {
+      start: {
+        text: "تو یک کارآگاه در کاروانسرای دوره صفویه هستی. گنجی دزدیده شده. دو سرنخ داری: ردپا در حیاط یا نامه‌ای مشکوک. کدام را دنبال می‌کنی؟",
+        choices: [
+          { text: "دنبال ردپا", next: "footprints", score: 10 },
+          { text: "بررسی نامه", next: "letter", score: 5 }
+        ]
+      },
+      footprints: {
+        text: "ردپا به انبار منتهی می‌شود. آیا داخل انبار می‌روی یا نگهبان را بازجویی می‌کنی؟",
+        choices: [
+          { text: "ورود به انبار", next: "storage", score: 15 },
+          { text: "بازجویی نگهبان", next: "guard", score: 5 }
+        ]
+      },
+      letter: {
+        text: "نامه حاوی پیامی رمزنگاری‌شده است. آیا رمز را حل می‌کنی یا به دنبال نویسنده می‌گردی؟",
+        choices: [
+          { text: "حل رمز", next: "decode", score: 20 },
+          { text: "جست‌وجوی نویسنده", next: "guard", score: 10 }
+        ]
+      },
+      storage: {
+        text: "گنج را در انبار پیدا کردی! دزد دستگیر شد!",
+        choices: [],
+        end: true
+      },
+      decode: {
+        text: "رمز تو را به مخفیگاه دزد هدایت کرد! برنده شدی!",
+        choices: [],
+        end: true
+      },
+      guard: {
+        text: "نگهبان بی‌گناه بود و سرنخ جدیدی نداد. معما حل نشد. پایان داستان.",
+        choices: [],
+        end: true
+      }
+    };
+
+    function startStory() {
+      score = 0;
+      currentNode = storyNodes.start;
+      document.getElementById('restart').classList.add('hidden');
+      updateUI();
+    }
+
+    function updateUI() {
+      document.getElementById('story-text').innerText = currentNode.text;
+      document.getElementById('score').innerText = `امتیاز: ${score}`;
+      
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      
+      if (currentNode.choices.length === 0) {
+        document.getElementById('restart').classList.remove('hidden');
+        localStorage.setItem('caravanseraiMysteryScore', score);
+        return;
+      }
+
+      currentNode.choices.forEach(choice => {
+        const button = document.createElement('button');
+        button.innerText = choice.text;
+        button.className = 'bg-green-500 text-white py-3 px-6 rounded-lg text-lg choice-button';
+        button.onclick = () => {
+          score += choice.score;
+          currentNode = storyNodes[choice.next];
+          updateUI();
+        };
+        choicesDiv.appendChild(button);
+      });
+    }
+
+    const link = document.createElement('link');
+    link.href = 'https://cdn.fontcdn.ir/Font/Persian/Vazir/Vazir.css';
+    link.rel = 'stylesheet';
+    document.head.appendChild(link);
+
+    startStory();
+  </script>
+</body>
+</html>

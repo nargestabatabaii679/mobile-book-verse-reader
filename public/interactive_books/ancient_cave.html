@@ -1,0 +1,115 @@
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>راز غار کهن</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Vazir', sans-serif;
+      touch-action: manipulation;
+    }
+    .choice-button {
+      transition: transform 0.2s;
+    }
+    .choice-button:active {
+      transform: scale(0.95);
+    }
+  </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+  <div class="bg-white p-6 rounded-lg shadow-lg max-w-2xl w-full">
+    <h1 id="story-title" class="text-2xl font-bold text-center mb-4">راز غار کهن</h1>
+    <p id="story-text" class="text-lg mb-6 text-justify"></p>
+    <div id="choices" class="flex flex-col gap-4"></div>
+    <p id="score" class="text-center text-lg mt-4 font-semibold"></p>
+    <button id="restart" class="hidden mt-4 w-full bg-blue-500 text-white py-2 rounded-lg choice-button" onclick="startStory()">شروع دوباره</button>
+  </div>
+
+  <script>
+    let score = 0;
+    let currentNode;
+
+    const storyNodes = {
+      start: {
+        text: "تو یک باستان‌شناس هستی که وارد غاری باستانی شده‌ای. دو مسیر پیش رو داری: یکی به سمت صدایی مرموز و دیگری به سمت کتیبه‌ای قدیمی. کدام را انتخاب می‌کنی؟",
+        choices: [
+          { text: "به سمت صدا", next: "sound", score: 10 },
+          { text: "بررسی کتیبه", next: "inscription", score: 5 }
+        ]
+      },
+      sound: {
+        text: "صدای یک موجود زنده را می‌شنوی. آیا به او نزدیک می‌شوی یا مخفی می‌مانی؟",
+        choices: [
+          { text: "نزدیک شدن", next: "creature", score: 15 },
+          { text: "مخفی ماندن", next: "escape", score: 5 }
+        ]
+      },
+      inscription: {
+        text: "کتیبه حاوی نقشه‌ای به گنج است، اما تله‌ای فعال شده! آیا تله را خنثی می‌کنی یا فرار می‌کنی؟",
+        choices: [
+          { text: "خنثی کردن تله", next: "treasure", score: 20 },
+          { text: "فرار", next: "escape", score: 10 }
+        ]
+      },
+      creature: {
+        text: "موجود یک نگهبان باستانی است که گنج را به تو می‌دهد! برنده شدی!",
+        choices: [],
+        end: true
+      },
+      treasure: {
+        text: "تله را خنثی کردی و گنج را یافتی! برنده شدی!",
+        choices: [],
+        end: true
+      },
+      escape: {
+        text: "از غار خارج شدی، اما راز آن را کشف نکردی. پایان داستان.",
+        choices: [],
+        end: true
+      }
+    };
+
+    function startStory() {
+      score = 0;
+      currentNode = storyNodes.start;
+      document.getElementById('restart').classList.add('hidden');
+      updateUI();
+    }
+
+    function updateUI() {
+      document.getElementById('story-text').innerText = currentNode.text;
+      document.getElementById('score').innerText = `امتیاز: ${score}`;
+      
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      
+      if (currentNode.choices.length === 0) {
+        document.getElementById('restart').classList.remove('hidden');
+        localStorage.setItem('ancientCaveScore', score);
+        return;
+      }
+
+      currentNode.choices.forEach(choice => {
+        const button = document.createElement('button');
+        button.innerText = choice.text;
+        button.className = 'bg-green-500 text-white py-3 px-6 rounded-lg text-lg choice-button';
+        button.onclick = () => {
+          score += choice.score;
+          currentNode = storyNodes[choice.next];
+          updateUI();
+        };
+        choicesDiv.appendChild(button);
+      });
+    }
+
+    const link = document.createElement('link');
+    link.href = 'https://cdn.fontcdn.ir/Font/Persian/Vazir/Vazir.css';
+    link.rel = 'stylesheet';
+    document.head.appendChild(link);
+
+    startStory();
+  </script>
+</body>
+</html>

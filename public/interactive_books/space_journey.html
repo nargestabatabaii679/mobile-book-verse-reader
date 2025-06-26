@@ -1,0 +1,115 @@
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>سفر به ستاره‌ها</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Vazir', sans-serif;
+      touch-action: manipulation;
+    }
+    .choice-button {
+      transition: transform 0.2s;
+    }
+    .choice-button:active {
+      transform: scale(0.95);
+    }
+  </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+  <div class="bg-white p-6 rounded-lg shadow-lg max-w-2xl w-full">
+    <h1 id="story-title" class="text-2xl font-bold text-center mb-4">سفر به ستاره‌ها</h1>
+    <p id="story-text" class="text-lg mb-6 text-justify"></p>
+    <div id="choices" class="flex flex-col gap-4"></div>
+    <p id="score" class="text-center text-lg mt-4 font-semibold"></p>
+    <button id="restart" class="hidden mt-4 w-full bg-blue-500 text-white py-2 rounded-lg choice-button" onclick="startStory()">شروع دوباره</button>
+  </div>
+
+  <script>
+    let score = 0;
+    let currentNode;
+
+    const storyNodes = {
+      start: {
+        text: "تو یک فضانورد در یک سفینه فضایی هستی. سیگنالی ناشناس دریافت می‌کنی. آیا به سمت سیگنال می‌روی یا به مسیر اصلی ادامه می‌دهی؟",
+        choices: [
+          { text: "به سمت سیگنال", next: "signal", score: 10 },
+          { text: "ادامه مسیر", next: "path", score: 5 }
+        ]
+      },
+      signal: {
+        text: "یک سفینه بیگانه ظاهر می‌شود. آیا با آن‌ها ارتباط برقرار می‌کنی یا مخفی می‌مانی؟",
+        choices: [
+          { text: "ارتباط برقرار کردن", next: "alien", score: 15 },
+          { text: "مخفی ماندن", next: "escape", score: 5 }
+        ]
+      },
+      path: {
+        text: "سفینه‌ات به یک کمربند شهاب‌سنگ برخورد می‌کند. آیا سعی می‌کنی از آن عبور کنی یا مسیر را تغییر می‌دهی؟",
+        choices: [
+          { text: "عبور از شهاب‌سنگ‌ها", next: "asteroids", score: 20 },
+          { text: "تغییر مسیر", next: "escape", score: 10 }
+        ]
+      },
+      alien: {
+        text: "بیگانگان فناوری پیشرفته‌ای به تو می‌دهند! ماموریت موفق شد!",
+        choices: [],
+        end: true
+      },
+      asteroids: {
+        text: "با موفقیت از شهاب‌سنگ‌ها عبور کردی و به مقصد رسیدی! برنده شدی!",
+        choices: [],
+        end: true
+      },
+      escape: {
+        text: "به پایگاه بازگشتی، اما ماموریت ناتمام ماند. پایان داستان.",
+        choices: [],
+        end: true
+      }
+    };
+
+    function startStory() {
+      score = 0;
+      currentNode = storyNodes.start;
+      document.getElementById('restart').classList.add('hidden');
+      updateUI();
+    }
+
+    function updateUI() {
+      document.getElementById('story-text').innerText = currentNode.text;
+      document.getElementById('score').innerText = `امتیاز: ${score}`;
+      
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      
+      if (currentNode.choices.length === 0) {
+        document.getElementById('restart').classList.remove('hidden');
+        localStorage.setItem('spaceJourneyScore', score);
+        return;
+      }
+
+      currentNode.choices.forEach(choice => {
+        const button = document.createElement('button');
+        button.innerText = choice.text;
+        button.className = 'bg-green-500 text-white py-3 px-6 rounded-lg text-lg choice-button';
+        button.onclick = () => {
+          score += choice.score;
+          currentNode = storyNodes[choice.next];
+          updateUI();
+        };
+        choicesDiv.appendChild(button);
+      });
+    }
+
+    const link = document.createElement('link');
+    link.href = 'https://cdn.fontcdn.ir/Font/Persian/Vazir/Vazir.css';
+    link.rel = 'stylesheet';
+    document.head.appendChild(link);
+
+    startStory();
+  </script>
+</body>
+</html>

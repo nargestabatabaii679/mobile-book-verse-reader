@@ -4,7 +4,8 @@ import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Edit, Trash2, Eye, Search } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Edit, Trash2, Eye, Search, Sparkles } from 'lucide-react';
 import { Book } from '@/types';
 
 interface BookManagementTableProps {
@@ -22,17 +23,31 @@ export const BookManagementTable: React.FC<BookManagementTableProps> = ({
 }) => {
   const [titleSearch, setTitleSearch] = useState('');
   const [authorSearch, setAuthorSearch] = useState('');
+  const [showInteractiveOnly, setShowInteractiveOnly] = useState(false);
 
   const filteredBooks = books.filter(book => {
     const titleMatch = book.title.toLowerCase().includes(titleSearch.toLowerCase());
     const authorMatch = book.author.toLowerCase().includes(authorSearch.toLowerCase());
-    return titleMatch && authorMatch;
+    const interactiveMatch = showInteractiveOnly ? book.interactiveStoryId : true;
+    return titleMatch && authorMatch && interactiveMatch;
   });
+
+  const interactiveBooks = books.filter(book => book.interactiveStoryId);
+  const regularBooks = books.filter(book => !book.interactiveStoryId);
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>مدیریت کتاب‌ها</CardTitle>
+        <CardTitle className="flex items-center gap-2">
+          مدیریت کتاب‌ها
+          <div className="flex gap-2 text-sm">
+            <Badge variant="secondary">{books.length} کل</Badge>
+            <Badge variant="default" className="bg-purple-600">
+              <Sparkles className="w-3 h-3 mr-1" />
+              {interactiveBooks.length} تعاملی
+            </Badge>
+          </div>
+        </CardTitle>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -55,12 +70,23 @@ export const BookManagementTable: React.FC<BookManagementTableProps> = ({
             />
           </div>
         </div>
+        <div className="flex gap-2 mt-4">
+          <Button
+            variant={showInteractiveOnly ? "default" : "outline"}
+            onClick={() => setShowInteractiveOnly(!showInteractiveOnly)}
+            className="flex items-center gap-2"
+          >
+            <Sparkles className="w-4 h-4" />
+            {showInteractiveOnly ? 'نمایش همه' : 'فقط داستان‌های تعاملی'}
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>نوع</TableHead>
                 <TableHead>عنوان</TableHead>
                 <TableHead>نویسنده</TableHead>
                 <TableHead>دسته‌بندی</TableHead>
@@ -72,9 +98,23 @@ export const BookManagementTable: React.FC<BookManagementTableProps> = ({
             <TableBody>
               {filteredBooks.map((book) => (
                 <TableRow key={book.id}>
+                  <TableCell>
+                    {book.interactiveStoryId ? (
+                      <Badge className="bg-purple-600 text-white">
+                        <Sparkles className="w-3 h-3 mr-1" />
+                        تعاملی
+                      </Badge>
+                    ) : (
+                      <Badge variant="outline">معمولی</Badge>
+                    )}
+                  </TableCell>
                   <TableCell className="font-medium">{book.title}</TableCell>
                   <TableCell>{book.author}</TableCell>
-                  <TableCell>{book.category}</TableCell>
+                  <TableCell>
+                    <Badge variant={book.category === 'داستان تعاملی' ? 'default' : 'secondary'}>
+                      {book.category}
+                    </Badge>
+                  </TableCell>
                   <TableCell>{book.pages}</TableCell>
                   <TableCell>{book.rating}/5</TableCell>
                   <TableCell>
@@ -112,6 +152,7 @@ export const BookManagementTable: React.FC<BookManagementTableProps> = ({
           
           {filteredBooks.length === 0 && (
             <div className="text-center py-8 text-gray-500">
+              <Sparkles className="w-12 h-12 mx-auto mb-4 text-gray-300" />
               هیچ کتابی با این معیارهای جستجو یافت نشد
             </div>
           )}

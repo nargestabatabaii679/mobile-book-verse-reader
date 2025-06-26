@@ -235,6 +235,7 @@ export const books: Book[] = [
     downloadUrl: '/downloads/chehel-sotoon.pdf',
     pagesContent: ['نمونه متن چهل ستون...', 'قسمت دوم...', 'خاتمه کتاب...']
   },
+  // Interactive Books - Updated with correct category
   {
     id: '16',
     title: 'ماجراجویی در جنگل جادویی',
@@ -281,6 +282,39 @@ export const books: Book[] = [
     ageRange: '10-16 سال',
     interactiveStoryId: 'pirate-treasure',
     downloadUrl: '/downloads/interactive-pirate.pdf',
+    pagesContent: ['داستان تعاملی - لطفاً از حالت داستان تعاملی استفاده کنید']
+  },
+  // Additional Interactive Books
+  {
+    id: '19',
+    title: 'رمز و راز قلعه اسرارآمیز',
+    author: 'سارا محمدی',
+    category: 'داستان تعاملی',
+    pages: 35,
+    coverUrl: 'https://images.unsplash.com/photo-1520637836862-4d197d17c10a?w=400&h=600&fit=crop',
+    description: 'کشف رازهای قلعه‌ای کهن در قلب کوهستان. هر انتخاب شما به حقیقت جدیدی می‌رسد.',
+    publishYear: 2024,
+    rating: 4.9,
+    isbn: '978-964-111-555-6',
+    ageRange: '12-18 سال',
+    interactiveStoryId: 'castle-mystery',
+    downloadUrl: '/downloads/interactive-castle.pdf',
+    pagesContent: ['داستان تعاملی - لطفاً از حالت داستان تعاملی استفاده کنید']
+  },
+  {
+    id: '20',
+    title: 'سفر به سیاره رنگین‌کمان',
+    author: 'احمد نوری',
+    category: 'داستان تعاملی',
+    pages: 28,
+    coverUrl: 'https://images.unsplash.com/photo-1446776877081-d282a0f896e2?w=400&h=600&fit=crop',
+    description: 'ماجراجویی فضایی در سیاره‌ای پر از موجودات عجیب و غریب. انتخاب‌های شما سرنوشت کهکشان را تعیین می‌کند.',
+    publishYear: 2024,
+    rating: 4.5,
+    isbn: '978-964-111-666-7',
+    ageRange: '8-16 سال',
+    interactiveStoryId: 'rainbow-planet',
+    downloadUrl: '/downloads/interactive-space.pdf',
     pagesContent: ['داستان تعاملی - لطفاً از حالت داستان تعاملی استفاده کنید']
   }
 ];

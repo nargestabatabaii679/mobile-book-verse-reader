@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,11 +13,12 @@ import { useAddBook } from '@/hooks/useBooks';
 import { toast } from '@/components/ui/use-toast';
 
 interface AddBookFormProps {
-  onBookAdded: () => void;
+  onAddBook?: (book: Partial<Book>) => void;
+  onBookAdded?: () => void;
 }
 
-export const AddBookForm: React.FC<AddBookFormProps> = ({ onBookAdded }) => {
-  const { mutate: addBook, isLoading } = useAddBook();
+export const AddBookForm: React.FC<AddBookFormProps> = ({ onAddBook, onBookAdded }) => {
+  const { mutate: addBook, isPending } = useAddBook();
   const [isInteractive, setIsInteractive] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
@@ -54,7 +54,7 @@ export const AddBookForm: React.FC<AddBookFormProps> = ({ onBookAdded }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.title || !formData.author || !formData.category) {
+    if (!formData.title || !formData.author || (!isInteractive && !formData.category)) {
       toast({
         title: "خطا",
         description: "لطفاً فیلدهای اجباری را پر کنید",
@@ -87,37 +87,41 @@ export const AddBookForm: React.FC<AddBookFormProps> = ({ onBookAdded }) => {
       interactiveStoryId: isInteractive ? formData.interactiveStoryId : undefined
     };
 
-    addBook(newBook as Book, {
-      onSuccess: () => {
-        toast({
-          title: "موفقیت",
-          description: `کتاب ${isInteractive ? 'تعاملی' : ''} با موفقیت اضافه شد`
-        });
-        setFormData({
-          title: '',
-          author: '',
-          translator: '',
-          category: '',
-          pages: '',
-          coverUrl: '',
-          description: '',
-          publishYear: '',
-          rating: '',
-          isbn: '',
-          ageRange: '',
-          interactiveStoryId: ''
-        });
-        setIsInteractive(false);
-        onBookAdded();
-      },
-      onError: (error) => {
-        toast({
-          title: "خطا",
-          description: "خطا در افزودن کتاب",
-          variant: "destructive"
-        });
-      }
-    });
+    if (onAddBook) {
+      onAddBook(newBook);
+    } else {
+      addBook(newBook as Book, {
+        onSuccess: () => {
+          toast({
+            title: "موفقیت",
+            description: `کتاب ${isInteractive ? 'تعاملی' : ''} با موفقیت اضافه شد`
+          });
+          setFormData({
+            title: '',
+            author: '',
+            translator: '',
+            category: '',
+            pages: '',
+            coverUrl: '',
+            description: '',
+            publishYear: '',
+            rating: '',
+            isbn: '',
+            ageRange: '',
+            interactiveStoryId: ''
+          });
+          setIsInteractive(false);
+          if (onBookAdded) onBookAdded();
+        },
+        onError: (error) => {
+          toast({
+            title: "خطا",
+            description: "خطا در افزودن کتاب",
+            variant: "destructive"
+          });
+        }
+      });
+    }
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -326,13 +330,13 @@ export const AddBookForm: React.FC<AddBookFormProps> = ({ onBookAdded }) => {
 
           <Button 
             type="submit" 
-            disabled={isLoading}
+            disabled={isPending}
             className={`w-full ${isInteractive 
               ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700' 
               : ''
             }`}
           >
-            {isLoading ? 'در حال افزودن...' : (
+            {isPending ? 'در حال افزودن...' : (
               <>
                 <Plus className="w-4 h-4 mr-2" />
                 افزودن {isInteractive ? 'داستان تعاملی' : 'کتاب'}

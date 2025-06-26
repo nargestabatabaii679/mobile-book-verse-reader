@@ -138,7 +138,7 @@ const InteractiveShelf: React.FC<InteractiveShelfProps> = ({ books }) => {
       </div>
 
       {/* CSS for custom scrollbar */}
-      <style jsx>{`
+      <style>{`
         .interactive-shelf-scroll::-webkit-scrollbar {
           height: 6px;
         }

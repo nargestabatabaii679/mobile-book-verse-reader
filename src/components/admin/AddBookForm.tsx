@@ -1,93 +1,130 @@
-import React, { useState, useRef } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
-import { Plus, Upload, X } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Badge } from '@/components/ui/badge';
+import { Sparkles, BookOpen, Plus } from 'lucide-react';
 import { Book } from '@/types';
-import { PdfUpload } from './PdfUpload';
+import { useAddBook } from '@/hooks/useBooks';
+import { toast } from '@/components/ui/use-toast';
 
 interface AddBookFormProps {
-  onAddBook: (book: Partial<Book>) => void;
+  onBookAdded: () => void;
 }
 
-export const AddBookForm: React.FC<AddBookFormProps> = ({ onAddBook }) => {
-  const [coverImage, setCoverImage] = useState<string>('');
-  const [pdfUrl, setPdfUrl] = useState<string>('');
-  const coverFileInputRef = useRef<HTMLInputElement>(null);
-  
-  const form = useForm<Partial<Book>>({
-    defaultValues: {
-      title: '',
-      author: '',
-      translator: '',
-      category: '',
-      pages: 0,
-      coverUrl: '',
-      description: '',
-      publishYear: new Date().getFullYear(),
-      rating: 0,
-      isbn: '',
-      downloadUrl: ''
-    }
+export const AddBookForm: React.FC<AddBookFormProps> = ({ onBookAdded }) => {
+  const { mutate: addBook, isLoading } = useAddBook();
+  const [isInteractive, setIsInteractive] = useState(false);
+  const [formData, setFormData] = useState({
+    title: '',
+    author: '',
+    translator: '',
+    category: '',
+    pages: '',
+    coverUrl: '',
+    description: '',
+    publishYear: '',
+    rating: '',
+    isbn: '',
+    ageRange: '',
+    interactiveStoryId: ''
   });
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const imageUrl = e.target?.result as string;
-        setCoverImage(imageUrl);
-        form.setValue('coverUrl', imageUrl);
-      };
-      reader.readAsDataURL(file);
+  const categories = [
+    'ادبیات کودک',
+    'علمی',
+    'تاریخی', 
+    'ماجراجویی',
+    'آموزشی',
+    'داستان تعاملی'
+  ];
+
+  const ageRanges = [
+    '3-6 سال',
+    '7-10 سال', 
+    '11-14 سال',
+    '15+ سال'
+  ];
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!formData.title || !formData.author || !formData.category) {
+      toast({
+        title: "خطا",
+        description: "لطفاً فیلدهای اجباری را پر کنید",
+        variant: "destructive"
+      });
+      return;
     }
-  };
 
-  const handlePdfUploadSuccess = (url: string) => {
-    setPdfUrl(url);
-    form.setValue('downloadUrl', url);
-  };
-
-  const handleClearPdfUrl = () => {
-    setPdfUrl('');
-    form.setValue('downloadUrl', '');
-  };
-
-  const removeCoverImage = () => {
-    setCoverImage('');
-    form.setValue('coverUrl', '');
-    if (coverFileInputRef.current) {
-      coverFileInputRef.current.value = '';
+    if (isInteractive && !formData.interactiveStoryId) {
+      toast({
+        title: "خطا", 
+        description: "برای داستان تعاملی، شناسه داستان الزامی است",
+        variant: "destructive"
+      });
+      return;
     }
-  };
 
-  const handleAddSingleBook = (data: Partial<Book>) => {
-    const newBook: Book = {
-      id: Date.now().toString(),
-      title: data.title || '',
-      author: data.author || '',
-      translator: data.translator || undefined,
-      category: data.category || '',
-      pages: data.pages || 0,
-      coverUrl: coverImage || data.coverUrl || 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=600&fit=crop',
-      description: data.description || '',
-      publishYear: data.publishYear || new Date().getFullYear(),
-      rating: data.rating || 0,
-      isbn: data.isbn || '',
-      downloadUrl: pdfUrl || data.downloadUrl || ''
+    const newBook: Omit<Book, 'id'> = {
+      title: formData.title,
+      author: formData.author,
+      translator: formData.translator || undefined,
+      category: isInteractive ? 'داستان تعاملی' : formData.category,
+      pages: parseInt(formData.pages) || 100,
+      coverUrl: formData.coverUrl || '/placeholder.svg',
+      description: formData.description,
+      publishYear: parseInt(formData.publishYear) || new Date().getFullYear(),
+      rating: parseFloat(formData.rating) || 0,
+      isbn: formData.isbn,
+      ageRange: formData.ageRange,
+      interactiveStoryId: isInteractive ? formData.interactiveStoryId : undefined
     };
 
-    onAddBook(newBook);
-    toast.success('کتاب با موفقیت اضافه شد');
-    form.reset();
-    setCoverImage('');
-    setPdfUrl('');
+    addBook(newBook as Book, {
+      onSuccess: () => {
+        toast({
+          title: "موفقیت",
+          description: `کتاب ${isInteractive ? 'تعاملی' : ''} با موفقیت اضافه شد`
+        });
+        setFormData({
+          title: '',
+          author: '',
+          translator: '',
+          category: '',
+          pages: '',
+          coverUrl: '',
+          description: '',
+          publishYear: '',
+          rating: '',
+          isbn: '',
+          ageRange: '',
+          interactiveStoryId: ''
+        });
+        setIsInteractive(false);
+        onBookAdded();
+      },
+      onError: (error) => {
+        toast({
+          title: "خطا",
+          description: "خطا در افزودن کتاب",
+          variant: "destructive"
+        });
+      }
+    });
+  };
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
   return (
@@ -96,262 +133,213 @@ export const AddBookForm: React.FC<AddBookFormProps> = ({ onAddBook }) => {
         <CardTitle className="flex items-center gap-2">
           <Plus className="w-5 h-5" />
           افزودن کتاب جدید
+          {isInteractive && (
+            <Badge className="bg-purple-600 text-white">
+              <Sparkles className="w-3 h-3 mr-1" />
+              داستان تعاملی
+            </Badge>
+          )}
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleAddSingleBook)} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* آپلود عکس جلد */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                عکس جلد کتاب
-              </label>
-              <div className="flex items-start gap-4">
-                <div className="flex-1">
-                  <input
-                    ref={coverFileInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="hidden"
-                  />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => coverFileInputRef.current?.click()}
-                    className="w-full h-24 border-2 border-dashed border-gray-300 hover:border-blue-400 transition-colors"
-                  >
-                    <div className="flex flex-col items-center">
-                      <Upload className="w-6 h-6 mb-2 text-gray-400" />
-                      <span className="text-sm text-gray-500">انتخاب عکس جلد</span>
-                    </div>
-                  </Button>
-                </div>
-                
-                {coverImage && (
-                  <div className="relative">
-                    <img 
-                      src={coverImage} 
-                      alt="Cover preview" 
-                      className="w-20 h-24 object-cover rounded border"
-                    />
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="sm"
-                      onClick={removeCoverImage}
-                      className="absolute -top-2 -right-2 w-6 h-6 rounded-full p-0"
-                    >
-                      <X className="w-3 h-3" />
-                    </Button>
-                  </div>
-                )}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Interactive Toggle */}
+          <div className="flex items-center space-x-2 rtl:space-x-reverse p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border">
+            <Switch
+              id="interactive-mode"
+              checked={isInteractive}
+              onCheckedChange={setIsInteractive}
+            />
+            <Label htmlFor="interactive-mode" className="flex items-center gap-2 cursor-pointer">
+              {isInteractive ? (
+                <>
+                  <Sparkles className="w-4 h-4 text-purple-600" />
+                  داستان تعاملی
+                </>
+              ) : (
+                <>
+                  <BookOpen className="w-4 h-4 text-gray-600" />
+                  کتاب معمولی
+                </>
+              )}
+            </Label>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="title">عنوان کتاب *</Label>
+              <Input
+                id="title"
+                value={formData.title}
+                onChange={(e) => handleInputChange('title', e.target.value)}
+                placeholder="عنوان کتاب را وارد کنید"
+                required
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="author">نویسنده *</Label>
+              <Input
+                id="author"
+                value={formData.author}
+                onChange={(e) => handleInputChange('author', e.target.value)}
+                placeholder="نام نویسنده"
+                required
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="translator">مترجم</Label>
+              <Input
+                id="translator"
+                value={formData.translator}
+                onChange={(e) => handleInputChange('translator', e.target.value)}
+                placeholder="نام مترجم (اختیاری)"
+              />
+            </div>
+
+            {!isInteractive && (
+              <div>
+                <Label htmlFor="category">دسته‌بندی *</Label>
+                <Select value={formData.category} onValueChange={(value) => handleInputChange('category', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="انتخاب دسته‌بندی" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.filter(cat => cat !== 'داستان تعاملی').map((category) => (
+                      <SelectItem key={category} value={category}>
+                        {category}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
-            </div>
+            )}
 
-            {/* آپلود فایل PDF */}
-            <div className="mb-4">
-              <PdfUpload
-                onUploadSuccess={handlePdfUploadSuccess}
-                currentUrl={pdfUrl}
-                onClearUrl={handleClearPdfUrl}
+            <div>
+              <Label htmlFor="pages">تعداد صفحات</Label>
+              <Input
+                id="pages"
+                type="number"
+                value={formData.pages}
+                onChange={(e) => handleInputChange('pages', e.target.value)}
+                placeholder="100"
+                min="1"
               />
             </div>
 
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>عنوان کتاب</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="عنوان کتاب را وارد کنید" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="author"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>نام نویسنده</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="نام نویسنده را وارد کنید" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="translator"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>نام مترجم (اختیاری)</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="نام مترجم را وارد کنید" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="category"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>دسته‌بندی</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="bg-white">
-                        <SelectValue placeholder="دسته‌بندی را انتخاب کنید" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent className="bg-white border border-gray-200 shadow-lg">
-                      <SelectItem value="ادبیات">ادبیات</SelectItem>
-                      <SelectItem value="تاریخ">تاریخ</SelectItem>
-                      <SelectItem value="علوم">علوم</SelectItem>
-                      <SelectItem value="فلسفه">فلسفه</SelectItem>
-                      <SelectItem value="کودک و نوجوان">کودک و نوجوان</SelectItem>
-                      <SelectItem value="روانشناسی">روانشناسی</SelectItem>
-                      <SelectItem value="اقتصاد">اقتصاد</SelectItem>
-                      <SelectItem value="هنر">هنر</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="pages"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>تعداد صفحات ({form.watch('category') || 'دسته‌بندی'})</FormLabel>
-                  <FormControl>
-                    <Input 
-                      {...field} 
-                      type="number" 
-                      placeholder="تعداد صفحات را وارد کنید"
-                      onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                      value={field.value || ''}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="isbn"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>شماره ISBN</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="شماره ISBN" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="publishYear"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>سال انتشار</FormLabel>
-                  <Select onValueChange={(value) => field.onChange(parseInt(value))} defaultValue={field.value?.toString()}>
-                    <FormControl>
-                      <SelectTrigger className="bg-white">
-                        <SelectValue placeholder="سال انتشار را انتخاب کنید" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent className="bg-white border border-gray-200 shadow-lg">
-                      {Array.from({ length: 30 }, (_, i) => {
-                        const year = new Date().getFullYear() - i;
-                        return (
-                          <SelectItem key={year} value={year.toString()}>
-                            {year}
-                          </SelectItem>
-                        );
-                      })}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="rating"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>امتیاز (نظر خوانندگان)</FormLabel>
-                  <Select onValueChange={(value) => field.onChange(parseFloat(value))} defaultValue={field.value?.toString()}>
-                    <FormControl>
-                      <SelectTrigger className="bg-white">
-                        <SelectValue placeholder="امتیاز خوانندگان را انتخاب کنید" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent className="bg-white border border-gray-200 shadow-lg">
-                      <SelectItem value="1">1 ستاره</SelectItem>
-                      <SelectItem value="2">2 ستاره</SelectItem>
-                      <SelectItem value="3">3 ستاره</SelectItem>
-                      <SelectItem value="4">4 ستاره</SelectItem>
-                      <SelectItem value="5">5 ستاره</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="coverUrl"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>آدرس تصویر جلد (اختیاری)</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="آدرس URL تصویر جلد" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="md:col-span-2">
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>توضیحات کتاب</FormLabel>
-                    <FormControl>
-                      <Textarea {...field} placeholder="توضیحات و خلاصه کتاب" rows={4} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+            <div>
+              <Label htmlFor="publishYear">سال انتشار</Label>
+              <Input
+                id="publishYear"
+                type="number"
+                value={formData.publishYear}
+                onChange={(e) => handleInputChange('publishYear', e.target.value)}
+                placeholder="1402"
+                min="1300"
+                max={new Date().getFullYear()}
               />
             </div>
 
-            <div className="md:col-span-2">
-              <Button type="submit" className="w-full">
-                افزودن کتاب
-              </Button>
+            <div>
+              <Label htmlFor="rating">امتیاز (از 5)</Label>
+              <Input
+                id="rating"
+                type="number"
+                step="0.1"
+                min="0"
+                max="5"
+                value={formData.rating}
+                onChange={(e) => handleInputChange('rating', e.target.value)}
+                placeholder="4.5"
+              />
             </div>
-          </form>
-        </Form>
+
+            <div>
+              <Label htmlFor="ageRange">گروه سنی</Label>
+              <Select value={formData.ageRange} onValueChange={(value) => handleInputChange('ageRange', value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="انتخاب گروه سنی" />
+                </SelectTrigger>
+                <SelectContent>
+                  {ageRanges.map((range) => (
+                    <SelectItem key={range} value={range}>
+                      {range}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="isbn">شابک (ISBN)</Label>
+              <Input
+                id="isbn"
+                value={formData.isbn}
+                onChange={(e) => handleInputChange('isbn', e.target.value)}
+                placeholder="978-600-xxx-xxx-x"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="coverUrl">آدرس تصویر جلد</Label>
+              <Input
+                id="coverUrl"
+                value={formData.coverUrl}
+                onChange={(e) => handleInputChange('coverUrl', e.target.value)}
+                placeholder="https://example.com/cover.jpg"
+              />
+            </div>
+
+            {/* Interactive Story ID field */}
+            {isInteractive && (
+              <div className="md:col-span-2">
+                <Label htmlFor="interactiveStoryId" className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-purple-600" />
+                  شناسه داستان تعاملی *
+                </Label>
+                <Input
+                  id="interactiveStoryId"
+                  value={formData.interactiveStoryId}
+                  onChange={(e) => handleInputChange('interactiveStoryId', e.target.value)}
+                  placeholder="story-1, magical-forest, ..."
+                  required={isInteractive}
+                  className="border-purple-300 focus:border-purple-500"
+                />
+                <p className="text-sm text-gray-600 mt-1">
+                  این شناسه باید با یکی از داستان‌های موجود در سیستم تطبیق داشته باشد
+                </p>
+              </div>
+            )}
+          </div>
+
+          <div>
+            <Label htmlFor="description">توضیحات</Label>
+            <Textarea
+              id="description"
+              value={formData.description}
+              onChange={(e) => handleInputChange('description', e.target.value)}
+              placeholder="توضیح مختصری از کتاب..."
+              rows={3}
+            />
+          </div>
+
+          <Button 
+            type="submit" 
+            disabled={isLoading}
+            className={`w-full ${isInteractive 
+              ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700' 
+              : ''
+            }`}
+          >
+            {isLoading ? 'در حال افزودن...' : (
+              <>
+                <Plus className="w-4 h-4 mr-2" />
+                افزودن {isInteractive ? 'داستان تعاملی' : 'کتاب'}
+              </>
+            )}
+          </Button>
+        </form>
       </CardContent>
     </Card>
   );

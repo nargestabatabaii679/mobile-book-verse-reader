@@ -1,13 +1,13 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { ChevronDown, Search, X } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Slider } from '@/components/ui/slider';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Search, Filter, X, Sparkles, BookOpen, Users } from 'lucide-react';
 import { FilterOptions } from '@/types';
 
 interface FilterTabsProps {
@@ -25,254 +25,240 @@ const FilterTabs: React.FC<FilterTabsProps> = ({
   activeFiltersCount,
   currentFilters,
   minPages,
-  maxPages,
+  maxPages
 }) => {
-  const [showMobileFilters, setShowMobileFilters] = useState(false);
+  const [localFilters, setLocalFilters] = useState<FilterOptions>(currentFilters);
+  const [showInteractiveOnly, setShowInteractiveOnly] = useState(false);
 
-  // Custom filter icon component matching the mobile design
-  const FilterIcon = () => (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="h-4 w-4">
-      <line x1="2" y1="4" x2="14" y2="4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-      <circle cx="5" cy="4" r="1.5" fill="currentColor"/>
-      <line x1="2" y1="8" x2="14" y2="8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-      <circle cx="9" cy="8" r="1.5" fill="currentColor"/>
-      <line x1="2" y1="12" x2="14" y2="12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-      <circle cx="6" cy="12" r="1.5" fill="currentColor"/>
-    </svg>
-  );
-
-  const pageRanges = [
-    { value: 'all', label: 'همه تعداد صفحات' },
-    { value: '0-100', label: 'کمتر از 100 صفحه' },
-    { value: '100-200', label: '100-200 صفحه' },
-    { value: '200-300', label: '200-300 صفحه' },
-    { value: '300+', label: 'بیش از 300 صفحه' },
-  ];
-
-  const ageRanges = [
-    { value: '', label: 'همه گروه‌های سنی' },
-    { value: '0-6', label: '۰-۶ سال (کودکان)' },
-    { value: '7-12', label: '۷-۱۲ سال (نوجوانان)' },
-    { value: '13-17', label: '۱۳-۱۷ سال (نوجوانان بزرگ)' },
-    { value: '18+', label: '۱۸+ سال (بزرگسالان)' },
-  ];
-
-  const handleSearchChange = (value: string) => {
-    onFilterChange({
-      ...currentFilters,
-      search: value,
-    });
+  const updateFilter = (key: keyof FilterOptions, value: any) => {
+    const newFilters = { ...localFilters, [key]: value };
+    setLocalFilters(newFilters);
+    onFilterChange(newFilters);
   };
 
-  const handleAuthorSearchChange = (value: string) => {
-    onFilterChange({
-      ...currentFilters,
-      authorSearch: value,
-    });
+  const clearAllFilters = () => {
+    const clearedFilters: FilterOptions = {
+      search: '',
+      authorSearch: '',
+      categories: [],
+      sortBy: '',
+      minPages: minPages,
+      maxPages: maxPages,
+      ageRange: ''
+    };
+    setLocalFilters(clearedFilters);
+    setShowInteractiveOnly(false);
+    onFilterChange(clearedFilters);
   };
 
-  const handleCategoryChange = (category: string) => {
-    const newCategories = category === 'all' ? [] : [category];
-    onFilterChange({
-      ...currentFilters,
-      categories: newCategories,
-    });
-  };
-
-  const handlePagesChange = (pages: string) => {
-    let newMinPages = minPages;
-    let newMaxPages = maxPages;
+  const toggleInteractiveFilter = () => {
+    const newShowInteractive = !showInteractiveOnly;
+    setShowInteractiveOnly(newShowInteractive);
     
-    if (pages === '0-100') {
-      newMinPages = 0;
-      newMaxPages = 100;
-    } else if (pages === '100-200') {
-      newMinPages = 100;
-      newMaxPages = 200;
-    } else if (pages === '200-300') {
-      newMinPages = 200;
-      newMaxPages = 300;
-    } else if (pages === '300+') {
-      newMinPages = 300;
-      newMaxPages = 1000;
+    if (newShowInteractive) {
+      const interactiveFilters = {
+        ...localFilters,
+        categories: ['داستان تعاملی']
+      };
+      setLocalFilters(interactiveFilters);
+      onFilterChange(interactiveFilters);
     } else {
-      newMinPages = 0;
-      newMaxPages = 1000;
+      const allFilters = {
+        ...localFilters,
+        categories: []
+      };
+      setLocalFilters(allFilters);
+      onFilterChange(allFilters);
     }
-    
-    onFilterChange({
-      ...currentFilters,
-      minPages: newMinPages,
-      maxPages: newMaxPages,
-    });
   };
 
-  const handleAgeRangeChange = (ageRange: string) => {
-    onFilterChange({
-      ...currentFilters,
-      ageRange: ageRange,
-    });
+  const toggleCategory = (category: string) => {
+    const newCategories = localFilters.categories.includes(category)
+      ? localFilters.categories.filter(c => c !== category)
+      : [...localFilters.categories, category];
+    updateFilter('categories', newCategories);
   };
 
-  const getCategoryLabel = () => {
-    if (currentFilters.categories.length === 0) return 'همه دسته‌ها';
-    return currentFilters.categories[0];
-  };
-
-  const getPagesLabel = () => {
-    if (currentFilters.minPages === 0 && currentFilters.maxPages === 1000) return 'همه تعداد صفحات';
-    if (currentFilters.minPages === 0 && currentFilters.maxPages === 100) return 'کمتر از 100 صفحه';
-    if (currentFilters.minPages === 100 && currentFilters.maxPages === 200) return '100-200 صفحه';
-    if (currentFilters.minPages === 200 && currentFilters.maxPages === 300) return '200-300 صفحه';
-    if (currentFilters.minPages === 300) return 'بیش از 300 صفحه';
-    return 'همه تعداد صفحات';
-  };
-
-  const getAgeRangeLabel = () => {
-    if (!currentFilters.ageRange) return 'همه گروه‌های سنی';
-    const range = ageRanges.find(r => r.value === currentFilters.ageRange);
-    return range ? range.label : 'همه گروه‌های سنی';
-  };
-
-  const allCategories = [
-    { value: 'all', label: 'همه دسته‌ها' },
-    ...categories.map(cat => ({ value: cat, label: cat }))
+  const sortOptions = [
+    { value: 'title-asc', label: 'عنوان (الف-ی)' },
+    { value: 'title-desc', label: 'عنوان (ی-الف)' },
+    { value: 'author-asc', label: 'نویسنده (الف-ی)' },
+    { value: 'rating-desc', label: 'بالاترین امتیاز' },
+    { value: 'pages-asc', label: 'کمترین صفحات' },
+    { value: 'pages-desc', label: 'بیشترین صفحات' },
+    { value: 'year-desc', label: 'جدیدترین' }
   ];
+
+  const ageRanges = ['3-6 سال', '7-10 سال', '11-14 سال', '15+ سال'];
 
   return (
-    <div className="mb-4">
-      {/* Mobile Filter Toggle Button */}
-      <div className="block md:hidden mb-3">
-        <Button
-          onClick={() => setShowMobileFilters(!showMobileFilters)}
-          variant="outline"
-          className="w-full bg-white/20 border-white/30 text-white hover:bg-white/30 hover:text-white transition-all duration-200 justify-between"
-        >
-          <div className="flex items-center gap-2">
-            <FilterIcon />
-            <span>فیلترها</span>
-            {activeFiltersCount > 0 && (
-              <div className="text-xs bg-blue-500/50 px-2 py-1 rounded-full">
-                {activeFiltersCount}
-              </div>
-            )}
-          </div>
-          {showMobileFilters ? <X className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-        </Button>
-      </div>
+    <Card className="mb-6 bg-white/10 backdrop-blur-sm border-white/20">
+      <CardContent className="p-6">
+        <Tabs defaultValue="search" className="w-full">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+            <TabsList className="grid w-full grid-cols-4 lg:w-auto bg-white/20">
+              <TabsTrigger value="search" className="flex items-center gap-2 text-white data-[state=active]:bg-white/30">
+                <Search className="w-4 h-4" />
+                جستجو
+              </TabsTrigger>
+              <TabsTrigger value="category" className="flex items-center gap-2 text-white data-[state=active]:bg-white/30">
+                <Filter className="w-4 h-4" />
+                دسته‌بندی
+              </TabsTrigger>
+              <TabsTrigger value="details" className="flex items-center gap-2 text-white data-[state=active]:bg-white/30">
+                <BookOpen className="w-4 h-4" />
+                جزئیات
+              </TabsTrigger>
+              <TabsTrigger value="sort" className="flex items-center gap-2 text-white data-[state=active]:bg-white/30">
+                <Users className="w-4 h-4" />
+                مرتب‌سازی
+              </TabsTrigger>
+            </TabsList>
 
-      {/* Filter Content */}
-      <div className={`bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-3 transition-all duration-300 ${
-        showMobileFilters ? 'block' : 'hidden md:block'
-      }`}>
-        <div className="flex flex-wrap gap-3 items-center justify-center">
-          {/* Search for Book Title - Made more compact */}
-          <div className="relative min-w-[180px]">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 h-4 w-4" />
-            <Input
-              type="text"
-              placeholder="جستجو در عنوان..."
-              value={currentFilters.search || ''}
-              onChange={(e) => handleSearchChange(e.target.value)}
-              className="bg-white/20 border-white/30 text-white placeholder:text-white/60 hover:bg-white/30 focus:bg-white/30 pl-10 h-8 text-sm"
-            />
-          </div>
-
-          {/* Search for Author - Made more compact */}
-          <div className="relative min-w-[180px]">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 h-4 w-4" />
-            <Input
-              type="text"
-              placeholder="جستجو نویسنده..."
-              value={currentFilters.authorSearch || ''}
-              onChange={(e) => handleAuthorSearchChange(e.target.value)}
-              className="bg-white/20 border-white/30 text-white placeholder:text-white/60 hover:bg-white/30 focus:bg-white/30 pl-10 h-8 text-sm"
-            />
-          </div>
-
-          {/* Category Dropdown - Made more compact */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button 
-                variant="outline" 
-                size="sm"
-                className="bg-white/20 border-white/30 text-white hover:bg-white/30 hover:text-white transition-all duration-200 min-w-[140px] justify-between h-8 text-sm"
+            <div className="flex items-center gap-2">
+              {/* Interactive Books Filter Toggle */}
+              <Button
+                onClick={toggleInteractiveFilter}
+                variant={showInteractiveOnly ? "default" : "outline"}
+                className={`flex items-center gap-2 ${
+                  showInteractiveOnly 
+                    ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white' 
+                    : 'bg-white/20 border-white/30 text-white hover:bg-white/30'
+                }`}
               >
-                {getCategoryLabel()}
-                <ChevronDown className="h-3 w-3 ml-1" />
+                <Sparkles className="w-4 h-4" />
+                {showInteractiveOnly ? 'همه کتاب‌ها' : 'فقط تعاملی'}
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="bg-white border border-gray-200 shadow-lg min-w-[140px] z-50">
-              {allCategories.map((category) => (
-                <DropdownMenuItem
-                  key={category.value}
-                  onClick={() => handleCategoryChange(category.value)}
-                  className="text-gray-900 hover:bg-gray-100 cursor-pointer text-sm"
-                >
-                  {category.label}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
 
-          {/* Pages Dropdown - Made more compact */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button 
-                variant="outline" 
-                size="sm"
-                className="bg-white/20 border-white/30 text-white hover:bg-white/30 hover:text-white transition-all duration-200 min-w-[140px] justify-between h-8 text-sm"
-              >
-                {getPagesLabel()}
-                <ChevronDown className="h-3 w-3 ml-1" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="bg-white border border-gray-200 shadow-lg min-w-[140px] z-50">
-              {pageRanges.map((range) => (
-                <DropdownMenuItem
-                  key={range.value}
-                  onClick={() => handlePagesChange(range.value)}
-                  className="text-gray-900 hover:bg-gray-100 cursor-pointer text-sm"
+              {activeFiltersCount > 0 && (
+                <Button
+                  onClick={clearAllFilters}
+                  variant="outline"
+                  size="sm"
+                  className="bg-white/20 border-white/30 text-white hover:bg-white/30"
                 >
-                  {range.label}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          {/* Age Range Dropdown - Made more compact */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button 
-                variant="outline" 
-                size="sm"
-                className="bg-white/20 border-white/30 text-white hover:bg-white/30 hover:text-white transition-all duration-200 min-w-[140px] justify-between h-8 text-sm"
-              >
-                {getAgeRangeLabel()}
-                <ChevronDown className="h-3 w-3 ml-1" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="bg-white border border-gray-200 shadow-lg min-w-[140px] z-50">
-              {ageRanges.map((range) => (
-                <DropdownMenuItem
-                  key={range.value}
-                  onClick={() => handleAgeRangeChange(range.value)}
-                  className="text-gray-900 hover:bg-gray-100 cursor-pointer text-sm"
-                >
-                  {range.label}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          {activeFiltersCount > 0 && (
-            <div className="text-white/80 text-xs bg-blue-500/30 px-2 py-1 rounded-full hidden md:block">
-              فیلتر: {activeFiltersCount}
+                  <X className="w-4 h-4 mr-2" />
+                  پاک کردن ({activeFiltersCount})
+                </Button>
+              )}
             </div>
-          )}
-        </div>
-      </div>
-    </div>
+          </div>
+
+          <TabsContent value="search" className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-white">جستجو در عنوان</label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <Input
+                    type="text"
+                    placeholder="نام کتاب را وارد کنید..."
+                    value={localFilters.search}
+                    onChange={(e) => updateFilter('search', e.target.value)}
+                    className="pl-10 bg-white/20 border-white/30 text-white placeholder:text-gray-300"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-white">جستجو در نویسنده</label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <Input
+                    type="text"
+                    placeholder="نام نویسنده را وارد کنید..."
+                    value={localFilters.authorSearch}
+                    onChange={(e) => updateFilter('authorSearch', e.target.value)}
+                    className="pl-10 bg-white/20 border-white/30 text-white placeholder:text-gray-300"
+                  />
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="category" className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-white">دسته‌بندی‌ها</label>
+              <div className="flex flex-wrap gap-2">
+                {categories.map((category) => (
+                  <Badge
+                    key={category}
+                    variant={localFilters.categories.includes(category) ? "default" : "outline"}
+                    className={`cursor-pointer transition-colors ${
+                      localFilters.categories.includes(category)
+                        ? category === 'داستان تعاملی'
+                          ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700'
+                          : 'bg-blue-600 text-white hover:bg-blue-700'
+                        : 'bg-white/20 border-white/30 text-white hover:bg-white/30'
+                    }`}
+                    onClick={() => toggleCategory(category)}
+                  >
+                    {category === 'داستان تعاملی' && <Sparkles className="w-3 h-3 mr-1" />}
+                    {category}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="details" className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-white">گروه سنی</label>
+                <Select value={localFilters.ageRange} onValueChange={(value) => updateFilter('ageRange', value)}>
+                  <SelectTrigger className="bg-white/20 border-white/30 text-white">
+                    <SelectValue placeholder="انتخاب گروه سنی" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">همه گروه‌های سنی</SelectItem>
+                    {ageRanges.map((range) => (
+                      <SelectItem key={range} value={range}>
+                        {range}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="space-y-3">
+                <label className="text-sm font-medium text-white">
+                  تعداد صفحات: {localFilters.minPages} - {localFilters.maxPages}
+                </label>
+                <Slider
+                  value={[localFilters.minPages, localFilters.maxPages]}
+                  onValueChange={([min, max]) => {
+                    updateFilter('minPages', min);
+                    updateFilter('maxPages', max);
+                  }}
+                  max={maxPages}
+                  min={minPages}
+                  step={10}
+                  className="w-full"
+                />
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="sort" className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-white">مرتب‌سازی بر اساس</label>
+              <Select value={localFilters.sortBy} onValueChange={(value) => updateFilter('sortBy', value)}>
+                <SelectTrigger className="bg-white/20 border-white/30 text-white">
+                  <SelectValue placeholder="انتخاب نوع مرتب‌سازی" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">بدون مرتب‌سازی</SelectItem>
+                  {sortOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </CardContent>
+    </Card>
   );
 };
 

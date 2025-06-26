@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Book } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Play, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
+import { Play, ChevronLeft, ChevronRight, Sparkles, BookOpen } from 'lucide-react';
 
 interface InteractiveShelfProps {
   books: Book[];
@@ -24,7 +24,10 @@ const InteractiveShelf: React.FC<InteractiveShelfProps> = ({ books }) => {
     }
   };
 
-  const interactiveBooks = books.filter(book => book.interactiveStoryId);
+  // Filter books that have interactiveStoryId OR are in the interactive category
+  const interactiveBooks = books.filter(book => 
+    book.interactiveStoryId || book.category === 'داستان تعاملی'
+  );
 
   if (interactiveBooks.length === 0) {
     return null;
@@ -33,12 +36,20 @@ const InteractiveShelf: React.FC<InteractiveShelfProps> = ({ books }) => {
   return (
     <section className="mb-8 relative">
       {/* Header */}
-      <div className="flex items-center justify-center gap-3 mb-6">
-        <Sparkles className="w-8 h-8 text-yellow-400" />
-        <h2 className="text-3xl font-bold text-white text-center bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
-          📚 کتاب‌های تعاملی
-        </h2>
-        <Sparkles className="w-8 h-8 text-yellow-400" />
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <Sparkles className="w-8 h-8 text-yellow-400 animate-pulse" />
+          <h2 className="text-3xl font-bold text-white bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
+            قفسه ۴: داستان‌های تعاملی
+          </h2>
+          <Sparkles className="w-8 h-8 text-yellow-400 animate-pulse" />
+        </div>
+        
+        {/* Story Count Badge */}
+        <span className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600/20 to-pink-600/20 text-white px-4 py-2 rounded-full text-sm backdrop-blur-sm border border-purple-300/30">
+          <BookOpen className="w-4 h-4" />
+          {interactiveBooks.length} داستان تعاملی
+        </span>
       </div>
 
       {/* Interactive Books Shelf */}
@@ -82,39 +93,67 @@ const InteractiveShelf: React.FC<InteractiveShelfProps> = ({ books }) => {
                     className="w-full h-48 object-cover rounded-lg"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <div className="absolute top-2 right-2 bg-yellow-500 text-black px-2 py-1 rounded-full text-xs font-bold">
+                  <div className="absolute top-2 right-2 bg-gradient-to-r from-yellow-400 to-yellow-500 text-black px-2 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                    <Sparkles className="w-3 h-3" />
                     تعاملی
                   </div>
+                  {book.ageRange && (
+                    <div className="absolute top-2 left-2 bg-black/70 text-white px-2 py-1 rounded-full text-xs">
+                      {book.ageRange}
+                    </div>
+                  )}
                 </div>
                 
                 <h3 className="text-white font-bold text-lg mb-2 line-clamp-2">
                   {book.title}
                 </h3>
                 
+                <p className="text-gray-300 text-sm mb-2">
+                  نویسنده: {book.author}
+                </p>
+                
                 <p className="text-gray-300 text-sm mb-4 line-clamp-2">
                   {book.description}
                 </p>
 
                 <Button
-                  onClick={() => navigate(`/interactive/${book.interactiveStoryId}`)}
-                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0 group"
+                  onClick={() => {
+                    if (book.interactiveStoryId) {
+                      navigate(`/interactive/${book.interactiveStoryId}`);
+                    } else {
+                      // If no interactive story ID, show a message or handle differently
+                      console.log('کتاب تعاملی بدون شناسه داستان:', book.title);
+                    }
+                  }}
+                  disabled={!book.interactiveStoryId}
+                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0 group disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Play className="w-4 h-4 mr-2 group-hover:animate-pulse" />
-                  شروع ماجراجویی
+                  {book.interactiveStoryId ? 'شروع ماجراجویی' : 'به زودی...'}
                 </Button>
               </CardContent>
             </Card>
           ))}
         </div>
-
-        {/* Story Count Badge */}
-        <div className="text-center mt-4">
-          <span className="inline-flex items-center gap-2 bg-white/10 text-white px-4 py-2 rounded-full text-sm backdrop-blur-sm border border-white/20">
-            <Sparkles className="w-4 h-4" />
-            {interactiveBooks.length} داستان تعاملی موجود
-          </span>
-        </div>
       </div>
+
+      {/* CSS for custom scrollbar */}
+      <style jsx>{`
+        .interactive-shelf-scroll::-webkit-scrollbar {
+          height: 6px;
+        }
+        .interactive-shelf-scroll::-webkit-scrollbar-track {
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 3px;
+        }
+        .interactive-shelf-scroll::-webkit-scrollbar-thumb {
+          background: linear-gradient(90deg, #9333ea, #ec4899);
+          border-radius: 3px;
+        }
+        .interactive-shelf-scroll::-webkit-scrollbar-thumb:hover {
+          background: linear-gradient(90deg, #7c3aed, #db2777);
+        }
+      `}</style>
     </section>
   );
 };

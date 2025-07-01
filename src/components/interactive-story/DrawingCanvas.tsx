@@ -27,26 +27,54 @@ export const DrawingCanvas: React.FC<DrawingCanvasProps> = ({ onSubmit, onPlaySo
     ctx.strokeStyle = '#000';
   };
 
-  const startDrawing = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  const getEventPos = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return { x: 0, y: 0 };
+    
+    const rect = canvas.getBoundingClientRect();
+    
+    if ('touches' in e) {
+      // Touch event
+      const touch = e.touches[0] || e.changedTouches[0];
+      return {
+        x: touch.clientX - rect.left,
+        y: touch.clientY - rect.top
+      };
+    } else {
+      // Mouse event
+      return {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
+      };
+    }
+  };
+
+  const startDrawing = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+    e.preventDefault();
     setIsDrawing(true);
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext('2d');
     if (!canvas || !ctx) return;
     
-    const rect = canvas.getBoundingClientRect();
+    const pos = getEventPos(e);
     ctx.beginPath();
-    ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    ctx.moveTo(pos.x, pos.y);
   };
 
-  const draw = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  const draw = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+    e.preventDefault();
     if (!isDrawing) return;
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext('2d');
     if (!canvas || !ctx) return;
     
-    const rect = canvas.getBoundingClientRect();
-    ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+    const pos = getEventPos(e);
+    ctx.lineTo(pos.x, pos.y);
     ctx.stroke();
+  };
+
+  const stopDrawing = () => {
+    setIsDrawing(false);
   };
 
   const submitDrawing = () => {
@@ -91,11 +119,14 @@ export const DrawingCanvas: React.FC<DrawingCanvasProps> = ({ onSubmit, onPlaySo
               ref={canvasRef}
               width={400}
               height={200}
-              className="border-2 border-purple-400 dark:border-purple-600 rounded-lg cursor-crosshair bg-white dark:bg-slate-800 shadow-lg story-glow"
+              className="border-2 border-purple-400 dark:border-purple-600 rounded-lg cursor-crosshair bg-white dark:bg-slate-800 shadow-lg story-glow touch-none"
               onMouseDown={startDrawing}
               onMouseMove={draw}
-              onMouseUp={() => setIsDrawing(false)}
-              onMouseLeave={() => setIsDrawing(false)}
+              onMouseUp={stopDrawing}
+              onMouseLeave={stopDrawing}
+              onTouchStart={startDrawing}
+              onTouchMove={draw}
+              onTouchEnd={stopDrawing}
             />
             <div className="absolute -top-2 -right-2 text-2xl animate-bounce">🖌️</div>
           </div>

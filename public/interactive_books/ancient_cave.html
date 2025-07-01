@@ -10,22 +10,125 @@
     body {
       font-family: 'Vazir', sans-serif;
       touch-action: manipulation;
+      background: linear-gradient(135deg, #8B4513 0%, #654321 50%, #2F1B14 100%);
+      min-height: 100vh;
     }
+    
+    .story-container {
+      background: rgba(255, 248, 220, 0.95);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(139, 69, 19, 0.3);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      animation: fadeInUp 0.8s ease-out;
+    }
+    
     .choice-button {
-      transition: transform 0.2s;
+      transition: all 0.3s ease;
+      background: linear-gradient(135deg, #8B4513 0%, #A0522D 100%);
+      border: none;
+      box-shadow: 0 4px 15px rgba(139, 69, 19, 0.4);
+      position: relative;
+      overflow: hidden;
     }
+    
+    .choice-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(139, 69, 19, 0.5);
+      background: linear-gradient(135deg, #A0522D 0%, #CD853F 100%);
+    }
+    
     .choice-button:active {
-      transform: scale(0.95);
+      transform: translateY(-1px);
+    }
+    
+    .choice-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,215,0,0.3), transparent);
+      transition: left 0.5s;
+    }
+    
+    .choice-button:hover::before {
+      left: 100%;
+    }
+    
+    .story-title {
+      background: linear-gradient(135deg, #8B4513, #CD853F, #DAA520);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shimmer 2s infinite;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    
+    .story-text {
+      line-height: 1.8;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      color: #5D4037;
+    }
+    
+    .score-display {
+      background: linear-gradient(135deg, #FFD700, #FFA500);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: pulse 2s infinite;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    
+    @keyframes shimmer {
+      0%, 100% { background-position: -200% center; }
+      50% { background-position: 200% center; }
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    
+    @keyframes glow {
+      0%, 100% { box-shadow: 0 0 15px rgba(139, 69, 19, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2); }
+      50% { box-shadow: 0 0 30px rgba(139, 69, 19, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.4); }
+    }
+    
+    .cave-glow {
+      animation: glow 3s infinite;
+    }
+    
+    .torch-flicker {
+      animation: torchFlicker 1.5s infinite;
+    }
+    
+    @keyframes torchFlicker {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      25% { opacity: 0.8; transform: scale(0.95); }
+      50% { opacity: 1; transform: scale(1.05); }
+      75% { opacity: 0.9; transform: scale(0.98); }
     }
   </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
-  <div class="bg-white p-6 rounded-lg shadow-lg max-w-2xl w-full">
-    <h1 id="story-title" class="text-2xl font-bold text-center mb-4">راز غار کهن</h1>
-    <p id="story-text" class="text-lg mb-6 text-justify"></p>
+<body class="flex items-center justify-center min-h-screen p-4">
+  <div class="story-container p-8 rounded-2xl max-w-2xl w-full cave-glow">
+    <h1 id="story-title" class="story-title text-3xl font-bold text-center mb-6">🕯️ راز غار کهن 🏺</h1>
+    <p id="story-text" class="story-text text-lg mb-8 text-justify"></p>
     <div id="choices" class="flex flex-col gap-4"></div>
-    <p id="score" class="text-center text-lg mt-4 font-semibold"></p>
-    <button id="restart" class="hidden mt-4 w-full bg-blue-500 text-white py-2 rounded-lg choice-button" onclick="startStory()">شروع دوباره</button>
+    <p id="score" class="score-display text-center text-xl mt-6 font-bold torch-flicker"></p>
+    <button id="restart" class="hidden mt-6 w-full text-white py-3 rounded-xl text-lg choice-button" onclick="startStory()">✨ شروع دوباره ✨</button>
   </div>
 
   <script>
@@ -94,7 +197,7 @@
       currentNode.choices.forEach(choice => {
         const button = document.createElement('button');
         button.innerText = choice.text;
-        button.className = 'bg-green-500 text-white py-3 px-6 rounded-lg text-lg choice-button';
+        button.className = 'text-white py-3 px-6 rounded-xl text-lg choice-button';
         button.onclick = () => {
           score += choice.score;
           currentNode = storyNodes[choice.next];

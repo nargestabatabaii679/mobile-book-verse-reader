@@ -58,3 +58,6 @@ export interface StoryProgress {
   choicesMade: string[];
   completedAt?: Date;
 }
+
+// Export story game types
+export * from './story-game';

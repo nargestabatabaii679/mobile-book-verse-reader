@@ -118,4 +118,90 @@
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.1);
   }
+
+  /* Story Enhancement Styles */
+  :root {
+    --story-primary: 280 100% 70%;
+    --story-secondary: 320 100% 74%;
+    --story-accent: 45 100% 60%;
+    --story-success: 142 76% 36%;
+    --story-warning: 38 92% 50%;
+    --story-danger: 0 84% 60%;
+    --story-dark: 217 19% 27%;
+    --story-light: 210 40% 98%;
+    
+    --gradient-magical: linear-gradient(135deg, hsl(var(--story-primary)), hsl(var(--story-secondary)));
+    --gradient-haunted: linear-gradient(180deg, hsl(220 26% 14%), hsl(217 19% 27%));
+    --gradient-success: linear-gradient(135deg, hsl(var(--story-success)), hsl(142 76% 46%));
+    --gradient-warning: linear-gradient(135deg, hsl(var(--story-warning)), hsl(48 92% 60%));
+    
+    --shadow-glow: 0 0 20px hsla(var(--story-primary), 0.3);
+    --shadow-haunted: 0 10px 30px -10px hsla(217 19% 27%, 0.5);
+    --shadow-lift: 0 20px 40px -10px hsla(0 0% 0%, 0.2);
+  }
+
+  .story-magical-gradient {
+    background: var(--gradient-magical);
+  }
+
+  .story-haunted-gradient {
+    background: var(--gradient-haunted);
+  }
+
+  .story-glow {
+    box-shadow: var(--shadow-glow);
+  }
+
+  .story-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .story-pulse {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  .story-shimmer {
+    background: linear-gradient(
+      45deg,
+      transparent 30%,
+      hsla(var(--story-primary), 0.5) 50%,
+      transparent 70%
+    );
+    background-size: 200% 200%;
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { 
+      box-shadow: 0 0 10px hsla(var(--story-primary), 0.3);
+      transform: scale(1);
+    }
+    50% { 
+      box-shadow: 0 0 25px hsla(var(--story-primary), 0.6);
+      transform: scale(1.02);
+    }
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% -200%; }
+    100% { background-position: 200% 200%; }
+  }
+
+  @keyframes sparkle {
+    0%, 100% { opacity: 0; transform: scale(0); }
+    50% { opacity: 1; transform: scale(1); }
+  }
+
+  .story-sparkle::before {
+    content: '✨';
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    animation: sparkle 1.5s infinite;
+  }
 }

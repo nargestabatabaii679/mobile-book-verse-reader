@@ -157,44 +157,73 @@ export const HauntedHouseStory: React.FC = () => {
 
   if (!state.gameStarted) {
     return (
-      <Card className="max-w-2xl mx-auto">
-        <CardContent className="p-8 text-center">
-          <h1 className="text-3xl font-bold mb-4">خانه تسخیرشده</h1>
-          <p className="text-lg mb-6">یک ماجراجویی تعاملی با پازل‌های ریاضی و نقاشی</p>
-          <Button onClick={startGame} size="lg" className="text-lg px-8 py-4">
-            شروع داستان
-          </Button>
-          <audio ref={backgroundMusicRef} loop>
-            <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBj" type="audio/wav" />
-          </audio>
-        </CardContent>
-      </Card>
+      <div className="min-h-screen flex items-center justify-center story-haunted-gradient p-4">
+        <Card className="max-w-2xl mx-auto story-glow animate-bounce-in relative overflow-hidden">
+          <div className="absolute inset-0 story-shimmer opacity-20"></div>
+          <CardContent className="relative p-8 text-center">
+            <div className="story-float">
+              <h1 className="text-4xl font-bold mb-6 story-magical-gradient bg-clip-text text-transparent">
+                🏚️ خانه تسخیرشده 🌙
+              </h1>
+            </div>
+            <p className="text-lg mb-8 text-muted-foreground leading-relaxed">
+              یک ماجراجویی تعاملی جادویی با پازل‌های ریاضی، نقاشی و راز‌های مرموز
+            </p>
+            <div className="space-y-4 mb-8">
+              <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
+                <span className="flex items-center gap-1">🧮 پازل ریاضی</span>
+                <span className="flex items-center gap-1">🎨 نقاشی تعاملی</span>
+                <span className="flex items-center gap-1">🔊 جلوه‌های صوتی</span>
+              </div>
+            </div>
+            <Button 
+              onClick={startGame} 
+              size="lg" 
+              className="text-lg px-8 py-4 story-magical-gradient hover:scale-105 transition-all duration-300 story-pulse relative story-sparkle"
+            >
+              ✨ شروع ماجراجویی ✨
+            </Button>
+            <audio ref={backgroundMusicRef} loop>
+              <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjmS1vLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBj" type="audio/wav" />
+            </audio>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
   return (
-    <Card className="max-w-2xl mx-auto animate-fade-in">
-      <CardContent className="p-6">
-        {showMath && (
-          <MathPuzzle onSolved={handleMathSolved} onPlaySound={playStorySound} />
-        )}
-        
-        {showDrawing && (
-          <DrawingCanvas onSubmit={handleDrawingSubmitted} onPlaySound={playStorySound} />
-        )}
-        
-        {!showMath && !showDrawing && (
-          <StoryDisplay
-            title="خانه تسخیرشده"
-            text={currentStoryNode.text}
-            score={state.score}
-            choices={currentStoryNode.choices}
-            isEnd={!!currentStoryNode.end}
-            onChoice={handleChoice}
-            onRestart={restartGame}
-          />
-        )}
-      </CardContent>
-    </Card>
+    <div className="min-h-screen story-haunted-gradient p-4 flex items-center justify-center">
+      <Card className="max-w-2xl mx-auto animate-fade-in story-glow relative overflow-hidden">
+        <div className="absolute inset-0 story-shimmer opacity-10"></div>
+        <CardContent className="relative p-6">
+          {showMath && (
+            <div className="animate-slide-up">
+              <MathPuzzle onSolved={handleMathSolved} onPlaySound={playStorySound} />
+            </div>
+          )}
+          
+          {showDrawing && (
+            <div className="animate-slide-up">
+              <DrawingCanvas onSubmit={handleDrawingSubmitted} onPlaySound={playStorySound} />
+            </div>
+          )}
+          
+          {!showMath && !showDrawing && (
+            <div className="animate-slide-up">
+              <StoryDisplay
+                title="🏚️ خانه تسخیرشده 🌙"
+                text={currentStoryNode.text}
+                score={state.score}
+                choices={currentStoryNode.choices}
+                isEnd={!!currentStoryNode.end}
+                onChoice={handleChoice}
+                onRestart={restartGame}
+              />
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 };

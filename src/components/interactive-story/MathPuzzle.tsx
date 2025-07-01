@@ -60,20 +60,34 @@ export const MathPuzzle: React.FC<MathPuzzleProps> = ({ onSolved, onPlaySound })
   };
 
   return (
-    <Card className="bg-blue-50 border-blue-200">
-      <CardContent className="p-4">
-        <h3 className="font-bold mb-2 text-center">حل معادله برای ادامه!</h3>
-        <p className="text-center mb-4 text-xl">{mathQuestion}</p>
-        <div className="flex justify-center items-center gap-2">
+    <Card className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900 dark:to-indigo-900 border-2 border-blue-300 dark:border-blue-700 story-glow animate-bounce-in">
+      <CardContent className="p-6">
+        <div className="text-center mb-4">
+          <div className="text-4xl mb-2 animate-pulse">🧮</div>
+          <h3 className="font-bold text-lg mb-2 text-blue-800 dark:text-blue-200">
+            حل معادله جادویی برای ادامه!
+          </h3>
+        </div>
+        <div className="bg-white dark:bg-slate-800 rounded-lg p-4 mb-4 border-2 border-dashed border-blue-300 dark:border-blue-600">
+          <p className="text-center text-2xl font-bold text-blue-900 dark:text-blue-100 story-float">
+            {mathQuestion}
+          </p>
+        </div>
+        <div className="flex justify-center items-center gap-3">
           <Input
             type="number"
-            placeholder="پاسخ"
+            placeholder="پاسخ شما"
             value={mathAnswer}
             onChange={(e) => setMathAnswer(e.target.value)}
-            className="w-24 text-center"
+            className="w-32 text-center text-lg border-2 border-blue-300 focus:border-blue-500 bg-white dark:bg-slate-800"
             onKeyPress={(e) => e.key === 'Enter' && checkMathAnswer()}
           />
-          <Button onClick={checkMathAnswer}>تأیید</Button>
+          <Button 
+            onClick={checkMathAnswer}
+            className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-6 py-2 transition-all duration-300 hover:scale-105"
+          >
+            ✨ تأیید ✨
+          </Button>
         </div>
       </CardContent>
     </Card>

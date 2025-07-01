@@ -74,30 +74,48 @@ export const DrawingCanvas: React.FC<DrawingCanvasProps> = ({ onSubmit, onPlaySo
   };
 
   return (
-    <Card className="bg-gray-50 border-gray-300">
-      <CardContent className="p-4">
-        <h3 className="font-bold mb-2 text-center">نقشه خانه را بکشید!</h3>
-        <p className="text-center text-sm text-gray-600 mb-2">
-          با انگشت یا ماوس نقشه‌ای از خانه بکشید
-        </p>
-        <div className="flex justify-center mb-2">
-          <canvas
-            ref={canvasRef}
-            width={400}
-            height={200}
-            className="border border-gray-400 rounded cursor-crosshair bg-white"
-            onMouseDown={startDrawing}
-            onMouseMove={draw}
-            onMouseUp={() => setIsDrawing(false)}
-            onMouseLeave={() => setIsDrawing(false)}
-          />
+    <Card className="bg-gradient-to-br from-purple-50 to-pink-100 dark:from-purple-900 dark:to-pink-900 border-2 border-purple-300 dark:border-purple-700 story-glow animate-bounce-in">
+      <CardContent className="p-6">
+        <div className="text-center mb-4">
+          <div className="text-4xl mb-2 animate-pulse">🎨</div>
+          <h3 className="font-bold text-lg mb-2 text-purple-800 dark:text-purple-200">
+            نقشه خانه جادویی را بکشید!
+          </h3>
+          <p className="text-center text-sm text-purple-600 dark:text-purple-300 mb-4">
+            با انگشت یا ماوس نقشه‌ای از خانه بکشید تا راز آن کشف شود
+          </p>
         </div>
-        <div className="flex justify-center gap-2">
-          <Button variant="destructive" size="sm" onClick={clearCanvas}>
-            پاک کردن
+        <div className="flex justify-center mb-4">
+          <div className="relative">
+            <canvas
+              ref={canvasRef}
+              width={400}
+              height={200}
+              className="border-2 border-purple-400 dark:border-purple-600 rounded-lg cursor-crosshair bg-white dark:bg-slate-800 shadow-lg story-glow"
+              onMouseDown={startDrawing}
+              onMouseMove={draw}
+              onMouseUp={() => setIsDrawing(false)}
+              onMouseLeave={() => setIsDrawing(false)}
+            />
+            <div className="absolute -top-2 -right-2 text-2xl animate-bounce">🖌️</div>
+          </div>
+        </div>
+        <div className="flex justify-center gap-3">
+          <Button 
+            variant="destructive" 
+            size="sm" 
+            onClick={clearCanvas}
+            className="bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 transition-all duration-300 hover:scale-105"
+          >
+            🗑️ پاک کردن
           </Button>
-          <Button variant="default" size="sm" onClick={submitDrawing}>
-            تأیید نقشه
+          <Button 
+            variant="default" 
+            size="sm" 
+            onClick={submitDrawing}
+            className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white transition-all duration-300 hover:scale-105"
+          >
+            ✅ تأیید نقشه
           </Button>
         </div>
       </CardContent>

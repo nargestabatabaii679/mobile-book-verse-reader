@@ -1,0 +1,1 @@
+export { HauntedHouseStory } from './HauntedHouseStory';

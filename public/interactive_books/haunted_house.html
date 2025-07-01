@@ -122,50 +122,55 @@
 
     const storyNodes = {
       start: {
-        text: "تو وارد یک خانه تسخیرشده شده‌ای. صدایی از طبقه بالا می‌شنوی و دری در زیرزمین باز است. به کجا می‌روی؟",
+        text: "تو وارد یک خانه تسخیرشده شده‌ای. صدایی عجیب از طبقه بالا می‌شنوی و دری در زیرزمین باز است. به کجا می‌روی؟",
         choices: [
-          { text: "طبقه بالا", next: "upstairs", score: 10 },
-          { text: "زیرزمین", next: "basement", score: 5 }
+          { text: "طبقه بالا", next: "upstairs", score: 10, sound: "footsteps" },
+          { text: "زیرزمین", next: "basement", score: 5, sound: "door-creak" }
         ]
       },
       upstairs: {
-        text: "یک کتاب جادویی پیدا می‌کنی. کتاب قفل دارد و باید رمز آن را حل کنی!",
+        text: "یک کتاب جادویی پیدا می‌کنی. کتاب قفل دارد و باید رمز ریاضی آن را حل کنی!",
         choices: [],
-        special: "math"
+        special: "math",
+        sound: "mystery"
       },
       basement: {
         text: "یک صندوق قفل‌شده می‌بینی. برای بازکردن آن، باید نقشه‌ای از خانه بکشی تا راه مخفی را پیدا کنی.",
         choices: [],
-        special: "drawing"
+        special: "drawing",
+        sound: "echo"
       },
       mathSolved: {
         text: "کتاب باز شد! آیا آن را می‌خوانی یا به دنبال صاحبش می‌گردی؟",
         choices: [
-          { text: "خواندن کتاب", next: "book", score: 15 },
-          { text: "جست‌وجوی صاحب", next: "escape", score: 5 }
+          { text: "خواندن کتاب", next: "book", score: 15, sound: "page-flip" },
+          { text: "جست‌وجوی صاحب", next: "escape", score: 5, sound: "footsteps" }
         ]
       },
       drawingDone: {
         text: "نقشه تو راه مخفی را نشان داد! حالا می‌توانی صندوق را باز کنی یا به بالا بازگردی.",
         choices: [
-          { text: "بازکردن صندوق", next: "chest", score: 20 },
-          { text: "بازگشت به بالا", next: "escape", score: 10 }
+          { text: "بازکردن صندوق", next: "chest", score: 20, sound: "chest-open" },
+          { text: "بازگشت به بالا", next: "escape", score: 10, sound: "footsteps" }
         ]
       },
       book: {
         text: "کتاب نفرین را آزاد کرد، اما راز خانه را کشف کردی! برنده شدی!",
         choices: [],
-        end: true
+        end: true,
+        sound: "victory"
       },
       chest: {
         text: "صندوق حاوی مدارک قدیمی بود که راز خانه را فاش کرد! برنده شدی!",
         choices: [],
-        end: true
+        end: true,
+        sound: "victory"
       },
       escape: {
         text: "از خانه فرار کردی، اما راز آن را کشف نکردی. پایان داستان.",
         choices: [],
-        end: true
+        end: true,
+        sound: "escape"
       }
     };
 
@@ -191,6 +196,11 @@
       
       document.getElementById('story-text').innerText = currentNode.text;
       document.getElementById('score').innerText = `امتیاز: ${score}`;
+      
+      // Play node sound if available
+      if (currentNode.sound) {
+        setTimeout(() => playStorySound(currentNode.sound), 500);
+      }
       
       // Hide special sections
       document.getElementById('mathSection').classList.add('hidden');
@@ -221,6 +231,9 @@
         button.className = 'bg-green-500 text-white py-3 px-6 rounded-lg text-lg choice-button';
         button.onclick = () => {
           playClickSound();
+          if (choice.sound) {
+            playStorySound(choice.sound);
+          }
           score += choice.score;
           currentNode = storyNodes[choice.next];
           animateTransition();
@@ -385,7 +398,7 @@
     // Audio functions
     function playBackgroundMusic() {
       const music = document.getElementById('backgroundMusic');
-      music.volume = 0.3;
+      music.volume = 0.2;
       music.play().catch(e => console.log('Background music failed:', e));
     }
 
@@ -393,6 +406,68 @@
       const sound = document.getElementById('successSound');
       sound.volume = 0.5;
       sound.play().catch(e => console.log('Success sound failed:', e));
+    }
+
+    function playStorySound(soundType) {
+      try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        let frequency = 440;
+        let duration = 0.3;
+        
+        switch(soundType) {
+          case 'footsteps':
+            frequency = 200;
+            duration = 0.5;
+            break;
+          case 'door-creak':
+            frequency = 150;
+            duration = 1.0;
+            break;
+          case 'mystery':
+            frequency = 660;
+            duration = 0.8;
+            break;
+          case 'echo':
+            frequency = 330;
+            duration = 1.2;
+            break;
+          case 'page-flip':
+            frequency = 880;
+            duration = 0.2;
+            break;
+          case 'chest-open':
+            frequency = 550;
+            duration = 0.6;
+            break;
+          case 'victory':
+            frequency = 1200;
+            duration = 1.0;
+            break;
+          case 'escape':
+            frequency = 400;
+            duration = 0.7;
+            break;
+        }
+        
+        oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+        if (soundType === 'door-creak' || soundType === 'echo') {
+          oscillator.frequency.exponentialRampToValueAtTime(frequency * 0.7, audioContext.currentTime + duration);
+        }
+        
+        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + duration);
+      } catch (e) {
+        console.log('Story sound failed:', e);
+      }
     }
 
     function playClickSound() {

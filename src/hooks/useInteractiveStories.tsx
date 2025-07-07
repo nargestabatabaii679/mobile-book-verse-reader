@@ -46,19 +46,29 @@ export const useInteractiveStories = () => {
   return useQuery({
     queryKey: ['interactive-stories'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('interactive_stories')
-        .select('*')
-        .eq('is_active', true)
-        .order('created_at', { ascending: false });
+      try {
+        const { data, error } = await supabase
+          .from('interactive_stories')
+          .select('*')
+          .eq('is_active', true)
+          .order('created_at', { ascending: false });
 
-      if (error) {
-        console.error('Error fetching interactive stories:', error);
+        if (error) {
+          console.error('Error fetching interactive stories:', error);
+          toast.error('خطا در دریافت داستان‌های تعاملی');
+          throw error;
+        }
+
+        console.log('Interactive stories loaded:', data?.length || 0);
+        return data as InteractiveStory[];
+      } catch (error) {
+        console.error('Network error fetching stories:', error);
+        toast.error('خطا در اتصال به سرور');
         throw error;
       }
-
-      return data as InteractiveStory[];
     },
+    retry: 3,
+    retryDelay: 1000,
   });
 };
 

@@ -33,7 +33,16 @@ const InteractiveShelf: React.FC<InteractiveShelfProps> = ({ books }) => {
   const allInteractiveStories = [...interactiveStories, ...bookInteractiveStories];
 
   if (allInteractiveStories.length === 0 && !isLoading) {
-    return null;
+    return (
+      <section className="mb-8">
+        <div className="flex items-center justify-center p-8">
+          <div className="text-center text-gray-400">
+            <Sparkles className="w-12 h-12 mx-auto mb-4 opacity-50" />
+            <p>هنوز داستان تعاملی موجود نیست</p>
+          </div>
+        </div>
+      </section>
+    );
   }
 
   const getDifficultyColor = (level: string) => {

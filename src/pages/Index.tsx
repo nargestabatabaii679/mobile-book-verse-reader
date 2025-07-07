@@ -8,8 +8,6 @@ import { LibraryShelfView } from '@/components/library/LibraryShelfView';
 import InteractiveShelf from '@/components/library/InteractiveShelf';
 import BookList from '@/components/books/BookList';
 import BookDetailModal from '@/components/book-detail/BookDetailModal';
-import { HauntedHouseStory } from '@/components/interactive-story';
-import { StoryGame } from '@/components/story-game';
 import { useBooks } from '@/hooks/useBooks';
 import { FilterOptions } from '@/types';
 import { Button } from '@/components/ui/button';
@@ -93,16 +91,6 @@ const Index = () => {
       <div className="container mx-auto px-4 py-8">
         {/* Interactive Books Shelf */}
         <InteractiveShelf books={books} />
-
-        {/* Interactive Story Section */}
-        <div className="mb-8">
-          <HauntedHouseStory />
-        </div>
-
-        {/* Story Game Section */}
-        <div className="mb-8">
-          <StoryGame />
-        </div>
 
         {/* Filter Tabs */}
         <FilterTabs

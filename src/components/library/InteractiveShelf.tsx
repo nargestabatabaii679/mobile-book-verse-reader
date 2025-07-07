@@ -104,7 +104,7 @@ const InteractiveShelf: React.FC<InteractiveShelfProps> = ({ books }) => {
           {isLoading ? (
             // Loading skeletons
             [...Array(4)].map((_, i) => (
-              <div key={i} className="flex-shrink-0 w-64 h-80 bg-gradient-to-br from-purple-600/20 to-pink-600/20 backdrop-blur-sm border border-purple-300/30 rounded-lg animate-pulse" />
+              <div key={i} className="flex-shrink-0 w-56 h-72 bg-gradient-to-br from-purple-600/20 to-pink-600/20 backdrop-blur-sm border border-purple-300/30 rounded-lg animate-pulse" />
             ))
           ) : (
             allInteractiveStories.map((story) => {
@@ -133,14 +133,14 @@ const InteractiveShelf: React.FC<InteractiveShelfProps> = ({ books }) => {
               return (
                 <Card
                   key={storyData.id}
-                  className="flex-shrink-0 w-64 bg-gradient-to-br from-purple-600/20 to-pink-600/20 backdrop-blur-sm border-purple-300/30 hover:border-purple-300/50 transition-all duration-300 hover:scale-105 cursor-pointer group"
+                  className="flex-shrink-0 w-56 bg-gradient-to-br from-purple-600/20 to-pink-600/20 backdrop-blur-sm border-purple-300/30 hover:border-purple-300/50 transition-all duration-300 hover:scale-105 cursor-pointer group"
                 >
                   <CardContent className="p-4">
                     <div className="relative mb-4">
                       <img
                         src={storyData.cover_url || '/placeholder.svg'}
                         alt={storyData.title}
-                        className="w-full h-48 object-cover rounded-lg"
+                        className="w-full h-36 object-cover rounded-lg"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                       

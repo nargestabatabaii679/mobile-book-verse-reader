@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import StoryViewer from "./components/story-mode/StoryViewer";
+import InteractiveStoryPlayer from "./components/interactive-story/InteractiveStoryPlayer";
 
 const queryClient = new QueryClient();
 
@@ -21,6 +22,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/interactive/:storyId" element={<StoryViewer />} />
+          <Route path="/interactive/story/:storyId" element={<InteractiveStoryPlayer />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

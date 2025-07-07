@@ -3,3 +3,8 @@ export { MathPuzzle } from './MathPuzzle';
 export { DrawingCanvas } from './DrawingCanvas';
 export { StoryDisplay } from './StoryDisplay';
 export { useAudio } from './useAudio';
+export { TypewriterText } from './TypewriterText';
+export { ParticleEffect } from './ParticleEffect';
+export { MiniGame } from './MiniGame';
+export { InventorySystem } from './InventorySystem';
+export { default as InteractiveStoryPlayer } from './InteractiveStoryPlayer';

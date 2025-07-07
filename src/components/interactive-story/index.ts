@@ -7,4 +7,8 @@ export { TypewriterText } from './TypewriterText';
 export { ParticleEffect } from './ParticleEffect';
 export { MiniGame } from './MiniGame';
 export { InventorySystem } from './InventorySystem';
+export { StoryHeader } from './StoryHeader';
+export { StoryInfo } from './StoryInfo';
+export { GameContent } from './GameContent';
+export { GameEnded } from './GameEnded';
 export { default as InteractiveStoryPlayer } from './InteractiveStoryPlayer';

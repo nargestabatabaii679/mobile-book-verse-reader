@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Play, Trophy, Clock, Star, Package, Zap, Target } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { useInteractiveStories, useStoryNodes } from '@/hooks/useInteractiveStories';
 import { toast } from 'sonner';
-import { TypewriterText } from './TypewriterText';
 import { ParticleEffect } from './ParticleEffect';
 import { MiniGame } from './MiniGame';
 import { InventorySystem, InventoryItem } from './InventorySystem';
+import { StoryHeader } from './StoryHeader';
+import { StoryInfo } from './StoryInfo';
+import { GameContent } from './GameContent';
+import { GameEnded } from './GameEnded';
 import storyBg1 from '@/assets/story-bg-1.jpg';
 import storyBg2 from '@/assets/story-bg-2.jpg';
 import storyBg3 from '@/assets/story-bg-3.jpg';
@@ -210,227 +211,34 @@ const InteractiveStoryPlayer = () => {
         onItemCombine={handleItemCombine}
       />
       
-      {/* Header */}
       <div className="container mx-auto px-4 py-6">
-        <div className="flex items-center justify-between mb-6">
-          <Button
-            onClick={handleGoBack}
-            variant="outline"
-            className="text-white border-white/30 hover:bg-white/10"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            بازگشت
-          </Button>
-          
-          <div className="flex items-center gap-4 text-white">
-            <div className="flex items-center gap-2">
-              <Trophy className="w-5 h-5 text-yellow-400" />
-              <span>امتیاز: {score}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Star className="w-5 h-5 text-purple-400" />
-              <span>انتخاب‌ها: {choicesMade.length}</span>
-            </div>
-          </div>
-        </div>
+        <StoryHeader 
+          onGoBack={handleGoBack}
+          score={score}
+          choicesMade={choicesMade}
+        />
 
-        {/* Story Info */}
-        <Card className="mb-6 bg-gradient-to-r from-purple-600/20 to-pink-600/20 backdrop-blur-sm border-purple-300/30">
-          <CardContent className="p-6">
-            <div className="flex items-start gap-4">
-              {story.cover_url && (
-                <img
-                  src={story.cover_url}
-                  alt={story.title}
-                  className="w-20 h-20 object-cover rounded-lg"
-                />
-              )}
-              <div className="flex-1">
-                <h1 className="text-2xl font-bold text-white mb-2">{story.title}</h1>
-                <p className="text-gray-300 mb-3">{story.description}</p>
-                <div className="flex items-center gap-4 text-sm">
-                  <Badge variant="secondary" className="bg-purple-600/20 text-purple-200">
-                    {story.difficulty_level}
-                  </Badge>
-                  <div className="flex items-center gap-1 text-gray-300">
-                    <Clock className="w-4 h-4" />
-                    {story.estimated_time} دقیقه
-                  </div>
-                  {story.age_range && (
-                    <Badge variant="outline" className="text-gray-300 border-gray-300/30">
-                      {story.age_range}
-                    </Badge>
-                  )}
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <StoryInfo story={story} />
 
-        {/* Game Content */}
         {gameState === 'playing' && currentNode && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <Card className="bg-white/5 backdrop-blur-sm border-white/10 story-glow">
-              <CardContent className="p-8">
-                <AnimatePresence mode="wait">
-                  {currentNode.title && (
-                    <motion.h2 
-                      className="text-2xl font-bold text-white mb-4 story-float"
-                      initial={{ opacity: 0, y: -20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.2 }}
-                    >
-                      {currentNode.title}
-                    </motion.h2>
-                  )}
-                </AnimatePresence>
-                
-                <motion.div
-                  className="text-gray-200 text-lg leading-relaxed mb-8 bg-black/30 backdrop-blur-sm p-6 rounded-lg border border-white/10"
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.4 }}
-                >
-                  <TypewriterText 
-                    text={currentNode.content}
-                    speed={30}
-                    onComplete={() => setTextCompleted(true)}
-                    className="text-white"
-                  />
-                </motion.div>
-
-              <AnimatePresence>
-                {textCompleted && availableChoices.length > 0 && (
-                  <motion.div 
-                    className="space-y-3"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                  >
-                    <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                      <Target className="w-5 h-5" />
-                      انتخاب کنید:
-                    </h3>
-                    {availableChoices
-                      .sort((a, b) => (a.order_index || 0) - (b.order_index || 0))
-                      .map((choice, index) => (
-                        <motion.div
-                          key={choice.id}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: index * 0.1 }}
-                        >
-                          <Button
-                            onClick={() => handleChoice(choice)}
-                            className="w-full p-4 h-auto text-right justify-start bg-gradient-to-r from-purple-600/20 to-pink-600/20 border border-purple-300/30 hover:from-purple-600/40 hover:to-pink-600/40 text-white transform hover:scale-[1.02] transition-all duration-300 story-glow"
-                            variant="outline"
-                          >
-                            <Play className="w-4 h-4 ml-2 flex-shrink-0" />
-                            <span className="flex-1">{choice.choice_text}</span>
-                            {choice.score_impact && choice.score_impact !== 0 && (
-                              <Badge 
-                                variant={choice.score_impact > 0 ? "default" : "destructive"}
-                                className="ml-2 story-sparkle"
-                              >
-                                {choice.score_impact > 0 ? '+' : ''}{choice.score_impact}
-                              </Badge>
-                            )}
-                          </Button>
-                        </motion.div>
-                      ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-              </CardContent>
-            </Card>
-          </motion.div>
+          <GameContent
+            currentNode={currentNode}
+            availableChoices={availableChoices}
+            textCompleted={textCompleted}
+            onTextComplete={() => setTextCompleted(true)}
+            onChoice={handleChoice}
+          />
         )}
 
-        {/* Game Ended */}
         {gameState === 'ended' && currentNode && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6 }}
-          >
-            <Card className="bg-gradient-to-r from-green-600/20 to-blue-600/20 backdrop-blur-sm border-green-300/30 story-glow">
-              <CardContent className="p-8 text-center">
-                <motion.div
-                  animate={{ rotate: [0, 10, -10, 0] }}
-                  transition={{ duration: 0.6, repeat: 3 }}
-                >
-                  <Trophy className="w-16 h-16 mx-auto mb-4 text-yellow-400" />
-                </motion.div>
-                <h2 className="text-3xl font-bold text-white mb-4 story-float">پایان داستان</h2>
-                
-                <motion.div 
-                  className="text-gray-200 text-lg mb-6"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.3 }}
-                >
-                  <TypewriterText 
-                    text={currentNode.content}
-                    speed={40}
-                    className="text-white"
-                  />
-                </motion.div>
-
-                <motion.div 
-                  className="flex justify-center items-center gap-8 mb-6 text-white"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5 }}
-                >
-                  <div className="text-center bg-yellow-500/20 p-4 rounded-lg">
-                    <motion.div 
-                      className="text-3xl font-bold text-yellow-400"
-                      animate={{ scale: [1, 1.1, 1] }}
-                      transition={{ duration: 1, repeat: Infinity }}
-                    >
-                      {score}
-                    </motion.div>
-                    <div className="text-sm">امتیاز نهایی</div>
-                  </div>
-                  <div className="text-center bg-purple-500/20 p-4 rounded-lg">
-                    <div className="text-3xl font-bold text-purple-400">{choicesMade.length}</div>
-                    <div className="text-sm">انتخاب‌های انجام شده</div>
-                  </div>
-                  <div className="text-center bg-blue-500/20 p-4 rounded-lg">
-                    <div className="text-3xl font-bold text-blue-400">{inventory.length}</div>
-                    <div className="text-sm">اقلام جمع‌آوری شده</div>
-                  </div>
-                </motion.div>
-
-                <motion.div 
-                  className="flex gap-4 justify-center"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.7 }}
-                >
-                  <Button 
-                    onClick={handleRestart} 
-                    className="bg-purple-600 hover:bg-purple-700 story-pulse"
-                  >
-                    <Play className="w-4 h-4 mr-2" />
-                    بازی دوباره
-                  </Button>
-                  <Button 
-                    onClick={handleGoBack} 
-                    variant="outline" 
-                    className="text-white border-white/30 hover:bg-white/10"
-                  >
-                    <ArrowLeft className="w-4 h-4 mr-2" />
-                    بازگشت به خانه
-                  </Button>
-                </motion.div>
-              </CardContent>
-            </Card>
-          </motion.div>
+          <GameEnded
+            currentNode={currentNode}
+            score={score}
+            choicesMade={choicesMade}
+            inventoryLength={inventory.length}
+            onRestart={handleRestart}
+            onGoBack={handleGoBack}
+          />
         )}
       </div>
       

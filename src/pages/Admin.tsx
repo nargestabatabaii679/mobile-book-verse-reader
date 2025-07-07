@@ -13,6 +13,7 @@ import { AnalyticsCharts } from '@/components/admin/AnalyticsCharts';
 import { ReadingReports } from '@/components/admin/ReadingReports';
 import { BookshelfView } from '@/components/admin/BookshelfView';
 import SoundSettings from '@/components/admin/SoundSettings';
+import { InteractiveStoriesManagement } from '@/components/admin/InteractiveStoriesManagement';
 import { useBooks, useAddBook, useUpdateBook, useDeleteBook, useBulkAddBooks } from '@/hooks/useBooks';
 import { toast } from 'sonner';
 import { Book } from '@/types';
@@ -134,10 +135,11 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="dashboard" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-8 bg-white/10 backdrop-blur-sm">
+          <TabsList className="grid w-full grid-cols-9 bg-white/10 backdrop-blur-sm">
             <TabsTrigger value="dashboard" className="text-white data-[state=active]:bg-white/20">داشبورد</TabsTrigger>
             <TabsTrigger value="add-book" className="text-white data-[state=active]:bg-white/20">افزودن کتاب</TabsTrigger>
             <TabsTrigger value="manage-books" className="text-white data-[state=active]:bg-white/20">مدیریت کتاب‌ها</TabsTrigger>
+            <TabsTrigger value="interactive-stories" className="text-white data-[state=active]:bg-white/20">داستان‌های تعاملی</TabsTrigger>
             <TabsTrigger value="bulk-upload" className="text-white data-[state=active]:bg-white/20">بارگذاری گروهی</TabsTrigger>
             <TabsTrigger value="analytics" className="text-white data-[state=active]:bg-white/20">آنالیتیکس</TabsTrigger>
             <TabsTrigger value="reports" className="text-white data-[state=active]:bg-white/20">گزارشات</TabsTrigger>
@@ -160,6 +162,10 @@ const Admin = () => {
               onDeleteBook={handleDeleteBook}
               onViewBook={handleViewBook}
             />
+          </TabsContent>
+
+          <TabsContent value="interactive-stories">
+            <InteractiveStoriesManagement />
           </TabsContent>
 
           <TabsContent value="bulk-upload">

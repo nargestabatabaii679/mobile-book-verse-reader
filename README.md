@@ -1,8 +1,26 @@
-# Welcome to your Lovable project
+# Mobile Book Verse Reader 📚✨
 
 ## Project info
 
 **URL**: https://lovable.dev/projects/e08351e5-243f-4813-a83f-d22f842f7adc
+
+یک پلتفرم هوشمند برای خواندن و مطالعه کتاب‌های تعاملی و داستان‌های شخصی‌سازی شده.
+
+## 🚨 تنظیم مورد نیاز - Supabase
+
+⚠️ **مهم**: این پروژه در حال حاضر در حالت Demo کار می‌کند. برای استفاده کامل:
+
+1. **پروژه Supabase ایجاد کنید** در [Supabase.com](https://supabase.com)
+2. **راهنمای کامل** را در فایل [SUPABASE-SETUP.md](./SUPABASE-SETUP.md) دنبال کنید
+3. **فایل .env** را با اطلاعات واقعی به‌روزرسانی کنید
+
+```env
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key
+VITE_FORCE_OFFLINE=false
+```
+
+📋 **تست وضعیت**: برای بررسی اتصالات به `/diagnostics` بروید
 
 ## How can I edit this code?
 

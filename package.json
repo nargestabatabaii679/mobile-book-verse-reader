@@ -1,12 +1,26 @@
 {
   "name": "vite_react_shadcn_ts",
-  "private": true,
   "version": "0.0.0",
+  "private": true,
+  "description": "**URL**: https://lovable.dev/projects/e08351e5-243f-4813-a83f-d22f842f7adc",
+  "homepage": "https://github.com/nargestabatabaii679/mobile-book-verse-reader#readme",
+  "bugs": {
+    "url": "https://github.com/nargestabatabaii679/mobile-book-verse-reader/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nargestabatabaii679/mobile-book-verse-reader.git"
+  },
+  "license": "ISC",
+  "author": "",
   "type": "module",
+  "main": "eslint.config.js",
   "scripts": {
+    "start": "vite",
     "dev": "vite",
     "build": "vite build",
     "build:dev": "vite build --mode development",
+    "build:prod": "NODE_ENV=production vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },

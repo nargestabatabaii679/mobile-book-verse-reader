@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, checkSupabaseConnection } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 export interface InteractiveStory {
@@ -41,12 +41,39 @@ export interface StoryChoice {
   order_index: number;
 }
 
+// Enhanced error handling utility
+const handleSupabaseError = (error: unknown, context: string) => {
+  console.error(`${context}:`, error);
+
+  // Type guard for error objects
+  const err = error as { message?: string; code?: string; status?: number };
+
+  if (err?.code === 'PGRST301' || err?.code === 'PGRST116') {
+    toast.error('خطا در احراز هویت - لطفاً مجدداً وارد شوید');
+  } else if (err?.message?.includes('fetch')) {
+    toast.error('خطا در اتصال به شبکه - اتصال اینترنت خود را بررسی کنید');
+  } else if (err?.message?.includes('timeout')) {
+    toast.error('زمان اتصال به پایان رسید - لطفاً مجدداً تلاش کنید');
+  } else {
+    toast.error('خطا در اتصال به سرور - لطفاً مجدداً تلاش کنید');
+  }
+
+  return err;
+};
+
 // Fetch all interactive stories
 export const useInteractiveStories = () => {
   return useQuery({
     queryKey: ['interactive-stories'],
     queryFn: async () => {
       try {
+        // Check connection health first
+        const isHealthy = await checkSupabaseConnection();
+        if (!isHealthy) {
+          throw new Error('Supabase connection unhealthy');
+        }
+
+        console.log('Fetching interactive stories...');
         const { data, error } = await supabase
           .from('interactive_stories')
           .select('*')
@@ -54,21 +81,27 @@ export const useInteractiveStories = () => {
           .order('created_at', { ascending: false });
 
         if (error) {
-          console.error('Error fetching interactive stories:', error);
-          toast.error('خطا در دریافت داستان‌های تعاملی');
-          throw error;
+          throw handleSupabaseError(error, 'Error fetching interactive stories');
         }
 
         console.log('Interactive stories loaded:', data?.length || 0);
         return data as InteractiveStory[];
       } catch (error) {
-        console.error('Network error fetching stories:', error);
-        toast.error('خطا در اتصال به سرور');
-        throw error;
+        throw handleSupabaseError(error, 'Network error fetching stories');
       }
     },
-    retry: 3,
-    retryDelay: 1000,
+    retry: (failureCount, error) => {
+      // Don't retry for authentication errors
+      const err = error as { code?: string; status?: number };
+      if (err?.code === 'PGRST301' || err?.status === 401) {
+        return false;
+      }
+      // Retry up to 3 times for network errors
+      return failureCount < 3;
+    },
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
   });
 };
 
@@ -77,27 +110,43 @@ export const useStoryNodes = (storyId: string) => {
   return useQuery({
     queryKey: ['story-nodes', storyId],
     queryFn: async () => {
-      const { data: nodes, error: nodesError } = await supabase
-        .from('story_nodes')
-        .select('*')
-        .eq('story_id', storyId);
+      try {
+        const { data: nodes, error: nodesError } = await supabase
+          .from('story_nodes')
+          .select('*')
+          .eq('story_id', storyId);
 
-      if (nodesError) throw nodesError;
+        if (nodesError) {
+          throw handleSupabaseError(nodesError, 'Error fetching story nodes');
+        }
 
-      const { data: choices, error: choicesError } = await supabase
-        .from('story_choices')
-        .select('*')
-        .in('node_id', nodes.map(n => n.id))
-        .order('order_index');
+        const { data: choices, error: choicesError } = await supabase
+          .from('story_choices')
+          .select('*')
+          .in('node_id', nodes.map(n => n.id))
+          .order('order_index');
 
-      if (choicesError) throw choicesError;
+        if (choicesError) {
+          throw handleSupabaseError(choicesError, 'Error fetching story choices');
+        }
 
-      return {
-        nodes: nodes as StoryNode[],
-        choices: choices as StoryChoice[]
-      };
+        return {
+          nodes: nodes as StoryNode[],
+          choices: choices as StoryChoice[]
+        };
+      } catch (error) {
+        throw handleSupabaseError(error, 'Network error fetching story data');
+      }
     },
     enabled: !!storyId,
+    retry: (failureCount, error) => {
+      const err = error as { code?: string; status?: number };
+      if (err?.code === 'PGRST301' || err?.status === 401) {
+        return false;
+      }
+      return failureCount < 2;
+    },
+    retryDelay: 1500,
   });
 };
 
@@ -107,23 +156,37 @@ export const useAddInteractiveStory = () => {
 
   return useMutation({
     mutationFn: async (story: Omit<InteractiveStory, 'id' | 'created_at' | 'updated_at'>) => {
-      const { data, error } = await supabase
-        .from('interactive_stories')
-        .insert([story])
-        .select()
-        .single();
+      try {
+        const { data, error } = await supabase
+          .from('interactive_stories')
+          .insert([story])
+          .select()
+          .single();
 
-      if (error) throw error;
-      return data;
+        if (error) {
+          throw handleSupabaseError(error, 'Error adding interactive story');
+        }
+
+        return data;
+      } catch (error) {
+        throw handleSupabaseError(error, 'Network error adding story');
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['interactive-stories'] });
       toast.success('داستان تعاملی با موفقیت اضافه شد');
     },
-    onError: (error) => {
-      console.error('Error adding story:', error);
-      toast.error('خطا در افزودن داستان');
+    onError: () => {
+      // Error handling is done in the mutationFn
     },
+    retry: (failureCount, error) => {
+      const err = error as { code?: string; status?: number };
+      if (err?.code === 'PGRST301' || err?.status === 401) {
+        return false;
+      }
+      return failureCount < 1;
+    },
+    retryDelay: 2000,
   });
 };
 
@@ -133,24 +196,38 @@ export const useUpdateInteractiveStory = () => {
 
   return useMutation({
     mutationFn: async ({ id, ...updates }: Partial<InteractiveStory> & { id: string }) => {
-      const { data, error } = await supabase
-        .from('interactive_stories')
-        .update(updates)
-        .eq('id', id)
-        .select()
-        .single();
+      try {
+        const { data, error } = await supabase
+          .from('interactive_stories')
+          .update(updates)
+          .eq('id', id)
+          .select()
+          .single();
 
-      if (error) throw error;
-      return data;
+        if (error) {
+          throw handleSupabaseError(error, 'Error updating interactive story');
+        }
+
+        return data;
+      } catch (error) {
+        throw handleSupabaseError(error, 'Network error updating story');
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['interactive-stories'] });
       toast.success('داستان با موفقیت به‌روزرسانی شد');
     },
-    onError: (error) => {
-      console.error('Error updating story:', error);
-      toast.error('خطا در به‌روزرسانی داستان');
+    onError: () => {
+      // Error handling is done in the mutationFn
     },
+    retry: (failureCount, error) => {
+      const err = error as { code?: string; status?: number };
+      if (err?.code === 'PGRST301' || err?.status === 401) {
+        return false;
+      }
+      return failureCount < 1;
+    },
+    retryDelay: 2000,
   });
 };
 
@@ -160,20 +237,33 @@ export const useDeleteInteractiveStory = () => {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('interactive_stories')
-        .delete()
-        .eq('id', id);
+      try {
+        const { error } = await supabase
+          .from('interactive_stories')
+          .delete()
+          .eq('id', id);
 
-      if (error) throw error;
+        if (error) {
+          throw handleSupabaseError(error, 'Error deleting interactive story');
+        }
+      } catch (error) {
+        throw handleSupabaseError(error, 'Network error deleting story');
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['interactive-stories'] });
       toast.success('داستان با موفقیت حذف شد');
     },
-    onError: (error) => {
-      console.error('Error deleting story:', error);
-      toast.error('خطا در حذف داستان');
+    onError: () => {
+      // Error handling is done in the mutationFn
     },
+    retry: (failureCount, error) => {
+      const err = error as { code?: string; status?: number };
+      if (err?.code === 'PGRST301' || err?.status === 401) {
+        return false;
+      }
+      return failureCount < 1;
+    },
+    retryDelay: 2000,
   });
 };

@@ -88,13 +88,13 @@ export const BookOperationsLog = () => {
                        <div className="text-xs text-gray-500">
                          {log.operation_type === 'single' ? (
                            <div>
-                             <div>عنوان: {typeof log.operation_details === 'object' && log.operation_details && 'title' in log.operation_details ? log.operation_details.title : 'نامشخص'}</div>
-                             <div>نویسنده: {typeof log.operation_details === 'object' && log.operation_details && 'author' in log.operation_details ? log.operation_details.author : 'نامشخص'}</div>
+                             <div>عنوان: {typeof log.operation_details === 'object' && log.operation_details && 'title' in log.operation_details ? String(log.operation_details.title) : 'نامشخص'}</div>
+                             <div>نویسنده: {typeof log.operation_details === 'object' && log.operation_details && 'author' in log.operation_details ? String(log.operation_details.author) : 'نامشخص'}</div>
                            </div>
                          ) : (
                            <div>
                              <div>دسته‌ها: {typeof log.operation_details === 'object' && log.operation_details && 'categories' in log.operation_details && Array.isArray(log.operation_details.categories) ? log.operation_details.categories.join(', ') : 'نامشخص'}</div>
-                             <div>مجموع صفحات: {typeof log.operation_details === 'object' && log.operation_details && 'total_pages' in log.operation_details ? log.operation_details.total_pages : 'نامشخص'}</div>
+                             <div>مجموع صفحات: {typeof log.operation_details === 'object' && log.operation_details && 'total_pages' in log.operation_details ? String(log.operation_details.total_pages) : 'نامشخص'}</div>
                            </div>
                          )}
                        </div>

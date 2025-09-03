@@ -14,6 +14,7 @@ import { ReadingReports } from '@/components/admin/ReadingReports';
 import { BookshelfView } from '@/components/admin/BookshelfView';
 import SoundSettings from '@/components/admin/SoundSettings';
 import { InteractiveStoriesManagement } from '@/components/admin/InteractiveStoriesManagement';
+import SupabaseSetupWarning from '@/components/SupabaseSetupWarning';
 import { useBooks, useAddBook, useUpdateBook, useDeleteBook, useBulkAddBooks } from '@/hooks/useBooks';
 import { toast } from 'sonner';
 import { Book } from '@/types';
@@ -134,6 +135,11 @@ const Admin = () => {
           </div>
         </div>
 
+        {/* Supabase setup warning - only visible in admin panel */}
+        <div className="mb-6">
+          <SupabaseSetupWarning />
+        </div>
+
         <Tabs defaultValue="dashboard" className="space-y-6">
           <TabsList className="grid w-full grid-cols-9 bg-white/10 backdrop-blur-sm">
             <TabsTrigger value="dashboard" className="text-white data-[state=active]:bg-white/20">داشبورد</TabsTrigger>
@@ -156,8 +162,8 @@ const Admin = () => {
           </TabsContent>
 
           <TabsContent value="manage-books">
-            <BookManagementTable 
-              books={books} 
+            <BookManagementTable
+              books={books}
               onEditBook={handleEditBook}
               onDeleteBook={handleDeleteBook}
               onViewBook={handleViewBook}

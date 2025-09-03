@@ -11,7 +11,6 @@ import Diagnostics from "./pages/Diagnostics";
 import StoryViewer from "./components/story-mode/StoryViewer";
 import InteractiveStoryPlayer from "./components/interactive-story/InteractiveStoryPlayer";
 import ConnectionStatus from "./components/ConnectionStatus";
-import SupabaseSetupWarning from "./components/SupabaseSetupWarning";
 import { config } from "./config";
 
 // Enhanced QueryClient configuration with environment-based settings
@@ -55,11 +54,6 @@ const App = () => (
         {/* Connection status indicator */}
         <div className="fixed top-0 left-0 right-0 z-50">
           <ConnectionStatus className="m-2" />
-        </div>
-
-        {/* Supabase setup warning for demo mode */}
-        <div className="container mx-auto px-4 pt-16">
-          <SupabaseSetupWarning />
         </div>
 
         <Toaster />

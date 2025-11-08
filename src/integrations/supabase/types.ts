@@ -14,7 +14,296 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      book_additions_log: {
+        Row: {
+          book_ids: string[]
+          books_count: number
+          created_at: string
+          id: string
+          operation_details: Json | null
+          operation_type: string
+          status: string
+          user_session: string | null
+        }
+        Insert: {
+          book_ids: string[]
+          books_count?: number
+          created_at?: string
+          id?: string
+          operation_details?: Json | null
+          operation_type: string
+          status?: string
+          user_session?: string | null
+        }
+        Update: {
+          book_ids?: string[]
+          books_count?: number
+          created_at?: string
+          id?: string
+          operation_details?: Json | null
+          operation_type?: string
+          status?: string
+          user_session?: string | null
+        }
+        Relationships: []
+      }
+      book_pages: {
+        Row: {
+          audio_url: string | null
+          book_id: string
+          content: string | null
+          created_at: string
+          id: string
+          image_url: string | null
+          page_number: number
+        }
+        Insert: {
+          audio_url?: string | null
+          book_id: string
+          content?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          page_number: number
+        }
+        Update: {
+          audio_url?: string | null
+          book_id?: string
+          content?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          page_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "book_pages_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      books: {
+        Row: {
+          age_range: string | null
+          author: string
+          category: string | null
+          cover_url: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_interactive: boolean | null
+          language: string | null
+          title: string
+          total_pages: number | null
+          updated_at: string
+        }
+        Insert: {
+          age_range?: string | null
+          author: string
+          category?: string | null
+          cover_url?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_interactive?: boolean | null
+          language?: string | null
+          title: string
+          total_pages?: number | null
+          updated_at?: string
+        }
+        Update: {
+          age_range?: string | null
+          author?: string
+          category?: string | null
+          cover_url?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_interactive?: boolean | null
+          language?: string | null
+          title?: string
+          total_pages?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      interactive_stories: {
+        Row: {
+          age_range: string | null
+          category: string | null
+          cover_url: string | null
+          created_at: string
+          description: string | null
+          difficulty_level: string | null
+          estimated_time: number | null
+          id: string
+          is_active: boolean | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          age_range?: string | null
+          category?: string | null
+          cover_url?: string | null
+          created_at?: string
+          description?: string | null
+          difficulty_level?: string | null
+          estimated_time?: number | null
+          id?: string
+          is_active?: boolean | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          age_range?: string | null
+          category?: string | null
+          cover_url?: string | null
+          created_at?: string
+          description?: string | null
+          difficulty_level?: string | null
+          estimated_time?: number | null
+          id?: string
+          is_active?: boolean | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      story_choices: {
+        Row: {
+          choice_text: string
+          id: string
+          next_node_id: string
+          node_id: string
+          order_index: number | null
+          required_item: string | null
+          score_impact: number | null
+          sound_effect: string | null
+        }
+        Insert: {
+          choice_text: string
+          id?: string
+          next_node_id: string
+          node_id: string
+          order_index?: number | null
+          required_item?: string | null
+          score_impact?: number | null
+          sound_effect?: string | null
+        }
+        Update: {
+          choice_text?: string
+          id?: string
+          next_node_id?: string
+          node_id?: string
+          order_index?: number | null
+          required_item?: string | null
+          score_impact?: number | null
+          sound_effect?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "story_choices_node_id_fkey"
+            columns: ["node_id"]
+            isOneToOne: false
+            referencedRelation: "story_nodes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      story_interactions: {
+        Row: {
+          correct_answer: string | null
+          id: string
+          interaction_type: string
+          items: Json | null
+          node_id: string
+          prompt: string
+          reward_score: number | null
+        }
+        Insert: {
+          correct_answer?: string | null
+          id?: string
+          interaction_type: string
+          items?: Json | null
+          node_id: string
+          prompt: string
+          reward_score?: number | null
+        }
+        Update: {
+          correct_answer?: string | null
+          id?: string
+          interaction_type?: string
+          items?: Json | null
+          node_id?: string
+          prompt?: string
+          reward_score?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "story_interactions_node_id_fkey"
+            columns: ["node_id"]
+            isOneToOne: false
+            referencedRelation: "story_nodes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      story_nodes: {
+        Row: {
+          background_gradient: string | null
+          background_image: string | null
+          content: string
+          created_at: string
+          ending_type: string | null
+          id: string
+          is_ending: boolean | null
+          node_id: string
+          score_impact: number | null
+          sound_effect: string | null
+          story_id: string
+          title: string | null
+        }
+        Insert: {
+          background_gradient?: string | null
+          background_image?: string | null
+          content: string
+          created_at?: string
+          ending_type?: string | null
+          id?: string
+          is_ending?: boolean | null
+          node_id: string
+          score_impact?: number | null
+          sound_effect?: string | null
+          story_id: string
+          title?: string | null
+        }
+        Update: {
+          background_gradient?: string | null
+          background_image?: string | null
+          content?: string
+          created_at?: string
+          ending_type?: string | null
+          id?: string
+          is_ending?: boolean | null
+          node_id?: string
+          score_impact?: number | null
+          sound_effect?: string | null
+          story_id?: string
+          title?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "story_nodes_story_id_fkey"
+            columns: ["story_id"]
+            isOneToOne: false
+            referencedRelation: "interactive_stories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

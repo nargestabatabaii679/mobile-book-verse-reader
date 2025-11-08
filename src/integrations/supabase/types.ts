@@ -85,6 +85,44 @@ export type Database = {
           },
         ]
       }
+      book_ratings: {
+        Row: {
+          book_id: string
+          created_at: string | null
+          id: string
+          rating: number | null
+          review: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          book_id: string
+          created_at?: string | null
+          id?: string
+          rating?: number | null
+          review?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          book_id?: string
+          created_at?: string | null
+          id?: string
+          rating?: number | null
+          review?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "book_ratings_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       books: {
         Row: {
           age_range: string | null
@@ -171,6 +209,92 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string | null
+          font_size: string | null
+          full_name: string | null
+          id: string
+          notifications_enabled: boolean | null
+          reading_speed: string | null
+          theme_preference: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string | null
+          font_size?: string | null
+          full_name?: string | null
+          id: string
+          notifications_enabled?: boolean | null
+          reading_speed?: string | null
+          theme_preference?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string | null
+          font_size?: string | null
+          full_name?: string | null
+          id?: string
+          notifications_enabled?: boolean | null
+          reading_speed?: string | null
+          theme_preference?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      reading_history: {
+        Row: {
+          book_id: string
+          completed_at: string | null
+          current_page: number | null
+          id: string
+          last_read_at: string | null
+          progress_percentage: number | null
+          reading_time_minutes: number | null
+          started_at: string | null
+          total_pages: number | null
+          user_id: string
+        }
+        Insert: {
+          book_id: string
+          completed_at?: string | null
+          current_page?: number | null
+          id?: string
+          last_read_at?: string | null
+          progress_percentage?: number | null
+          reading_time_minutes?: number | null
+          started_at?: string | null
+          total_pages?: number | null
+          user_id: string
+        }
+        Update: {
+          book_id?: string
+          completed_at?: string | null
+          current_page?: number | null
+          id?: string
+          last_read_at?: string | null
+          progress_percentage?: number | null
+          reading_time_minutes?: number | null
+          started_at?: string | null
+          total_pages?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reading_history_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       story_choices: {
         Row: {
@@ -304,15 +428,74 @@ export type Database = {
           },
         ]
       }
+      user_favorites: {
+        Row: {
+          added_at: string | null
+          book_id: string
+          id: string
+          notes: string | null
+          user_id: string
+        }
+        Insert: {
+          added_at?: string | null
+          book_id: string
+          id?: string
+          notes?: string | null
+          user_id: string
+        }
+        Update: {
+          added_at?: string | null
+          book_id?: string
+          id?: string
+          notes?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_favorites_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -439,6 +622,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const

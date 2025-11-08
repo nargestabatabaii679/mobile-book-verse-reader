@@ -4,8 +4,13 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import Admin from "./pages/Admin";
+import Auth from "./pages/Auth";
+import Profile from "./pages/Profile";
+import ReadingHistory from "./pages/ReadingHistory";
+import Favorites from "./pages/Favorites";
 import NotFound from "./pages/NotFound";
 import Diagnostics from "./pages/Diagnostics";
 import StoryViewer from "./components/story-mode/StoryViewer";
@@ -49,28 +54,34 @@ const queryClient = new QueryClient({
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <div className="min-h-screen">
-        {/* Connection status indicator */}
-        <div className="fixed top-0 left-0 right-0 z-50">
-          <ConnectionStatus className="m-2" />
-        </div>
+    <AuthProvider>
+      <TooltipProvider>
+        <div className="min-h-screen">
+          {/* Connection status indicator */}
+          <div className="fixed top-0 left-0 right-0 z-50">
+            <ConnectionStatus className="m-2" />
+          </div>
 
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/diagnostics" element={<Diagnostics />} />
-            <Route path="/interactive/:storyId" element={<StoryViewer />} />
-            <Route path="/interactive/story/:storyId" element={<InteractiveStoryPlayer />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </div>
-    </TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/reading-history" element={<ReadingHistory />} />
+              <Route path="/favorites" element={<Favorites />} />
+              <Route path="/admin" element={<Admin />} />
+              <Route path="/diagnostics" element={<Diagnostics />} />
+              <Route path="/interactive/:storyId" element={<StoryViewer />} />
+              <Route path="/interactive/story/:storyId" element={<InteractiveStoryPlayer />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </div>
+      </TooltipProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 

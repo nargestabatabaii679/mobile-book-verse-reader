@@ -1,10 +1,13 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Loader2 } from 'lucide-react';
 import { AddBookForm } from '@/components/admin/AddBookForm';
 import { BookManagementTable } from '@/components/admin/BookManagementTable';
 import { BulkUploadSection } from '@/components/admin/BulkUploadSection';
@@ -19,12 +22,10 @@ import { useBooks, useAddBook, useUpdateBook, useDeleteBook, useBulkAddBooks } f
 import { toast } from 'sonner';
 import { Book } from '@/types';
 import { LogOut, Home } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 
 const Admin = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const { user, isAdmin, loading: authLoading } = useAuth();
 
   // Use Supabase hooks
   const { data: books = [], isLoading } = useBooks();
@@ -33,20 +34,14 @@ const Admin = () => {
   const deleteBookMutation = useDeleteBook();
   const bulkAddBooksMutation = useBulkAddBooks();
 
-  const handleLogin = () => {
-    if (password === '123') {
-      setIsAuthenticated(true);
-      toast.success('ورود موفق به پنل مدیریت');
-    } else {
-      toast.error('رمز عبور اشتباه است');
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate('/auth');
+    } else if (!authLoading && user && !isAdmin) {
+      navigate('/');
+      toast.error('شما دسترسی به پنل مدیریت ندارید');
     }
-  };
-
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    setPassword('');
-    toast.success('خروج موفق از پنل مدیریت');
-  };
+  }, [user, isAdmin, authLoading, navigate]);
 
   const handleGoToHome = () => {
     navigate('/');
@@ -74,37 +69,16 @@ const Admin = () => {
     toast.info('نمایش کتاب: ' + book.title);
   };
 
-  if (!isAuthenticated) {
+  if (authLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle>ورود به پنل مدیریت</CardTitle>
-            <CardDescription>لطفاً رمز عبور را وارد کنید</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="password">رمز عبور</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
-                placeholder="رمز عبور را وارد کنید"
-              />
-            </div>
-            <Button onClick={handleLogin} className="w-full">
-              ورود
-            </Button>
-            <Button onClick={handleGoToHome} variant="outline" className="w-full">
-              <Home className="w-4 h-4 mr-2" />
-              بازگشت به صفحه اصلی
-            </Button>
-          </CardContent>
-        </Card>
+        <Loader2 className="h-8 w-8 animate-spin text-white" />
       </div>
     );
+  }
+
+  if (!user || !isAdmin) {
+    return null;
   }
 
   if (isLoading) {
@@ -127,10 +101,6 @@ const Admin = () => {
             <Button onClick={handleGoToHome} variant="outline" className="text-white border-white hover:bg-white/10">
               <Home className="w-4 h-4 mr-2" />
               صفحه اصلی
-            </Button>
-            <Button onClick={handleLogout} variant="destructive">
-              <LogOut className="w-4 h-4 mr-2" />
-              خروج
             </Button>
           </div>
         </div>

@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { RefreshCw, CheckCircle2, XCircle, AlertCircle } from 'lucide-react';
-import { checkSupabaseConnection } from '@/integrations/supabase/client';
+import { supabase } from '@/integrations/supabase/client';
 import { testSupabaseConnectivity, getNetworkInfo, isOnline } from '@/utils/networkUtils';
 
 interface DiagnosticResult {
@@ -60,20 +60,21 @@ export const DiagnosticsPage: React.FC = () => {
             });
         }
 
-        // Test 3: Supabase client health
+        // Test 3: Cloud database health
         try {
-            const isHealthy = await checkSupabaseConnection();
+            const { error } = await supabase.from('books').select('id').limit(1);
+            const isHealthy = !error || error.code === 'PGRST116'; // PGRST116 means table doesn't exist yet, which is OK for new projects
             newResults.push({
-                name: 'سلامت کلاینت Supabase',
+                name: 'سلامت پایگاه داده',
                 status: isHealthy ? 'success' : 'error',
-                message: isHealthy ? 'کلاینت Supabase سالم' : 'مشکل در کلاینت Supabase',
-                details: 'بررسی اتصال به جدول interactive_stories'
+                message: isHealthy ? 'پایگاه داده در دسترس' : 'مشکل در دسترسی به پایگاه داده',
+                details: error ? `خطا: ${error.message}` : 'اتصال موفق'
             });
         } catch (error) {
             newResults.push({
-                name: 'سلامت کلاینت Supabase',
+                name: 'سلامت پایگاه داده',
                 status: 'error',
-                message: 'خطا در بررسی کلاینت',
+                message: 'خطا در بررسی پایگاه داده',
                 details: String(error)
             });
         }
